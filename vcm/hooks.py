@@ -132,7 +132,10 @@ app_license = "mit"
 # override_doctype_class = {
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
-
+override_doctype_class = {
+    "POS Invoice": "vcm.erpnext_vcm.overrides.VCMPOSInv.VCMPOSInv",
+    "Sales Invoice": "vcm.erpnext_vcm.overrides.VCMSalesInv.VCMSalesInv",
+}
 # Document Events
 # ---------------
 # Hook on document methods and events
