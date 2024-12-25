@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{Devotee}{#####}",
+ "creation": "2024-12-25 17:00:59.763397",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "devotee_name",
+  "reference_code",
+  "name_and_code",
+  "department",
+  "email_id",
+  "contact_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "devotee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Devotee Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reference Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "name_and_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name and Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Division\nBio Diversity 2\nHarinam Distribution\nProject\nFund Raising\nAdmin\nDiety Department\nFolk-VRINDAVAN\nKrishna Life\nPR & Liasioning\nFacilities\nG-FOLK\nAnnadan\nAshram General\nFOLK-NOIDA\nGuest House\nFinance\nCES\nDiety Garland\nRRM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-25 17:33:20.589615",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "Devotee Details",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "name_and_code",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "email_id"
+}

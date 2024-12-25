@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{BnPSalesRep}{#####}",
+ "creation": "2024-12-25 17:26:34.345708",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "name1",
+  "emp_id",
+  "mobile_number",
+  "email_id",
+  "name_and_empid",
+  "allocated_topos"
+ ],
+ "fields": [
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "emp_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "EMP ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "name_and_empid",
+   "fieldtype": "Data",
+   "label": "Name and EmpID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "allocated_topos",
+   "fieldtype": "Link",
+   "label": "Allocated ToPOS",
+   "options": "POS Profile"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-25 17:47:09.944767",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "BnPSalesRep",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "name_and_empid",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "name1"
+}
