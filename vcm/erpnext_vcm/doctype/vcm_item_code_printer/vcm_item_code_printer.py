@@ -5,7 +5,7 @@
 import frappe
 from frappe.model.document import Document
 
-class ItemCodePrinter(Document):
+class VCMItemCodePrinter(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
