@@ -335,7 +335,7 @@ class VCMPOSInv(POSInvoice):
             self.send_email()
 
         # for Books and Para
-        if ((self.pos_profile == 'Krishna Prasadam' ) or (self.pos_profile == 'Krishna Counter POS') 
+        if ((self.pos_profile == 'Jagannath Counter POS' ) or (self.pos_profile == 'Krishna Counter POS') 
 			or (self.pos_profile == 'Gita Counter POS') or (self.pos_profile == 'Gurugram POS')
 			or (self.pos_profile == 'NOIDA POS') or (self.pos_profile == 'Amritsar POS')
             or (self.pos_profile == 'Balram POS')  ): 
@@ -344,7 +344,6 @@ class VCMPOSInv(POSInvoice):
                 frappe.throw("Please fill Sales Rep name before completing the order.")
 
             # we are making sure that in case of COupon as MOP, remarks with COupon code is filled
-            #payment = None  # initialize payment variable
             for payment in self.payments:
                     if payment.mode_of_payment == 'Coupon':
                         if payment.amount != 0:
