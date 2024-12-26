@@ -343,9 +343,13 @@ class VCMPOSInv(POSInvoice):
             if not self.custom_bnp_salesrep :
                 frappe.throw("Please fill Sales Rep name before completing the order.")
 
-            if payment.mode_of_payment == 'Coupon':       
-                if not self.custom_additional_remarks:
-                    frappe.throw("Please fill Coupon number in additional remarks before completing the order.")
+            # we are making sure that in case of COupon as MOP, remarks with COupon code is filled
+            #payment = None  # initialize payment variable
+            for payment in self.payments:
+                    if payment.mode_of_payment == 'Coupon':
+                        if payment.amount != 0:
+                           if not self.custom_additional_remarks:
+                                frappe.throw("Please fill Coupon number in additional remarks before completing the order.")
     
     def send_email(self):
         # check if doc is ready to submit and not in draft (state 0)
