@@ -71,7 +71,7 @@ frappe.ui.form.on("VCM Item Code Printer", {
                           var itemCode = total_items[j + g]["code"];
                        
   
-                          group_string += `^FO${xOffset+2},${yOffset} ^BY 1,2,100 ^BCN,,N,N,N ^FD${itemCode}^FS`;
+                          group_string += `^FO${xOffset+2},${yOffset} ^BY 2,1,100 ^BCN,,N,N,N ^FD${itemCode}^FS`;
                           group_string += `^FO${xOffset},${
                             yOffset + 5 + 105
                           }^FB200,3,5,L^A0N,30,17 ^FD${
