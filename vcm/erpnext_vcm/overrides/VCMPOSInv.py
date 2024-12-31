@@ -338,18 +338,18 @@ class VCMPOSInv(POSInvoice):
         if ((self.pos_profile == 'Jagannath Counter POS' ) or (self.pos_profile == 'Krishna Counter POS') 
 			or (self.pos_profile == 'Gita Counter POS') or (self.pos_profile == 'Gurugram POS')
 			or (self.pos_profile == 'NOIDA POS') or (self.pos_profile == 'Amritsar POS')
-            or (self.pos_profile == 'Balram POS')  ): 
+            or (self.pos_profile == 'Balram Counter POS')  ): 
             
             if not self.custom_bnp_salesrep :
                 frappe.throw("Please fill Sales Rep name before completing the order.")
 
-            # we are making sure that in case of COupon as MOP, remarks with COupon code is filled
+            # make sure that in case of Pushpanjali 100Rs coupon as MOP, remarks with Coupon code is filled
             for payment in self.payments:
-                    if payment.mode_of_payment == 'Coupon':
+                    if payment.mode_of_payment == 'Pushpanjali Coupon':
                         if payment.amount != 0:
                            if not self.custom_additional_remarks:
-                                frappe.throw("Please fill Coupon number in additional remarks before completing the order.")
-    
+                                frappe.throw("Please fill Pushpanjali coupon number in additional remarks before completing the order.")
+                    
     def send_email(self):
         # check if doc is ready to submit and not in draft (state 0)
         if self.docstatus == 1:   
