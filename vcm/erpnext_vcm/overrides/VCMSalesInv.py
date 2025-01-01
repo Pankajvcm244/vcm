@@ -96,45 +96,43 @@ class VCMSalesInv(SalesInvoice):
                     prefix = f"TBC2425/RT-"
                 else:
                     prefix = f"TBC2425/SI-"   
-                self.name = prefix + getseries(prefix, 4)            
+                self.name = prefix + getseries(prefix, 4)
+            elif (self.pos_profile == 'Jagannath Counter POS'): 
+                if self.is_return:
+                    prefix = f"TJC2425/RT-"
+                else:
+                    prefix = f"TJC2425/SI-"   
+                self.name = prefix + getseries(prefix, 4)
+        # these are Sales invoice series for direct creation of Sales Invoice, Upper one is for POS closing           
         elif (self.cost_center == 'Braj Nidhi Guest House - TSF') :
-            #guest house sales invocie series
+            #guest house sales invoice series
             prefix = f"TGH2425/SI-" 
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Annakoot - TSF'):
-            #guest house sales invocie series
             prefix = f"TAK2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Brajras - TSF') :
-            #guest house sales invocie series
             prefix = f"TBR2425/SI-" 
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Surabhi - TSF'):
-            #guest house sales invocie series
             prefix = f"TSP2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Varanasi Laddu Feeding - TSF'):
-            #guest house sales invocie series
             prefix = f"TLF2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Noida Merchandise - TSF'):
-            #guest house sales invocie series
             prefix = f"TNP2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Amritsar Merchandise - TSF'):
-            #guest house sales invocie series
             prefix = f"TAP2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Books - TSF'):
-            #guest house sales invocie series
             prefix = f"TGC2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Gifts - TSF'):
-            #guest house sales invocie series
             prefix = f"TKC2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'GGN Merchandise - TSF'):
-            #guest house sales invocie series
             prefix = f"TGP2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         else:
