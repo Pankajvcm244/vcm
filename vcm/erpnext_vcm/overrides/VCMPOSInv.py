@@ -1,4 +1,8 @@
 from __future__ import unicode_literals
+from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
+    get_accounting_dimensions,
+    get_dimensions,
+)
 import frappe, erpnext
 from frappe.utils.data import getdate
 from frappe.model.naming import getseries
@@ -14,7 +18,9 @@ from erpnext.accounts.doctype.pos_invoice.pos_invoice import (
 class VCMPOSInv(POSInvoice):
     def __init__(self, *args, **kwargs):
         super(VCMPOSInv, self).__init__(*args, **kwargs)
-       
+
+    def before_save(self):
+        return super().before_cancel()       
 
     def validate(self):
         super().validate()
@@ -28,77 +34,14 @@ class VCMPOSInv(POSInvoice):
         # 	from erpnext.accounts.doctype.pricing_rule.utils import validate_coupon_code
         # 	validate_coupon_code(self.coupon_code)
 
-    #############################################################################
-        # changes done by Pankaj for different series for sales invoice based upon POS Profile
-    #############################################################################
-    # this code is to generate seperate Invoice series for FOC/Paid cutomers
-    def autoname(self):
-        
-        # Get the current date and time
-        now = datetime.datetime.now()
-        # Get the current month in 2-digit format
-        month = now.strftime("%m")
-        # Get the current year in 2-digit format
-        year = now.strftime("%y")
-
-        #numbering series for Krishna Prasadam
-        if (self.pos_profile == 'Krishna Prasadam'):    
-            # select a document series name based on customer             
-            if self.customer  == 'FOC':
-                prefix = f"HKPFOC-{year}{month}-"
-                self.name = prefix + getseries(prefix, 4)            
-            elif  self.customer  == 'WALK_IN':          
-                prefix = f"HKPPOS-{year}{month}-"         
-                self.name = prefix + getseries(prefix, 4)            
-            else:
-                frappe.throw(f"Unknown customer:{self.customer} Error POSINV003 . Please select FOC or WALK_IN as customer before completing the order.")
-        elif (self.pos_profile == 'Krishnamrita'): 
-            # select a document series name based on customer             
-            if self.customer  == 'FOC':
-                prefix = f"HKAFOC-{year}{month}-"
-                self.name = prefix + getseries(prefix, 4)            
-            elif  self.customer  == 'WALK_IN' :          
-                prefix = f"HKAPOS-{year}{month}-"         
-                self.name = prefix + getseries(prefix, 4)            
-            else:
-                frappe.throw(f"Unknown customer:{self.customer} Error POSINV004 . Please select correct customer before completing the order.")
-        elif (self.pos_profile == 'Pushpanjali'):  
-            prefix = f"VPS-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5)           
-        elif (self.pos_profile == 'Surabhi POS'):  
-            prefix = f"TSP-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5)
-        elif (self.pos_profile == 'Brajras POS'):  
-            prefix = f"TBR-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Annakoot POS'):  
-            prefix = f"TAK-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Amritsar POS'):  
-            prefix = f"TAP-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'NOIDA POS'):  
-            prefix = f"TNP-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Gurugram POS'):  
-            prefix = f"TGP-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Krishna Counter POS'):  
-            prefix = f"TKC-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Gita Counter POS'):  
-            prefix = f"TGC-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5)
-        elif (self.pos_profile == 'Jagannath Counter POS'):  
-            prefix = f"TJC-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'Balram Counter POS'):  
-            prefix = f"TBC-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
-        else:
-            prefix = f"POS-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5)             
-        #############################  Till here by Pankaj ############################
+    def set_accounting_dimensions(self):
+        dimensions = get_accounting_dimensions(as_list=True)
+        if self.pos_profile:
+            profile = frappe.get_doc("POS Profile", self.pos_profile)
+            for dimension in dimensions:
+                self.update({dimension: profile.get(dimension)})
+                for item in self.get("items"):
+                    item.update({dimension: profile.get(dimension)})
 
     def validate_full_amount(self):
         if self.paid_amount != self.rounded_total:
@@ -295,7 +238,77 @@ class VCMPOSInv(POSInvoice):
                 )
         return
 
+    #############################################################################
+        # changes done by Pankaj for different series for sales invoice based upon POS Profile
+    #############################################################################
+    # this code is to generate seperate Invoice series for FOC/Paid cutomers
+    def autoname(self):
+        
+        # Get the current date and time
+        now = datetime.datetime.now()
+        # Get the current month in 2-digit format
+        month = now.strftime("%m")
+        # Get the current year in 2-digit format
+        year = now.strftime("%y")
 
+        #numbering series for Krishna Prasadam
+        if (self.pos_profile == 'Krishna Prasadam'):    
+            # select a document series name based on customer             
+            if self.customer  == 'FOC':
+                prefix = f"HKPFOC-{year}{month}-"
+                self.name = prefix + getseries(prefix, 4)            
+            elif  self.customer  == 'WALK_IN':          
+                prefix = f"HKPPOS-{year}{month}-"         
+                self.name = prefix + getseries(prefix, 4)            
+            else:
+                frappe.throw(f"Unknown customer:{self.customer} Error POSINV003 . Please select FOC or WALK_IN as customer before completing the order.")
+        elif (self.pos_profile == 'Krishnamrita'): 
+            # select a document series name based on customer             
+            if self.customer  == 'FOC':
+                prefix = f"HKAFOC-{year}{month}-"
+                self.name = prefix + getseries(prefix, 4)            
+            elif  self.customer  == 'WALK_IN' :          
+                prefix = f"HKAPOS-{year}{month}-"         
+                self.name = prefix + getseries(prefix, 4)            
+            else:
+                frappe.throw(f"Unknown customer:{self.customer} Error POSINV004 . Please select correct customer before completing the order.")
+        elif (self.pos_profile == 'Pushpanjali'):  
+            prefix = f"VPS-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)           
+        elif (self.pos_profile == 'Surabhi POS'):  
+            prefix = f"TSP-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)
+        elif (self.pos_profile == 'Brajras POS'):  
+            prefix = f"TBR-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Annakoot POS'):  
+            prefix = f"TAK-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Amritsar POS'):  
+            prefix = f"TAP-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'NOIDA POS'):  
+            prefix = f"TNP-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Gurugram POS'):  
+            prefix = f"TGP-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Krishna Counter POS'):  
+            prefix = f"TKC-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Gita Counter POS'):  
+            prefix = f"TGC-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)
+        elif (self.pos_profile == 'Jagannath Counter POS'):  
+            prefix = f"TJC-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        elif (self.pos_profile == 'Balram Counter POS'):  
+            prefix = f"TBC-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5) 
+        else:
+            prefix = f"POS-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)             
+        #############################  Till here by Pankaj ############################
 
     ###########################################################
     #   Changes doen by Pankaj for second screen submit
