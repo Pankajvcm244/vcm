@@ -20,10 +20,11 @@ class VCMPOSInv(POSInvoice):
         super(VCMPOSInv, self).__init__(*args, **kwargs)
 
     def before_save(self):
-        return super().before_cancel()       
-
+        return super().before_cancel()
+        
     def validate(self):
         super().validate()
+        self.set_accounting_dimensions()
         self.validate_if_zero_rate_item()
         self.validate_full_amount()
         self.cummulative_stock_availbility()
@@ -238,18 +239,34 @@ class VCMPOSInv(POSInvoice):
                 )
         return
 
+
     #############################################################################
         # changes done by Pankaj for different series for sales invoice based upon POS Profile
     #############################################################################
     # this code is to generate seperate Invoice series for FOC/Paid cutomers
     def autoname(self):
-        
         # Get the current date and time
         now = datetime.datetime.now()
         # Get the current month in 2-digit format
         month = now.strftime("%m")
         # Get the current year in 2-digit format
         year = now.strftime("%y")
+        # HKA - Krishnamrita
+        # HKP-  Krishna Prasadam
+        # VPS- Pushpanjali
+        # TAK - Annakoot POS
+        # TAP - Amritsar POS
+        # TBC - Balram Counter POS
+        # TGC - Gita Counter POS
+        # TBR - Brajras POS
+        # TGP - Gurugram POS
+        # TJC - Jagannath Counter POS
+        # TKC - Krishna Counter POS
+        # TKM - Kumbh Mela_Merchandise POS
+        # TNP - NOIDA POS
+        # TSP - Surabhi POS
+        # POS - Other POS Profiles
+        #
 
         #numbering series for Krishna Prasadam
         if (self.pos_profile == 'Krishna Prasadam'):    
@@ -304,7 +321,11 @@ class VCMPOSInv(POSInvoice):
             self.name = prefix + getseries(prefix, 5) 
         elif (self.pos_profile == 'Balram Counter POS'):  
             prefix = f"TBC-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5) 
+            self.name = prefix + getseries(prefix, 5)
+        #addded on 09-01-2025 for Kumbh Mela
+        elif (self.pos_profile == 'Kumbh Mela_Merchandise POS'):  
+            prefix = f"TKM-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)
         else:
             prefix = f"POS-{year}{month}-"         
             self.name = prefix + getseries(prefix, 5)             
@@ -326,7 +347,7 @@ class VCMPOSInv(POSInvoice):
             frappe.throw("To Be Paid should be zero.")
 
         
-        # Checks for different POS counters
+        # Checks for Krishna Prasadam POS counters
         if (self.pos_profile == "Krishna Prasadam"):  
             # check for WALK_IN customer, FOC as payment mode is not selected
             if self.customer == 'WALK_IN_KP':
@@ -357,10 +378,13 @@ class VCMPOSInv(POSInvoice):
         if ((self.pos_profile == 'Jagannath Counter POS' ) or (self.pos_profile == 'Krishna Counter POS') 
 			or (self.pos_profile == 'Gita Counter POS') or (self.pos_profile == 'Gurugram POS')
 			or (self.pos_profile == 'NOIDA POS') or (self.pos_profile == 'Amritsar POS')
-            or (self.pos_profile == 'Balram Counter POS')  ): 
+            or (self.pos_profile == 'Balram Counter POS') or (self.pos_profile == 'Kumbh Mela_Merchandise POS') ): 
             
-            if not self.custom_bnp_salesrep :
-                frappe.throw("Please fill Sales Rep name before completing the order.")
+            #only in Vrindavan counters we fill sales rep name
+            if ((self.pos_profile == 'Jagannath Counter POS' ) or (self.pos_profile == 'Krishna Counter POS') 
+			or (self.pos_profile == 'Gita Counter POS') or (self.pos_profile == 'Balram Counter POS') ): 
+                if not self.custom_bnp_salesrep :
+                    frappe.throw("Please fill Sales Rep name before completing the order.")
 
             # make sure that in case of Pushpanjali 100Rs coupon as MOP, remarks with Coupon code is filled
             for payment in self.payments:

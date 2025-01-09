@@ -31,7 +31,8 @@ class VCMSalesInv(SalesInvoice):
         year = now.strftime("%y")
 
         if self.pos_profile:
-            #numbering series for Krishna Prasadam
+            # these are Sales invoice series for POS Profile closing
+            # numbering series for Krishna Prasadam
             if (self.pos_profile == 'Krishna Prasadam'):    
                 # select a document series name based on customer             
                 if self.customer  == 'FOC':
@@ -103,7 +104,13 @@ class VCMSalesInv(SalesInvoice):
                 else:
                     prefix = f"TJC2425/SI-"   
                 self.name = prefix + getseries(prefix, 4)
-        # these are Sales invoice series for direct creation of Sales Invoice, Upper one is for POS closing           
+            elif (self.pos_profile == 'Kumbh Mela_Merchandise POS'): 
+                if self.is_return:
+                    prefix = f"TKM2425/RT-"
+                else:
+                    prefix = f"TKM2425/SI-"   
+                self.name = prefix + getseries(prefix, 4)
+        # these are Sales invoice series for direct creation of Sales Invoice,            
         elif (self.cost_center == 'Braj Nidhi Guest House - TSF') :
             #guest house sales invoice series
             prefix = f"TGH2425/SI-" 
@@ -134,6 +141,9 @@ class VCMSalesInv(SalesInvoice):
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'GGN Merchandise - TSF'):
             prefix = f"TGP2425/SI-"
+            self.name = prefix + getseries(prefix, 4)
+        elif (self.cost_center == 'Kumbh Mela_Merchandise POS'):
+            prefix = f"TKM2425/SI-"
             self.name = prefix + getseries(prefix, 4)
         else:
             # rest sales invoice will follow this series
