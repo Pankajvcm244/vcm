@@ -136,6 +136,17 @@ override_doctype_class = {
     "POS Invoice": "vcm.erpnext_vcm.overrides.VCMPOSInv.VCMPOSInv",
     "Sales Invoice": "vcm.erpnext_vcm.overrides.VCMSalesInv.VCMSalesInv",
 }
+
+
+# Importing HKMPOSInvoice and VCMPOSInv from respective modules
+from hkm.erpnext___custom.overrides import HKMPOSInvoice
+from vcm.erpnext_vcm.overrides import VCMPOSInv
+from hkm.erpnext___custom.overrides import HKMSalesInvoice
+from vcm.erpnext_vcm.overrides import VCMSalesInv
+
+# Reassigning HKMPOS/SalesInvoice to use VCMPOSInv for unified behavior
+HKMPOSInvoice = VCMPOSInv
+HKMSalesInvoice = VCMSalesInv
 # Document Events
 # ---------------
 # Hook on document methods and events
