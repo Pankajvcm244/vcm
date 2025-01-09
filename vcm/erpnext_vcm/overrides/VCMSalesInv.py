@@ -145,6 +145,9 @@ class VCMSalesInv(SalesInvoice):
         elif (self.cost_center == 'Kumbh Mela_Merchandise POS'):
             prefix = f"TKM2425/SI-"
             self.name = prefix + getseries(prefix, 4)
+        elif (self.cost_center == 'Krishnamrita Catering - TSF'):
+            prefix = f"TKA2425/SI-"
+            self.name = prefix + getseries(prefix, 4)
         else:
             # rest sales invoice will follow this series
             prefix = f"SI-2425/" 
