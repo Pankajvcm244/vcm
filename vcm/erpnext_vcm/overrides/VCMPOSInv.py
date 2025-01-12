@@ -263,7 +263,7 @@ class VCMPOSInv(POSInvoice):
         # TJC - Jagannath Counter POS
         # TKC - Krishna Counter POS
         # TKM - Kumbh Mela_Merchandise POS
-        # TNP - NOIDA POS
+        # TNP - Noida POS
         # TSP - Surabhi POS
         # POS - Other POS Profiles
         #
@@ -304,7 +304,7 @@ class VCMPOSInv(POSInvoice):
         elif (self.pos_profile == 'Amritsar POS'):  
             prefix = f"TAP-{year}{month}-"         
             self.name = prefix + getseries(prefix, 5) 
-        elif (self.pos_profile == 'NOIDA POS'):  
+        elif (self.pos_profile == 'Noida POS'):  
             prefix = f"TNP-{year}{month}-"         
             self.name = prefix + getseries(prefix, 5) 
         elif (self.pos_profile == 'Gurugram POS'):  
@@ -377,7 +377,7 @@ class VCMPOSInv(POSInvoice):
         # for Books and Para
         if ((self.pos_profile == 'Jagannath Counter POS' ) or (self.pos_profile == 'Krishna Counter POS') 
 			or (self.pos_profile == 'Gita Counter POS') or (self.pos_profile == 'Gurugram POS')
-			or (self.pos_profile == 'NOIDA POS') or (self.pos_profile == 'Amritsar POS')
+			or (self.pos_profile == 'Noida POS') or (self.pos_profile == 'Amritsar POS')
             or (self.pos_profile == 'Balram Counter POS') or (self.pos_profile == 'Kumbh Mela_Merchandise POS') ): 
             
             #only in Vrindavan counters we fill sales rep name

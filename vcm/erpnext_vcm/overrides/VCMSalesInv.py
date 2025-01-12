@@ -74,7 +74,7 @@ class VCMSalesInv(SalesInvoice):
             elif (self.pos_profile == 'Amritsar POS'):
                 prefix = f"TAP2425/SI"   
                 self.name = prefix + getseries(prefix, 4)  
-            elif (self.pos_profile == 'NOIDA POS'): 
+            elif (self.pos_profile == 'Noida POS'): 
                 prefix = f"TNP2425/SI"   
                 self.name = prefix + getseries(prefix, 4)  
             elif (self.pos_profile == 'Gurugram POS'):
