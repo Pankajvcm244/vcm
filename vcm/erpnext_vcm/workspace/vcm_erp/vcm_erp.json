@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"RMsPeY-t3P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">VCM ERP</span>\",\"col\":12}},{\"id\":\"C3s1CFg04H\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Register \",\"col\":3}}]",
+ "content": "[{\"id\":\"RMsPeY-t3P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">VCM ERP Reports</span>\",\"col\":12}},{\"id\":\"UbrbU-sWwA\",\"type\":\"card\",\"data\":{\"card_name\":\"Item wise Reports\",\"col\":4}},{\"id\":\"TmLSRwO6r1\",\"type\":\"card\",\"data\":{\"card_name\":\"GRN Reports\",\"col\":4}},{\"id\":\"K98bX1Y5o6\",\"type\":\"card\",\"data\":{\"card_name\":\"MRN Releated Reports\",\"col\":4}},{\"id\":\"6qYFUPGjv9\",\"type\":\"card\",\"data\":{\"card_name\":\"Purchase Reports\",\"col\":4}},{\"id\":\"OfGCKG-Lv1\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Report\",\"col\":4}},{\"id\":\"jqkc1jLuaH\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Reports\",\"col\":4}},{\"id\":\"Kvo4-Cw-Km\",\"type\":\"card\",\"data\":{\"card_name\":\"POS Reports\",\"col\":4}}]",
  "creation": "2025-01-17 10:59:18.706177",
  "custom_blocks": [],
  "docstatus": 0,
@@ -12,8 +12,302 @@
  "indicator_color": "green",
  "is_hidden": 0,
  "label": "VCM ERP",
- "links": [],
- "modified": "2025-01-17 11:00:30.239208",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item wise Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item with GST Rate",
+   "link_count": 0,
+   "link_to": "ITEM With GST Rate",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Item",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Prices",
+   "link_count": 0,
+   "link_to": "Item Prices",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item-wise Sales Register",
+   "link_count": 0,
+   "link_to": "Item-wise Sales Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item-wise Price List Rate",
+   "link_count": 0,
+   "link_to": "Item-wise Price List Rate",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Item Price",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POS Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POS Register",
+   "link_count": 0,
+   "link_to": "POS Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "POS Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "POS Closing Entry",
+   "link_count": 0,
+   "link_to": "POS Closing Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Report",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Total Stock Summary",
+   "link_count": 0,
+   "link_to": "Total Stock Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Ledger Variance",
+   "link_count": 0,
+   "link_to": "Stock Ledger Variance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Ledger",
+   "link_count": 0,
+   "link_to": "Stock Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Balance",
+   "link_count": 0,
+   "link_to": "Stock Balance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Stock Ledger Entry",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Reports",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Register",
+   "link_count": 0,
+   "link_to": "Purchase Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item-wise Purchase Register",
+   "link_count": 0,
+   "link_to": "Item-wise Purchase Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item-wise Purchase History",
+   "link_count": 0,
+   "link_to": "Item-wise Purchase History",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Order Analysis",
+   "link_count": 0,
+   "link_to": "Purchase Order Analysis",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Accounts Payable",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Procurement Tracker",
+   "link_count": 0,
+   "link_to": "Procurement Tracker",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Order",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MRN Releated Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Requested Items to Order and Receive",
+   "link_count": 0,
+   "link_to": "Requested Items to Order and Receive",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Material Request",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Material Requests for which Supplier Quotations are not created",
+   "link_count": 0,
+   "link_to": "Material Requests for which Supplier Quotations are not created",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Material Request",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GRN Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Receipt Trends",
+   "link_count": 0,
+   "link_to": "Purchase Receipt Trends",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Receipt",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Other Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GST Sales Register Beta",
+   "link_count": 0,
+   "link_to": "GST Sales Register Beta",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Sales Invoice",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GST Itemised Purchase Register",
+   "link_count": 0,
+   "link_to": "GST Itemised Purchase Register",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Invoice",
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-01-17 13:01:52.877323",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",
@@ -24,14 +318,6 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 40.0,
- "shortcuts": [
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "POS Register ",
-   "link_to": "POS Register",
-   "type": "Report"
-  }
- ],
+ "shortcuts": [],
  "title": "VCM ERP"
 }
