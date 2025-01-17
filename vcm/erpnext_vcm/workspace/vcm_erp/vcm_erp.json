@@ -1,0 +1,37 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"RMsPeY-t3P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">VCM ERP</span>\",\"col\":12}},{\"id\":\"C3s1CFg04H\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"POS Register \",\"col\":3}}]",
+ "creation": "2025-01-17 10:59:18.706177",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "solid-success",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "VCM ERP",
+ "links": [],
+ "modified": "2025-01-17 11:00:30.239208",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM ERP",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 40.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "POS Register ",
+   "link_to": "POS Register",
+   "type": "Report"
+  }
+ ],
+ "title": "VCM ERP"
+}
