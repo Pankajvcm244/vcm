@@ -394,8 +394,8 @@ class VCMPOSInv(POSInvoice):
                             if not self.custom_additional_remarks:
                                 frappe.throw("Please fill Pushpanjali coupon number in additional remarks before completing the order.")
                             # In case of Pushpanjali Coupon, amount should be 100
-                            if payment.amount != 100:
-                                frappe.throw("Please select 100 Rs. as payment amount for Pushpanjali Coupon.")
+                            #if payment.amount != 100:
+                            #    frappe.throw("Please select 100 Rs. as payment amount for Pushpanjali Coupon.")
     def send_email(self):
         # check if doc is ready to submit and not in draft (state 0)
         if self.docstatus == 1:   
