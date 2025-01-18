@@ -1,9 +1,16 @@
 import frappe,requests,json
 
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
+
 @frappe.whitelist()
 def filter_sellable_items(items,price_list,company):
+	#logging.debug(f"in Filter sellable items {items}. {price_list}. {company}") 
 	items = json.loads(items)
+	#logging.debug(f"in Filter sellable items1 {items}") 
+	
 	item_codes = tuple(items)
+	#logging.debug(f"in Filter sellable items2{item_codes}" )
 	join_item = ','.join(["'"+str(item)+"'" for item in items])
 	join_item = "({})".format(join_item)
 
