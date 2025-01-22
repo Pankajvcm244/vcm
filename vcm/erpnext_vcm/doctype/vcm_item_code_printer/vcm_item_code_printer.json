@@ -6,9 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "column_break_yozl",
   "price_list",
-  "item_code",
-  "quantity",
+  "section_break_holr",
+  "items",
   "date_printer_section",
   "date",
   "quantity_date",
@@ -29,16 +30,6 @@
    "fieldtype": "Link",
    "label": "Price List",
    "options": "Price List"
-  },
-  {
-   "fieldname": "item_code",
-   "fieldtype": "Data",
-   "label": "Item Code"
-  },
-  {
-   "fieldname": "quantity",
-   "fieldtype": "Int",
-   "label": "Quantity"
   },
   {
    "fieldname": "date_printer_section",
@@ -74,12 +65,28 @@
    "fieldname": "quantity_exp",
    "fieldtype": "Int",
    "label": "Quantity (EXP)"
+  },
+  {
+   "fieldname": "column_break_yozl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_holr",
+   "fieldtype": "Section Break",
+   "label": "Print Labels"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "VCM Label Print Table",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-26 18:14:11.060348",
+ "modified": "2025-01-21 15:05:46.599710",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Code Printer",
