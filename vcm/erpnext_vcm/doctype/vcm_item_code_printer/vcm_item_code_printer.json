@@ -5,18 +5,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "general_details_section",
   "company",
   "column_break_yozl",
   "price_list",
   "section_break_holr",
-  "items",
-  "date_printer_section",
-  "date",
-  "quantity_date",
-  "expiry_date_printer_section_section",
-  "manufacturing_date",
-  "day_after_expiry",
-  "quantity_exp"
+  "items"
  ],
  "fields": [
   {
@@ -30,41 +24,6 @@
    "fieldtype": "Link",
    "label": "Price List",
    "options": "Price List"
-  },
-  {
-   "fieldname": "date_printer_section",
-   "fieldtype": "Section Break",
-   "label": "Date Printer"
-  },
-  {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date"
-  },
-  {
-   "fieldname": "quantity_date",
-   "fieldtype": "Int",
-   "label": "Quantity (Date)"
-  },
-  {
-   "fieldname": "expiry_date_printer_section_section",
-   "fieldtype": "Section Break",
-   "label": "Expiry Date Printer Section"
-  },
-  {
-   "fieldname": "manufacturing_date",
-   "fieldtype": "Date",
-   "label": "Manufacturing Date"
-  },
-  {
-   "fieldname": "day_after_expiry",
-   "fieldtype": "Int",
-   "label": "Day After Expiry"
-  },
-  {
-   "fieldname": "quantity_exp",
-   "fieldtype": "Int",
-   "label": "Quantity (EXP)"
   },
   {
    "fieldname": "column_break_yozl",
@@ -81,12 +40,17 @@
    "label": "Items",
    "options": "VCM Label Print Table",
    "reqd": 1
+  },
+  {
+   "fieldname": "general_details_section",
+   "fieldtype": "Section Break",
+   "label": "General Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-01-21 15:05:46.599710",
+ "modified": "2025-01-22 21:35:43.888750",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Code Printer",
@@ -104,11 +68,19 @@
   },
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "print": 1,
    "read": 1,
    "role": "Stock Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "All",
    "share": 1,
    "write": 1
   }

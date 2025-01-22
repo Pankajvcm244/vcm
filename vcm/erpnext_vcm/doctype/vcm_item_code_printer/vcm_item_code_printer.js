@@ -10,14 +10,14 @@ frappe.ui.form.on("VCM Item Code Printer", {
         var shift =310;
 
         var stock_qty ={}
-        #console.log("Print Item code items:", frm.doc.items);
+        //console.log("Print Item code items:", frm.doc.items);
         for(var index in frm.doc.items){
           stock_qty[frm.doc.items[index]['item_code']] = frm.doc.items[index]['qty'];
-          #console.log("Print Item code stock_qty:", index, frm.doc.items[index]['qty'], stock_qty[frm.doc.items[index]['item_code']] );
+          //console.log("Print Item code stock_qty:", index, frm.doc.items[index]['qty'], stock_qty[frm.doc.items[index]['item_code']] );
         } 
-        #console.log("Print Item code 2 stock qty:", stock_qty);
+        //console.log("Print Item code 2 stock qty:", stock_qty);
 
-        #console.log("Print Item code just before frappe call:");
+        //console.log("Print Item code just before frappe call:");
         frappe.call({
           method:
             "vcm.erpnext_vcm.godex_print.filter_sellable_items",
@@ -30,10 +30,10 @@ frappe.ui.form.on("VCM Item Code Printer", {
           freeze: true,
           callback: (r) => {
             console.log(r.message);
-            #console.log(stock_qty)
+            //console.log(stock_qty)
             var items_detailed = r.message;
             var total_items =[];
-            #console.log("Print Item code in callback:");
+            //console.log("Print Item code in callback:");
             //based upon number of items prepare rows
             for(var index in items_detailed){
                 // get quantity of each item based upon code
@@ -49,7 +49,7 @@ frappe.ui.form.on("VCM Item Code Printer", {
                     }
                 }
               }  
-            #console.log("****Print Item code total_items:", total_items);            
+            //console.log("****Print Item code total_items:", total_items);            
             for (var j = 0; j < total_items.length; j = j + 2) {
               var group_string = "";
               for (var g = 0; g < 2; g++) {
@@ -73,7 +73,7 @@ frappe.ui.form.on("VCM Item Code Printer", {
                     total_items[j + g]["rate"];
                 }
               }
-              #console.log("****Print Item code before print push");
+              //console.log("****Print Item code before print push");
               print_data.push(
                 frm.events.get_EZPL_string(frm, group_string)
               );
