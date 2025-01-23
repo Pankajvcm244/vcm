@@ -41,6 +41,7 @@ def filter_sellable_items(items,price_list,company):
                 ON tax.item_tax_template = item_template.name
             WHERE item.has_variants = 0
                 AND item.name IN %(items)s
+                AND (tax.idx = 1)
                 AND item_price.price_list = %(price_list)s
                 AND (item_template.name IS NULL OR item_template.company = %(company)s)
             GROUP BY item.name
