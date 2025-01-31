@@ -16,75 +16,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Purchase Reports",
-   "link_count": 6,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Register",
-   "link_count": 0,
-   "link_to": "Purchase Register",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Purchase Register",
-   "link_count": 0,
-   "link_to": "Item-wise Purchase Register",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Purchase History",
-   "link_count": 0,
-   "link_to": "Item-wise Purchase History",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Order Analysis",
-   "link_count": 0,
-   "link_to": "Purchase Order Analysis",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Accounts Payable",
-   "link_count": 0,
-   "link_to": "Accounts Payable",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Procurement Tracker",
-   "link_count": 0,
-   "link_to": "Procurement Tracker",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Other Reports",
    "link_count": 2,
    "link_type": "DocType",
@@ -474,9 +405,88 @@
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase Reports",
+   "link_count": 7,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Purchase Register",
+   "link_count": 0,
+   "link_to": "Purchase Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Item-wise Purchase Register",
+   "link_count": 0,
+   "link_to": "Item-wise Purchase Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Item-wise Purchase History",
+   "link_count": 0,
+   "link_to": "Item-wise Purchase History",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Purchase Order Analysis",
+   "link_count": 0,
+   "link_to": "Purchase Order Analysis",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Accounts Payable",
+   "link_count": 0,
+   "link_to": "Accounts Payable",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Procurement Tracker",
+   "link_count": 0,
+   "link_to": "Procurement Tracker",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "VCM Indent Tracker",
+   "link_count": 0,
+   "link_to": "VCM Indent Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
   }
  ],
- "modified": "2025-01-22 11:54:39.881126",
+ "modified": "2025-01-31 13:04:42.487553",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",
