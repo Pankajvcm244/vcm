@@ -46,6 +46,7 @@ def get_data(filters):
 			mr.name.as_("material_request"),
 			mr.transaction_date.as_("date"),
 			mr.owner.as_("mrrequestor"),
+			mr.department.as_("mrdepartment"),
 			mr_item.schedule_date.as_("required_date"),
 			mr_item.item_code.as_("item_code"),
 			Sum(Coalesce(mr_item.qty, 0)).as_("qty"),
@@ -196,6 +197,19 @@ def get_columns(filters):
 		columns.extend(
 			[
 				{
+					"label": _("MR Department"),
+					"fieldname": "mrdepartment",
+					"fieldtype": "Data",
+					"width": 140,
+				},
+				{
+					"label": _("MR Requestor"),
+					"options": "Employee",
+					"fieldname": "mrrequestor",
+					"fieldtype": "Link",
+					"width": 140,
+				},
+				{
 					"label": _("Item Code"),
 					"fieldname": "item_code",
 					"fieldtype": "Link",
@@ -204,13 +218,7 @@ def get_columns(filters):
 				},
 				{"label": _("Item Name"), "fieldname": "item_name", "fieldtype": "Data", "width": 100},
 				{"label": _("Description"), "fieldname": "description", "fieldtype": "Data", "width": 200},
-				{
-					"label": _("MR Requestor"),
-					"options": "Employee",
-					"fieldname": "mrrequestor",
-					"fieldtype": "Link",
-					"width": 140,
-				},
+				
 				{
 					"label": _("UOM"),
 					"fieldname": "uom",
