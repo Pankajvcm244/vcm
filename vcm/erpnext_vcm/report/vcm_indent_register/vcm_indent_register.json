@@ -9,7 +9,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-01-31 10:35:50.147258",
+ "modified": "2025-01-31 13:17:02.092833",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Indent Register",
@@ -32,6 +32,12 @@
   },
   {
    "role": "Purchase User"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "VCM FO Exec"
   }
  ],
  "timeout": 0
