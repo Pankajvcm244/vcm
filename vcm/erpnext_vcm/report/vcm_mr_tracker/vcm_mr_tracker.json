@@ -6,10 +6,14 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 1,
  "is_standard": "Yes",
  "letterhead": null,
+<<<<<<<< HEAD:vcm/erpnext_vcm/report/vcm_mr_tracker/vcm_mr_tracker.json
  "modified": "2025-01-31 15:05:59.815111",
+========
+ "modified": "2025-01-31 15:04:36.637104",
+>>>>>>>> 8d3369d (renamed to VCM MR tracker):vcm/erpnext_vcm/report/vcm_indent_register/vcm_indent_register.json
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM MR Tracker",
