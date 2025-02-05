@@ -72,14 +72,23 @@ class VCMSalesInv(SalesInvoice):
                 prefix = f"TAK2425/SI"   
                 self.name = prefix + getseries(prefix, 4)
             elif (self.pos_profile == 'Amritsar POS'):
-                prefix = f"TAP2425/SI"   
-                self.name = prefix + getseries(prefix, 4)  
-            elif (self.pos_profile == 'Noida POS'): 
-                prefix = f"TNP2425/SI"   
-                self.name = prefix + getseries(prefix, 4)  
+                if self.is_return:
+                    prefix = f"TAP2425/RT"
+                else:
+                    prefix = f"TAP2425/SI"  
+                self.name = prefix + getseries(prefix, 4) 
+            elif (self.pos_profile == 'Noida POS'):
+                if self.is_return:
+                    prefix = f"TNP2425/RT"
+                else:
+                    prefix = f"TNP2425/SI"  
+                self.name = prefix + getseries(prefix, 4)
             elif (self.pos_profile == 'Gurugram POS'):
-                prefix = f"TGP2425/SI"   
-                self.name = prefix + getseries(prefix, 4)  
+                if self.is_return:
+                    prefix = f"TGP2425/RT"
+                else:
+                    prefix = f"TGP2425/SI"  
+                self.name = prefix + getseries(prefix, 4)
             elif (self.pos_profile == 'Krishna Counter POS'):
                 if self.is_return:
                     prefix = f"TKC2425/RT"
@@ -110,43 +119,82 @@ class VCMSalesInv(SalesInvoice):
                 else:
                     prefix = f"TKM2425/SI"   
                 self.name = prefix + getseries(prefix, 4)
-        # these are Sales invoice series for direct creation of Sales Invoice,            
+        # 
+        # these are Sales invoice series for direct creation of Sales Invoice
+        # 
+        #             
         elif (self.cost_center == 'Braj Nidhi Guest House - TSF') :
             #guest house sales invoice series
-            prefix = f"TGH2425/SI" 
+            if self.is_return:
+                prefix = f"TGH2425/RT"
+            else:
+                prefix = f"TGH2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Annakoot - TSF'):
-            prefix = f"TAK2425/SI"
+            if self.is_return:
+                prefix = f"TAK2425/RT"
+            else:
+                prefix = f"TAK2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Brajras - TSF') :
-            prefix = f"TBR2425/SI" 
+            if self.is_return:
+                prefix = f"TBR2425/RT"
+            else:
+                prefix = f"TBR2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Surabhi - TSF'):
-            prefix = f"TSP2425/SI"
-            self.name = prefix + getseries(prefix, 4)
+            if self.is_return:
+                prefix = f"TSP2425/RT"
+            else:
+                prefix = f"TSP2425/SI"   
+            self.name = prefix + getseries(prefix, 4)            
         elif (self.cost_center == 'Varanasi Laddu Feeding - TSF'):
-            prefix = f"TLF2425/SI"
+            if self.is_return:
+                prefix = f"TLF2425/RT"
+            else:
+                prefix = f"TLF2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Noida Merchandise - TSF'):
-            prefix = f"TNP2425/SI"
+            if self.is_return:
+                prefix = f"TNP2425/RT"
+            else:
+                prefix = f"TNP2425/SI"   
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Amritsar Merchandise - TSF'):
-            prefix = f"TAP2425/SI"
+            if self.is_return:
+                prefix = f"TAP2425/RT"
+            else:
+                prefix = f"TAP2425/SI"   
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Books - TSF'):
-            prefix = f"TGC2425/SI"
+            if self.is_return:
+                prefix = f"TGC2425/RT"
+            else:
+                prefix = f"TGC2425/SI"   
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Gifts - TSF'):
-            prefix = f"TKC2425/SI"
+            if self.is_return:
+                prefix = f"TKC2425/RT"
+            else:
+                prefix = f"TKC2425/SI"   
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'GGN Merchandise - TSF'):
-            prefix = f"TGP2425/SI"
+            if self.is_return:
+                prefix = f"TGP2425/RT"
+            else:
+                prefix = f"TGP2425/SI"   
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Kumbh Mela_Merchandise POS'):
-            prefix = f"TKM2425/SI"
+            if self.is_return:
+                prefix = f"TKM2425/RT"
+            else:
+                prefix = f"TKM2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Krishnamrita Catering - TSF'):
-            prefix = f"TKA2425/SI"
+            if self.is_return:
+                prefix = f"TKA2425/RT"
+            else:
+                prefix = f"TKA2425/SI"  
             self.name = prefix + getseries(prefix, 4)
         else:
             # rest sales invoice will follow this series
