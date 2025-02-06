@@ -186,7 +186,7 @@ class VCMSalesInv(SalesInvoice):
             else:
                 prefix = f"TGP2425/SI"   
             self.name = prefix + getseries(prefix, 4)
-        elif (self.cost_center == 'Kumbh Mela_Merchandise POS'):
+        elif (self.cost_center == 'Kumbh Mela - TSF'):
             if self.is_return:
                 prefix = f"TKM2425/RT"
             else:
