@@ -1,5 +1,5 @@
 // import {get_EZPL_string} from "./barcode-printing.js";
-// This file was taken from hkm app and modified a sper vcm app requirements
+// This file was taken from hkm app and modified as per vcm app requirements
 //Pankaj 17-01-2025
 
 frappe.ui.form.on('Purchase Receipt', {

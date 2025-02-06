@@ -11,6 +11,8 @@ class VCMSalesInv(SalesInvoice):
         self.validate_if_zero_rate_item()
         self.validate_back_dated_entry()
 
+    
+
     def autoname(self):
         # select a project name based on customer
         #dateF = getdate(self.posting_date)
@@ -269,3 +271,7 @@ def directly_mark_cancelled(name):
         frappe.throw("Only Draft document is allowed to be set as cancelled.")
     frappe.db.set_value("Sales Invoice", name, "docstatus", 2)
     frappe.db.commit()
+
+@frappe.whitelist()
+def before_insert(doc, method):
+        doc.place_of_supply = frappe.get_value("Company", doc.company, "state")  # Default to company state
