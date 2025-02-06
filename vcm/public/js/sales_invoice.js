@@ -3,10 +3,14 @@
 //Pankaj 06-02-2025
 frappe.ui.form.on('Sales Invoice', {
     onload: function(frm) {
-        frm.set_value("place_of_supply", "09-Uttar Pradesh");
+        if (frm.is_new()) {
+            frm.set_value("place_of_supply", "09-Uttar Pradesh");
+        }
     },
     refresh: function(frm) {
-        frm.set_value("place_of_supply", "09-Uttar Pradesh"); 
+        if (frm.is_new()) {
+            frm.set_value("place_of_supply", "09-Uttar Pradesh");
+        }    
     }
 
 });
