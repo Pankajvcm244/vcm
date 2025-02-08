@@ -3,9 +3,29 @@
 //Pankaj 17-01-2025
 
 frappe.ui.form.on('Purchase Receipt', {
+    onload(frm) {
+        console.log("Purchase Receipt.js entry:", frm.doc.name);
+        frm.add_custom_button(
+          __("Print labels from Purchase Receipt"),
+          function () {
+            frappe.call({
+              method:
+                "vcm.erpnext_vcm.utilities.fetch_items_from_purchase_receipt.get_PR_items",
+              args: {
+                pr_doc_id: frm.doc.name,
+              },
+              callback: (r) => {
+                var doc = frappe.model.sync(r.message);
+                frappe.set_route("Form", doc[0].doctype, doc[0].name);
+              },
+            });
+          },
+          "Utilities"
+        );
+      },
 
     refresh(frm) {
-            frm.add_custom_button(__("Print VCM Labels"), function(){
+            frm.add_custom_button(__("Print VCM Labels directly"), function(){
                 frappe.ui.form.qz_connect()
         .then(function () {
             var config = qz.configs.create("Godex G500");            // Exact printer name from OS
