@@ -4,7 +4,7 @@
 
 frappe.ui.form.on('Purchase Receipt', {
     onload(frm) {
-        console.log("Purchase Receipt.js entry:", frm.doc.name);
+        //console.log("Purchase Receipt.js entry:", frm.doc.name);
         frm.add_custom_button(
           __("Print labels from Purchase Receipt"),
           function () {
@@ -63,8 +63,8 @@ frappe.ui.form.on('Purchase Receipt', {
                                     },
                                     freeze: true,
                                     callback: (r) => {
-                                        console.log(r.message);
-                                        console.log(stock_qty)
+                                        //console.log(r.message);
+                                        //console.log(stock_qty)
                                         var items_detailed = r.message;
                                         var total_items =[];
                                         for(var index in items_detailed){
@@ -79,7 +79,7 @@ frappe.ui.form.on('Purchase Receipt', {
                                                 }
                                             }
                                         }
-                                        console.log(total_items);
+                                        //console.log(total_items);
                                         for(var j=0;j<total_items.length;j=j+2){
                                             var group_string="";
                                                 for(var g=0;g<2;g++){
