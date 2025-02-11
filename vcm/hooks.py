@@ -262,3 +262,18 @@ HKMSalesInvoice = VCMSalesInv
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+# Fixtures to add workflow in VCM Item Request
+fixtures = [
+    {
+        "doctype": "Workflow",
+        "filters": [["document_type", "=", "VCM Item Request"]]
+    }
+    #},
+    #{
+    #    "doctype": "Custom Field"
+    #},
+    #{
+    #    "doctype": "Property Setter"
+    #}
+]
+

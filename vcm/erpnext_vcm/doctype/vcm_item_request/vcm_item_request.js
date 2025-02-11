@@ -4,27 +4,43 @@
 frappe.ui.form.on("VCM Item Request", {
     refresh(frm) {
         //console.log("VCM Item Request.js entry:", frm.doc.name);
-        frm.add_custom_button(
-          __("Create Material Request"),
-          function () {
-            frappe.call({
-              method:
-                "vcm.erpnext_vcm.utilities.fetch_items_from_item_request.get_MR_items",
-              args: {
-                item_req_doc_id: frm.doc.name,
-              },
-              callback: (r) => {
-                var doc = frappe.model.sync(r.message);
-                frappe.set_route("Form", doc[0].doctype, doc[0].name);
-              },
-            });
-          },
-          "Create"
-        );
-      },
-     
+        if (frm.doc.docstatus === 1) {
+          frm.add_custom_button(
+            __("Create Material Request"),
+            function () {
+              frappe.call({
+                method:
+                  "vcm.erpnext_vcm.utilities.fetch_items_from_item_request.get_MR_items",
+                args: {
+                  item_req_doc_id: frm.doc.name,
+                },
+                callback: (r) => {
+                  var doc = frappe.model.sync(r.message);
+                  frappe.set_route("Form", doc[0].doctype, doc[0].name);
+                },
+              });
+            },
+            "Utilities"
+          );
+        }
+      }
+    });
 
- });
+//make_custom_buttons: function (frm) {
+//  if (frm.doc.docstatus == 0 && frm.doc.status == "Draft") {
+    //frm.add_custom_button(
+    //  __("Submit for Approval"),
+    //  () => frm.events.get_items_from_bom(frm),
+    //  __("Utilities")
+    //);
+  //}
+
+  //if (frm.doc.docstatus == 1 && frm.doc.status != "Stopped") {
+  
+      //frm.add_custom_button(__("Stop"), () => frm.events.update_status(frm, "Stopped"));
+    //}
+  //}
+
 
  frappe.ui.form.on("VCM Item Request Table", {  // Ensure this matches the Child Table Doctype
     item_code: function(frm, cdt, cdn) {

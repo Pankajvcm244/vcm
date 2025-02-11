@@ -1,0 +1,60 @@
+{
+    "doctype": "Workflow",
+    "workflow_name": "VCM Item Request Approval",
+    "document_type": "VCM Item Request",
+    "is_active": 1,
+    "states": [
+      {
+        "state": "Draft",
+        "allow_edit": "All",
+        "doc_status": 0
+      },
+      {
+        "state": "Pending",
+        "allow_edit": "All",
+        "doc_status": 0
+      },
+      {
+        "state": "Approved",
+        "allow_edit": "All",
+        "doc_status": 1
+      },
+      {
+        "state": "Rejected",
+        "allow_edit": "Requestor",
+        "doc_status": 0
+      },
+      {
+        "state": "Cancelled",
+        "allow_edit": "All",
+        "doc_status": 2
+      }
+    ],
+    "transitions": [
+      {
+        "state": "Draft",
+        "action": "Submit",
+        "next_state": "Pending",
+        "allowed": "All"
+      },
+      {
+        "state": "Pending",
+        "action": "Approve",
+        "next_state": "Approved",
+        "allowed": "All"
+      },
+      {
+        "state": "Pending",
+        "action": "Reject",
+        "next_state": "Rejected",
+        "allowed": "All"
+      },
+      {
+        "state": "Approved",
+        "action": "Cancel",
+        "next_state": "Cancelled",
+        "allowed": "All"
+      }
+    ]
+  }
+  

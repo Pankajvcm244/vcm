@@ -105,7 +105,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-08 15:56:10.489334",
+ "modified": "2025-02-10 15:07:54.156963",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Request",
@@ -120,6 +120,7 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   },
@@ -131,6 +132,7 @@
    "read": 1,
    "report": 1,
    "role": "Purchase Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   },
@@ -175,6 +177,7 @@
    "read": 1,
    "report": 1,
    "role": "All",
+   "select": 1,
    "share": 1,
    "write": 1
   }
