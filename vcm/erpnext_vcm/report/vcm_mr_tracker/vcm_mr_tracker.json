@@ -9,6 +9,7 @@
  "idx": 1,
  "is_standard": "Yes",
  "letterhead": null,
+ "modified": "2025-02-12 13:21:18.344463",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM MR Tracker",
@@ -37,6 +38,9 @@
   },
   {
    "role": "VCM FO Exec"
+  },
+  {
+   "role": "VCM FIN User"
   }
  ],
  "timeout": 0

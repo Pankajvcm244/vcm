@@ -1,16 +1,16 @@
 {
- "add_total_row": 1,
+ "add_total_row": 0,
  "columns": [],
  "creation": "2025-01-22 11:12:19.834344",
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 18,
  "is_standard": "Yes",
  "json": "{\"columns\":[{\"fieldtype\":\"Link\",\"options\":\"Warehouse\",\"width\":150,\"label\":\"Warehouse\",\"fieldname\":\"warehouse\",\"id\":\"warehouse\",\"name\":\"Warehouse\",\"editable\":false,\"compareValue\":null},{\"fieldtype\":\"Link\",\"options\":\"Item\",\"width\":150,\"label\":\"Item\",\"fieldname\":\"item\",\"id\":\"item\",\"name\":\"Item\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"item_group\",\"fieldtype\":\"Link\",\"label\":\"Item Group\",\"insert_after_index\":1,\"link_field\":{\"fieldname\":\"item\",\"names\":{}},\"doctype\":\"Item\",\"options\":\"Item Group\",\"width\":100,\"id\":\"item_group\",\"name\":\"Item Group\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"item_name\",\"fieldtype\":\"Data\",\"label\":\"Item Name\",\"insert_after_index\":2,\"link_field\":{\"fieldname\":\"item\",\"names\":{}},\"doctype\":\"Item\",\"width\":100,\"id\":\"item_name\",\"name\":\"Item Name\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"gst_hsn_code\",\"fieldtype\":\"Link\",\"label\":\"HSN/SAC\",\"insert_after_index\":3,\"link_field\":{\"fieldname\":\"item\",\"names\":{}},\"doctype\":\"Item\",\"options\":\"GST HSN Code\",\"width\":100,\"id\":\"gst_hsn_code\",\"name\":\"HSN/SAC\",\"editable\":false,\"compareValue\":null},{\"fieldtype\":\"\",\"width\":300,\"label\":\"Description\",\"fieldname\":\"description\",\"id\":\"description\",\"name\":\"Description\",\"editable\":false,\"compareValue\":null},{\"fieldtype\":\"Float\",\"width\":100,\"label\":\"Current Qty\",\"fieldname\":\"current_qty\",\"id\":\"current_qty\",\"name\":\"Current Qty\",\"editable\":false,\"compareValue\":null}],\"filters\":{\"group_by\":\"Warehouse\",\"company\":\"TOUCHSTONE FOUNDATION VRINDAVAN - NCR\"}}",
  "letterhead": null,
- "modified": "2025-01-22 11:38:40.553719",
+ "modified": "2025-02-12 13:25:16.434210",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Total Stock Summary - Gifts and Books",
@@ -44,6 +44,9 @@
   },
   {
    "role": "VCM FIN Payable"
+  },
+  {
+   "role": "VCM Report User"
   }
  ],
  "timeout": 0

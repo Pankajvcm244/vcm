@@ -267,6 +267,15 @@ fixtures = [
     {
         "doctype": "Workflow",
         "filters": [["document_type", "=", "VCM Item Request"]]
+    },
+    {
+        "doctype": "Report",
+    },
+    {
+        "doctype": "POS Profile",
+    },
+    {
+        "doctype": "Role",
     }
     #},
     #{

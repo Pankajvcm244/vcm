@@ -6,11 +6,11 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 18,
  "is_standard": "Yes",
  "json": "{\"columns\":[{\"fieldname\":\"item\",\"label\":\"Item\",\"fieldtype\":\"Link\",\"options\":\"Item\",\"width\":130,\"id\":\"item\",\"name\":\"Item\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"barcode\",\"label\":\"Barcode\",\"fieldtype\":\"Data\",\"width\":120,\"id\":\"barcode\",\"name\":\"Barcode\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"item_group\",\"label\":\"Item Group\",\"fieldtype\":\"Link\",\"options\":\"Item Group\",\"width\":200,\"id\":\"item_group\",\"name\":\"Item Group\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"item_name\",\"label\":\"Item Name\",\"fieldtype\":\"Data\",\"width\":250,\"id\":\"item_name\",\"name\":\"Item Name\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"gst_hsn_code\",\"fieldtype\":\"Link\",\"label\":\"HSN/SAC\",\"insert_after_index\":2,\"link_field\":{\"fieldname\":\"item\",\"names\":{}},\"doctype\":\"Item\",\"options\":\"GST HSN Code\",\"width\":100,\"id\":\"gst_hsn_code\",\"name\":\"HSN/SAC\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"valuation\",\"label\":\"Valuation\",\"fieldtype\":\"Currency\",\"width\":90,\"id\":\"valuation\",\"name\":\"Valuation\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"price_rate\",\"label\":\"Price Rate\",\"fieldtype\":\"Currency\",\"width\":90,\"id\":\"price_rate\",\"name\":\"Price Rate\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"tax_template\",\"label\":\"Tax Template\",\"fieldtype\":\"Link\",\"options\":\"Item Tax Template\",\"width\":150,\"id\":\"tax_template\",\"name\":\"Tax Template\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"tax_rate\",\"label\":\"Tax Rate\",\"fieldtype\":\"Int\",\"width\":80,\"id\":\"tax_rate\",\"name\":\"Tax Rate\",\"editable\":false,\"compareValue\":null},{\"fieldname\":\"sale_rate\",\"label\":\"Sale Rate\",\"fieldtype\":\"Currency\",\"width\":100,\"id\":\"sale_rate\",\"name\":\"Sale Rate\",\"editable\":false,\"compareValue\":null}],\"filters\":{\"company\":\"TOUCHSTONE FOUNDATION VRINDAVAN - NCR\",\"price_list\":\"Standard Selling\"}}",
  "letterhead": null,
- "modified": "2025-01-23 12:36:46.348043",
+ "modified": "2025-02-12 13:18:26.350517",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "ITEM With GST Rate and HSN",
@@ -68,6 +68,9 @@
   },
   {
    "role": "VCM FIN Receivable"
+  },
+  {
+   "role": "VCM FIN User"
   }
  ],
  "timeout": 0

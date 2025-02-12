@@ -6,11 +6,11 @@
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 0,
+ "idx": 18,
  "is_standard": "Yes",
  "json": "{\"filters\":[],\"fields\":[[\"name\",\"POS Invoice\"],[\"customer\",\"POS Invoice\"],[\"posting_date\",\"POS Invoice\"],[\"status\",\"POS Invoice\"],[\"custom_bnp_salesrep\",\"POS Invoice\"],[\"custom_bnp_sales_rep_name\",\"POS Invoice\"],[\"grand_total\",\"POS Invoice\"]],\"order_by\":\"`tabPOS Invoice`.`modified` desc\",\"page_length\":20,\"column_widths\":{\"name\":120,\"customer\":120,\"posting_date\":120,\"status\":120,\"custom_bnp_salesrep\":120,\"custom_bnp_sales_rep_name\":120,\"grand_total\":120},\"group_by\":null}",
  "letterhead": null,
- "modified": "2025-01-22 11:44:12.552354",
+ "modified": "2025-02-12 13:06:31.287460",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Sales Rep Performance",
@@ -46,6 +46,9 @@
   },
   {
    "role": "VCM FIN MGR"
+  },
+  {
+   "role": "VCM FIN User"
   }
  ],
  "timeout": 0
