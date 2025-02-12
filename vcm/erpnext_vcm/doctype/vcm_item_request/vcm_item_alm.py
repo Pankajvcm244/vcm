@@ -131,23 +131,32 @@ def send_email_approval(doc, user):
         "rejection_link": get_rejection_link(doc, user),
         "document_link": frappe.utils.get_url_to_form(doc.doctype, doc.name),
     }
-    # *************** PANKAJ COde this later ***&
-    #email_args = {
-    #    "recipients": [user],
-    #    "message": frappe.render_template(
-    #        "hkm/erpnext___custom/overrides/purchase_order/templates/email_template.html",
-    #        template_data,
-    #    ),
-    #    "subject": "#PO :{} Approval".format(doc.name),
-    #    "reference_doctype": doc.doctype,
-    #    "reference_name": doc.name,
-    #    "reply_to": doc.owner,
-   #     "delayed": False,
-    #    "sender": doc.owner,
-    #}
-    #enqueue(
-    #    method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args
-    #)
+   
+    email_args = {
+        "recipients": [user],
+        "message": frappe.render_template(
+            "vcm/erpnext_vcm/utilities/email_templates/item_request_template.html",
+            template_data,
+        ),
+        "subject": "#Item Request :{} Approval".format(doc.name),
+        "reference_doctype": doc.doctype,
+        "reference_name": doc.name,
+        "reply_to": doc.owner,
+        "delayed": False,
+        "sender": doc.owner,
+    }
+    logging.debug(f"**in send_email_approval vcm item req2 {doc.name}, {doc.doctype}, {doc.owner}, {user} ")
+    enqueue(
+        method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args
+    )
+    frappe.sendmail(
+        recipients=[user],
+        subject="#Item Request :{} Approval".format(doc.name),
+        message=frappe.render_template(
+            "vcm/erpnext_vcm/utilities/email_templates/item_request_template.html", template_data )
+    )
+    logging.debug(f"**in send_email_approval vcm item req3  ************* ")
+
     return
 
 
