@@ -45,105 +45,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Finance Reports",
-   "link_count": 9,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "COGS By Item Group",
-   "link_count": 0,
-   "link_to": "COGS By Item Group",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Consolidated Financial Statement",
-   "link_count": 0,
-   "link_to": "Consolidated Financial Statement",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Gross and Net Profit Report",
-   "link_count": 0,
-   "link_to": "Gross and Net Profit Report",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Sales Register",
-   "link_count": 0,
-   "link_to": "Sales Register",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Trial Balance",
-   "link_count": 0,
-   "link_to": "Trial Balance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "General Ledger",
-   "link_count": 0,
-   "link_to": "General Ledger",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Profitability Analysis",
-   "link_count": 0,
-   "link_to": "Profitability Analysis",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Gross Profit",
-   "link_count": 0,
-   "link_to": "Gross Profit",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Profit and Loss Statement",
-   "link_count": 0,
-   "link_to": "Profit and Loss Statement",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Customer and Supplier Reports",
    "link_count": 3,
    "link_type": "DocType",
@@ -176,114 +77,6 @@
    "label": "Customer Ledger Summary",
    "link_count": 0,
    "link_to": "Customer Ledger Summary",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "MRN and GRN Releated Reports",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Requested Items to Order and Receive",
-   "link_count": 0,
-   "link_to": "Requested Items to Order and Receive",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Material Requests for which Supplier Quotations are not created",
-   "link_count": 0,
-   "link_to": "Material Requests for which Supplier Quotations are not created",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Purchase Receipt Trends",
-   "link_count": 0,
-   "link_to": "Purchase Receipt Trends",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Stock Report",
-   "link_count": 6,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Total Stock Summary",
-   "link_count": 0,
-   "link_to": "Total Stock Summary",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Ledger Variance",
-   "link_count": 0,
-   "link_to": "Stock Ledger Variance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Ledger",
-   "link_count": 0,
-   "link_to": "Stock Ledger",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Balance",
-   "link_count": 0,
-   "link_to": "Stock Balance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Total Stock Summary - Gifts and Books",
-   "link_count": 0,
-   "link_to": "Total Stock Summary - Gifts and Books",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Billed Items To Be Received",
-   "link_count": 0,
-   "link_to": "Billed Items To Be Received",
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
@@ -421,20 +214,10 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Item wise Reports",
-   "link_count": 6,
+   "link_count": 5,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item with GST Rate",
-   "link_count": 0,
-   "link_to": "ITEM With GST Rate",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
   },
   {
    "hidden": 0,
@@ -485,10 +268,248 @@
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MRN and GRN Releated Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Requested Items to Order and Receive",
+   "link_count": 0,
+   "link_to": "Requested Items to Order and Receive",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Material Requests for which Supplier Quotations are not created",
+   "link_count": 0,
+   "link_to": "Material Requests for which Supplier Quotations are not created",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Purchase Receipt Trends",
+   "link_count": 0,
+   "link_to": "Purchase Receipt Trends",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "VCM MR Tracker",
+   "link_count": 0,
+   "link_to": "VCM MR Tracker",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Report",
+   "link_count": 8,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Total Stock Summary",
+   "link_count": 0,
+   "link_to": "Total Stock Summary",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Ledger Variance",
+   "link_count": 0,
+   "link_to": "Stock Ledger Variance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Ledger",
+   "link_count": 0,
+   "link_to": "Stock Ledger",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Balance",
+   "link_count": 0,
+   "link_to": "Stock Balance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Total Stock Summary - Gifts and Books",
+   "link_count": 0,
+   "link_to": "Total Stock Summary - Gifts and Books",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Billed Items To Be Received",
+   "link_count": 0,
+   "link_to": "Billed Items To Be Received",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Wise Stock Balance",
+   "link_count": 0,
+   "link_to": "Warehouse Wise Stock Balance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Sales & Stock Analysis",
+   "link_count": 0,
+   "link_to": "Warehouse Sales & Stock Analysis",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Finance Reports",
+   "link_count": 9,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "COGS By Item Group",
+   "link_count": 0,
+   "link_to": "COGS By Item Group",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Consolidated Financial Statement",
+   "link_count": 0,
+   "link_to": "Consolidated Financial Statement",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Gross and Net Profit Report",
+   "link_count": 0,
+   "link_to": "Gross and Net Profit Report",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Sales Register",
+   "link_count": 0,
+   "link_to": "Sales Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Trial Balance",
+   "link_count": 0,
+   "link_to": "Trial Balance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Profitability Analysis",
+   "link_count": 0,
+   "link_to": "Profitability Analysis",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Gross Profit",
+   "link_count": 0,
+   "link_to": "Gross Profit",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Profit and Loss Statement",
+   "link_count": 0,
+   "link_to": "Profit and Loss Statement",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "VCM General Ledger",
+   "link_count": 0,
+   "link_to": "VCM General Ledger",
+   "link_type": "Report",
+   "onboard": 1,
+   "report_ref_doctype": "GL Entry",
+   "type": "Link"
   }
  ],
- "modified": "2025-02-10 17:39:31.191545",
- "modified_by": "lokesh.sisodiya@vcm.org.in",
+ "modified": "2025-02-12 12:23:52.740871",
+ "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",
  "number_cards": [],
