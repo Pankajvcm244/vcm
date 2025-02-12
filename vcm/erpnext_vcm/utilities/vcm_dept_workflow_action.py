@@ -96,10 +96,10 @@ def return_link_expired_page(doc, doc_workflow_state):
 
 def get_approval_link(doc, user, allowed_options):
     logging.debug(f"in get_approval_link  {doc}, {user} , {allowed_options}")
-    if "Recommend" in allowed_options:
-        return get_vcm_dept_workflow_action_url(action="Recommend", doc=doc, user=user)
-    if "First Approve" in allowed_options:
-        return get_vcm_dept_workflow_action_url(action="First Approve", doc=doc, user=user)
+    if "L1 Approve" in allowed_options:
+        return get_vcm_dept_workflow_action_url(action="L1 Approve", doc=doc, user=user)
+    if "L2 Approve" in allowed_options:
+        return get_vcm_dept_workflow_action_url(action="L2 Approve", doc=doc, user=user)
     if "Final Approve" in allowed_options:
         return get_vcm_dept_workflow_action_url(action="Final Approve", doc=doc, user=user)
     else:

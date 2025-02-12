@@ -10,8 +10,11 @@
   "company",
   "department",
   "purpose_subject",
-  "column_break_cgdx",
   "purpose_description",
+  "column_break_cgdx",
+  "l1_approver",
+  "l2_approver",
+  "final_approver",
   "accounting_dimensions_section",
   "cost_center",
   "column_break_bizi",
@@ -101,11 +104,32 @@
    "label": "Items",
    "options": "VCM Item Request Table",
    "reqd": 1
+  },
+  {
+   "fieldname": "l1_approver",
+   "fieldtype": "Data",
+   "label": "L1 Approver",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "fieldname": "l2_approver",
+   "fieldtype": "Data",
+   "label": "L2 Approver",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_approver",
+   "fieldtype": "Data",
+   "label": "Final Approver",
+   "options": "Email",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-10 15:07:54.156963",
+ "modified": "2025-02-11 16:24:57.792913",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Request",
