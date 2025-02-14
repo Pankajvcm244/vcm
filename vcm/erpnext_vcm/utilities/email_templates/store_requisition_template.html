@@ -58,14 +58,14 @@
                 <tr>
                   <th class="text-center">{{ _("Company") }}</th>
                   <th class="text-center">{{ _("Department") }}</th>
-                  <th class="text-center">{{ _("Date") }}</th>
+                  <th class="text-center">{{ _("Purpose") }}</th>
                 </tr>
               </thead>
               <tbody style="font-weight: 600">
                 <tr>
                   <td class="text-center">{{ doc.company }}</td>
                   <td class="text-center">{{ doc.department }}</td>
-                  <td class="text-center">{{ doc.transaction_date }}</td>
+                  <td class="text-center">{{ doc.purpose_subject }}</td>
                 </tr>
               </tbody>
               <thead>
@@ -107,7 +107,7 @@
         </div>
         <div>
           <p class="subheading">⚞ {{ _("Extra Description") }}</p>
-          <p style="padding-left: 10px">{{ doc.purpose }}</p>
+          <p style="padding-left: 10px">{{ doc.purpose_description }}</p>
         </div>
         <hr />
         <div>

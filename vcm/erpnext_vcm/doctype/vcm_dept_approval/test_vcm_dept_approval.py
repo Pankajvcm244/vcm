@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestVCMDEPTALM(FrappeTestCase):
+class TestVCMDEPTApproval(FrappeTestCase):
 	pass

@@ -5,13 +5,10 @@ from frappe.contacts.doctype.address.address import get_default_address
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
-
-
-
 @frappe.whitelist()
 def get_MR_items(item_req_doc_id):
     #logging.debug(f"get_PR_items.py  {pr_doc_id} ")
-    item_req_doc = frappe.get_doc("VCM Item Request", item_req_doc_id)
+    item_req_doc = frappe.get_doc("VCM StoreRequisition", item_req_doc_id)
     #logging.debug(f"purchase_receipt_doc {purchase_receipt_doc} ")
     
     items = []

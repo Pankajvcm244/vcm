@@ -1,26 +1,25 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-02-08 14:19:23.137379",
+ "creation": "2025-02-14 11:49:24.780546",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "workflow_state",
-  "section_break_jfur",
+  "section_break_zzij",
   "company",
   "department",
   "purpose_subject",
   "purpose_description",
-  "column_break_cgdx",
+  "column_break_uhcb",
   "l1_approver",
   "l2_approver",
   "final_approver",
   "accounting_dimensions_section",
   "cost_center",
-  "column_break_bizi",
+  "column_break_lcho",
   "project",
-  "section_break_zhpy",
-  "column_break_gzwo",
+  "section_break_xgjg",
   "items"
  ],
  "fields": [
@@ -32,41 +31,52 @@
    "options": "Workflow State"
   },
   {
-   "fieldname": "section_break_jfur",
+   "fieldname": "section_break_zzij",
    "fieldtype": "Section Break"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Company",
-   "options": "Company",
-   "remember_last_selected_value": 1,
-   "reqd": 1
+   "options": "Company"
   },
   {
    "fieldname": "department",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Department",
-   "options": "Department",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_cgdx",
-   "fieldtype": "Column Break"
+   "options": "Department"
   },
   {
    "fieldname": "purpose_subject",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Purpose Subject",
-   "reqd": 1
+   "label": "Purpose Subject"
   },
   {
    "fieldname": "purpose_description",
    "fieldtype": "Small Text",
    "label": "Purpose Description"
+  },
+  {
+   "fieldname": "column_break_uhcb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "l1_approver",
+   "fieldtype": "Data",
+   "label": "L1 Approver",
+   "read_only": 1
+  },
+  {
+   "fieldname": "l2_approver",
+   "fieldtype": "Data",
+   "label": "L2 Approver",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_approver",
+   "fieldtype": "Data",
+   "label": "Final Approver",
+   "read_only": 1
   },
   {
    "fieldname": "accounting_dimensions_section",
@@ -80,7 +90,7 @@
    "options": "Cost Center"
   },
   {
-   "fieldname": "column_break_bizi",
+   "fieldname": "column_break_lcho",
    "fieldtype": "Column Break"
   },
   {
@@ -90,13 +100,8 @@
    "options": "Project"
   },
   {
-   "fieldname": "section_break_zhpy",
+   "fieldname": "section_break_xgjg",
    "fieldtype": "Section Break"
-  },
-  {
-   "allow_in_quick_entry": 1,
-   "fieldname": "column_break_gzwo",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "items",
@@ -104,35 +109,14 @@
    "label": "Items",
    "options": "VCM Item Request Table",
    "reqd": 1
-  },
-  {
-   "fieldname": "l1_approver",
-   "fieldtype": "Data",
-   "label": "L1 Approver",
-   "options": "Email",
-   "read_only": 1
-  },
-  {
-   "fieldname": "l2_approver",
-   "fieldtype": "Data",
-   "label": "L2 Approver",
-   "options": "Email",
-   "read_only": 1
-  },
-  {
-   "fieldname": "final_approver",
-   "fieldtype": "Data",
-   "label": "Final Approver",
-   "options": "Email",
-   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-11 16:24:57.792913",
+ "modified": "2025-02-14 13:28:07.857353",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
- "name": "VCM Item Request",
+ "name": "VCM StoreRequisition",
  "owner": "Administrator",
  "permissions": [
   {
@@ -144,52 +128,6 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
-   "select": 1,
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Purchase Manager",
-   "select": 1,
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Stock Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Stock User",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Purchase User",
    "share": 1,
    "write": 1
   },
@@ -201,7 +139,6 @@
    "read": 1,
    "report": 1,
    "role": "All",
-   "select": 1,
    "share": 1,
    "write": 1
   }

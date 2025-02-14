@@ -11,12 +11,12 @@ from frappe.model.workflow import apply_workflow, get_workflow_name
 from frappe.utils.verified_command import get_signed_params, verify_request
 from frappe.utils import get_datetime
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 
 def get_vcm_dept_workflow_action_url(action, doc, user):
-    logging.debug(f"in get_vcm_dept_workflow_action_url  {action} , {doc} , {user} ")
+    #logging.debug(f"in get_vcm_dept_workflow_action_url  {action} , {doc} , {user} ")
     apply_action_method = "/api/method/vcm.erpnext_vcm.utilities.vcm_dept_workflow_action.apply_action"
     
     params = {
@@ -35,7 +35,7 @@ def get_vcm_dept_workflow_action_url(action, doc, user):
 def apply_action(
     action, doctype, docname, current_state, user=None, last_modified=None
 ):
-    logging.debug(f"in apply_action  {action} , {doctype} , {current_state} , {docname}")
+    #logging.debug(f"in apply_action  {action} , {doctype} , {current_state} , {docname}")
     if not verify_request():
         return
 
@@ -59,7 +59,7 @@ def apply_action(
 
 
 def return_success_page(doc):
-    logging.debug(f"in return_success_page  {doc} ")
+    #logging.debug(f"in return_success_page  {doc} ")
     frappe.respond_as_web_page(
         ("Success"),
         ("{0}: {1} is set to state {2}").format(
@@ -72,7 +72,7 @@ def return_success_page(doc):
 
 
 def return_already_approved_page(doc):
-    logging.debug(f"in return_already_approved_page  {doc} ")
+    #logging.debug(f"in return_already_approved_page  {doc} ")
     frappe.respond_as_web_page(
         ("Already Approved"),
         ("The doument ( {0} ) is already {1}.").format(
@@ -83,7 +83,7 @@ def return_already_approved_page(doc):
 
 
 def return_link_expired_page(doc, doc_workflow_state):
-    logging.debug(f"in return_link_expired_page  {doc}, {doc_workflow_state} ")
+    #logging.debug(f"in return_link_expired_page  {doc}, {doc_workflow_state} ")
     frappe.respond_as_web_page(
         ("Link Expired"),
         ("Document {0} has been set to state {1} by {2}").format(
@@ -95,7 +95,7 @@ def return_link_expired_page(doc, doc_workflow_state):
     )
 
 def get_approval_link(doc, user, allowed_options):
-    logging.debug(f"in get_approval_link  {doc}, {user} , {allowed_options}")
+    #logging.debug(f"in get_approval_link  {doc}, {user} , {allowed_options}")
     if "L1 Approve" in allowed_options:
         return get_vcm_dept_workflow_action_url(action="L1 Approve", doc=doc, user=user)
     if "L2 Approve" in allowed_options:
@@ -109,5 +109,5 @@ def get_approval_link(doc, user, allowed_options):
 
 
 def get_rejection_link(doc, user):
-    logging.debug(f"in get_rejection_link  {doc}, {user} ")
+    #logging.debug(f"in get_rejection_link  {doc}, {user} ")
     return get_vcm_dept_workflow_action_url("Reject", doc, user)

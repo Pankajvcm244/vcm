@@ -30,15 +30,15 @@
    "fieldname": "vcm_dept_alm_level",
    "fieldtype": "Table",
    "label": "VCM DEPT ALM Level",
-   "options": "VCM DEPT ALM Level"
+   "options": "VCM DEPT Approval Table"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-09 18:47:25.918251",
+ "modified": "2025-02-14 13:32:08.107575",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
- "name": "VCM DEPT ALM",
+ "name": "VCM DEPT Approval",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

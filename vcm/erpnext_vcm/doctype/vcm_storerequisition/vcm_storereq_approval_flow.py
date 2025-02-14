@@ -1,8 +1,8 @@
 # Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 # For license information, please see license.txt
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 from datetime import date
 from hkm.erpnext___custom.overrides.purchase_order.whatsapp import (
@@ -21,19 +21,19 @@ import frappe
 from frappe.utils.background_jobs import enqueue
 
 
-def get_vcm_item_alm_level(doc):
+def get_vcm_storereq_approval_level(doc):
     """
     Get ALM level for purchase order.
     """
     # frappe.errprint(doc.as_dict())
     #deciding_dept = getattr(doc, doc.department)
-    logging.debug(f"in get_vcm_item_alm_level before_save  {doc}, {doc.department}  ")
+    #logging.debug(f"in get_vcm_storereq_approval_level before_save  {doc}, {doc.department}  ")
 
     for l in frappe.db.sql(
         f"""
                 SELECT level.*
-                FROM `tabVCM DEPT ALM` alm
-                JOIN `tabVCM DEPT ALM Level` level
+                FROM `tabVCM DEPT Approval` alm
+                JOIN `tabVCM DEPT Approval Table` level
                     ON level.parent = alm.name
                 WHERE alm.document = "{doc.doctype}"
                     AND alm.company = "{doc.company}"
@@ -43,17 +43,17 @@ def get_vcm_item_alm_level(doc):
         as_dict=1,
     ):
         
-        # frappe.errprint(f"{deciding_amount} {l.amount_condition}")
-        logging.debug(f"in get_vcm_item_alm_level before_save3  {l}, {l.department} ")
-        #if eval(f"{doc.department} {l.department}"):
-        return l
+    # frappe.errprint(f"{deciding_amount} {l.amount_condition}")
+    #logging.debug(f"in get_vcm_storereq_approval_level before_save3  {l}, {l.department} ")
+        if doc.department == l.department:
+            return l
     return None
 
 
 def assign_and_notify_next_authority(doc, method="Email"):
     user = None
     current_state = doc.workflow_state
-    logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
+    #logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
     states = ("Pending", "L1 Approved", "L2 Approved")
     approvers = (
         "l1_approver",
@@ -72,7 +72,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
                         break
                 break
         if user is None:
-            frappe.throw("Next authority is not Found. Please check ALM.")
+            frappe.throw("Next authority is not Found. Please check Approval Flow.")
         close_assignments(doc)
         assign_to_next_approving_authority(doc, user)
         mobile_no = frappe.get_value("User", user, "mobile_no")
@@ -83,7 +83,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
             send_email_approval(doc, user)
 
     if current_state == "Final Level Approved":
-        logging.debug(f"**in assign_and_notify_next_authority 8 {doc}, {current_state} ")
+        #logging.debug(f"**in assign_and_notify_next_authority 8 {doc}, {current_state} ")
         close_assignments(doc, remove=True)
     frappe.db.commit()
     return
@@ -111,10 +111,10 @@ def assign_to_next_approving_authority(doc, user):
             "reference_type": doc.doctype,
             "reference_name": doc.name,
             "date": date.today(),
-            "description": "VCM Item Request approval for " + doc.name,
+            "description": "VCM Store Requisition for " + doc.name,
         }
     )
-    logging.debug(f"**in assign_to_next_approving_authority 1 {user}, {doc.doctype}, {doc.name}, {frappe.session.user} ")
+    #logging.debug(f"**in assign_to_next_approving_authority 1 {user}, {doc.doctype}, {doc.name}, {frappe.session.user} ")
     todo_doc.insert()
     return
 
@@ -122,7 +122,7 @@ def assign_to_next_approving_authority(doc, user):
 def send_email_approval(doc, user):
     currency = frappe.get_cached_value("Company", doc.company, "default_currency")
     allowed_options = get_allowed_options(user, doc)
-    logging.debug(f"**in send_email_approval vcm item rew 1 {currency}, {allowed_options}")
+    #logging.debug(f"**in send_email_approval vcm item rew 1 {currency}, {allowed_options}")
     template_data = {
         "doc": doc,
         "user": user,
@@ -135,7 +135,7 @@ def send_email_approval(doc, user):
     email_args = {
         "recipients": [user],
         "message": frappe.render_template(
-            "vcm/erpnext_vcm/utilities/email_templates/item_request_template.html",
+            "vcm/erpnext_vcm/utilities/email_templates/store_requisition_template.html",
             template_data,
         ),
         "subject": "#Item Request :{} Approval".format(doc.name),
@@ -145,7 +145,7 @@ def send_email_approval(doc, user):
         "delayed": False,
         "sender": doc.owner,
     }
-    logging.debug(f"**in send_email_approval vcm item req2 {doc.name}, {doc.doctype}, {doc.owner}, {user} ")
+    #logging.debug(f"**in send_email_approval vcm item req2 {doc.name}, {doc.doctype}, {doc.owner}, {user} ")
     enqueue(
         method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args
     )
@@ -153,9 +153,9 @@ def send_email_approval(doc, user):
         recipients=[user],
         subject="#Item Request :{} Approval".format(doc.name),
         message=frappe.render_template(
-            "vcm/erpnext_vcm/utilities/email_templates/item_request_template.html", template_data )
+            "vcm/erpnext_vcm/utilities/email_templates/store_requisition_template.html", template_data )
     )
-    logging.debug(f"**in send_email_approval vcm item req3  ************* ")
+    #logging.debug(f"**in send_email_approval vcm item req3  ************* ")
 
     return
 

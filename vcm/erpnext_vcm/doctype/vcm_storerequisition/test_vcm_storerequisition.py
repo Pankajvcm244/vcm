@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestVCMItemRequest(FrappeTestCase):
+class TestVCMStoreRequisition(FrappeTestCase):
 	pass

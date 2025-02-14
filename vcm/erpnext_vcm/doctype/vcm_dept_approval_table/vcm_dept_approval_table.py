@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class VCMDEPTALM(Document):
+class VCMDEPTApprovalTable(Document):
 	pass
