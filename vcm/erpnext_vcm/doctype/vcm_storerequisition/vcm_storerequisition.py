@@ -6,6 +6,7 @@
 from vcm.erpnext_vcm.doctype.vcm_storerequisition.vcm_storereq_approval_flow import (
     assign_and_notify_next_authority,
     get_vcm_storereq_approval_level,
+	check_approver_assigned,
 )
 
 import frappe
@@ -44,12 +45,15 @@ class VCMStoreRequisition(Document):
 
 	def validate(self):
 		#logging.debug(f"in VCMStoreRequisition validate  {self}  ")
+		check_approver_assigned(self)
 		#check_items_are_not_from_template(self)
 		#validate_work_order_item(self)
 		#validate_one_time_vendor(self)
 		#self.validate_mrn_availble()
 		#validate_buying_dates(self)
 		return
+	
+	
 
 @frappe.whitelist()
 def resend_approver_request(docname, method):

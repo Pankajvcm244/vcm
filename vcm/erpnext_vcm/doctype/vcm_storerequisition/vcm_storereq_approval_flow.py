@@ -69,6 +69,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
                         and getattr(doc, approver) != ""
                     ):
                         user = getattr(doc, approver)
+                        #logging.debug(f"in assign_and_notify_next_authority 1 {user}, {current_state} ")
                         break
                 break
         if user is None:
@@ -111,11 +112,53 @@ def assign_to_next_approving_authority(doc, user):
             "reference_type": doc.doctype,
             "reference_name": doc.name,
             "date": date.today(),
-            "description": "VCM Store Requisition for " + doc.name,
+            "description": "VCM StoreReq " + doc.name,
         }
     )
     #logging.debug(f"**in assign_to_next_approving_authority 1 {user}, {doc.doctype}, {doc.name}, {frappe.session.user} ")
     todo_doc.insert()
+    return
+
+def check_approver_assigned(doc):    
+    user = None
+    proposed_state = doc.workflow_state    
+
+    #System Manager can approve any request
+    user = frappe.session.user  # Get current logged-in user
+    roles = frappe.get_roles(user)  # Get user roles
+    # Check if System Manager is in the user's roles
+    #logging.debug(f"in VCMStoreRequisition check_approver_assigned  {user}, {proposed_state} ")
+    if "System Manager" in roles:
+        return True
+    # when we reach here workflow state is already set to next proposed state
+    # we are not check reject request as it can happen at any stage and we need to check doc is at what state to decide rejecter
+    if (proposed_state == "L1 Approved"):
+        if (
+                getattr(doc, "l1_approver") is not None
+                and getattr(doc, "l1_approver") != ""
+            ):
+                approver_user = getattr(doc, "l1_approver")
+                #logging.debug(f"in check_approver_assigned 1 {user}, {approver_user}, {proposed_state} ")
+                if approver_user  != user:
+                    frappe.throw("You are not allowed to approve this Store Req request.")
+    if (proposed_state == "L2 Approved"):
+        if (
+                getattr(doc, "l2_approver") is not None
+                and getattr(doc, "l2_approver") != ""
+            ):
+                approver_user  = getattr(doc, "l2_approver")
+                #logging.debug(f"in check_approver_assigned 2 {user}, {approver_user}, {proposed_state} ")
+                if approver_user  != user:
+                    frappe.throw("You are not allowed to approve this Store Req request.")
+    if (proposed_state == "Final Level Approved"):
+        if (
+                getattr(doc, "final_approver") is not None
+                and getattr(doc, "final_approver") != ""
+            ):
+                approver_user  = getattr(doc, "final_approver")
+                #logging.debug(f"in check_approver_assigned 3 {user}, {approver_user}, {proposed_state} ")
+                if approver_user  != user:
+                    frappe.throw("You are not allowed to approve this Store Req request.")
     return
 
 

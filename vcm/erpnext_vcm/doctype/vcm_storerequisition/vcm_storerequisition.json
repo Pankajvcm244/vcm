@@ -20,7 +20,8 @@
   "column_break_lcho",
   "project",
   "section_break_xgjg",
-  "items"
+  "items",
+  "amended_from"
  ],
  "fields": [
   {
@@ -109,11 +110,22 @@
    "label": "Items",
    "options": "VCM Item Request Table",
    "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "VCM StoreRequisition",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-02-14 13:28:07.857353",
+ "modified": "2025-02-15 18:32:09.230949",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM StoreRequisition",
@@ -139,6 +151,29 @@
    "read": 1,
    "report": 1,
    "role": "All",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "VCM Store Req Approver",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "VCM Store Req Approver",
    "share": 1,
    "write": 1
   }
