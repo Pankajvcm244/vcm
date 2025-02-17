@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:BudgettHead-{YY}{MM}-{####}",
+ "creation": "2025-02-17 17:57:46.119998",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "budget_head_name",
+  "old_parent",
+  "column_break_diyr",
+  "disabled",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "budget_head_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Budget Head Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "label": "Old Parent",
+   "options": "Budget Head"
+  },
+  {
+   "fieldname": "column_break_diyr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Budget Head",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-02-17 18:04:17.887806",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "Budget Head",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
