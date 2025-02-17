@@ -62,6 +62,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
     )
     if current_state in states:
         for i, state in enumerate(states):
+            #logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
             if current_state == state:
                 for approver in approvers[i : len(approvers)]:
                     if (
@@ -112,10 +113,10 @@ def assign_to_next_approving_authority(doc, user):
             "reference_type": doc.doctype,
             "reference_name": doc.name,
             "date": date.today(),
-            "description": "VCM StoreReq " + doc.name,
+            "description": "VCM StoreReq" + doc.name,
         }
     )
-    #logging.debug(f"**in assign_to_next_approving_authority 1 {user}, {doc.doctype}, {doc.name}, {frappe.session.user} ")
+    #logging.debug(f"**in assign_to_next_approving_authority 1 {user},  {frappe.session.user} ")
     todo_doc.insert()
     return
 
@@ -206,12 +207,12 @@ def send_email_approval(doc, user):
 def close_assignments(doc, remove=True):
     if remove:
         frappe.db.delete(
-            "ToDo", {"reference_type": "VCM Item Request", "reference_name": doc.name}
+            "ToDo", {"reference_type": "VCM StoreRequisition", "reference_name": doc.name}
         )
     else:
         frappe.db.set_value(
             "ToDo",
-            {"reference_type": "VCM Item Request", "reference_name": doc.name},
+            {"reference_type": "VCM StoreRequisition", "reference_name": doc.name},
             "status",
             "Closed",
         )
