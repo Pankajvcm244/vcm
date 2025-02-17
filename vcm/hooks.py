@@ -275,14 +275,30 @@ fixtures = [
         "doctype": "POS Profile",
     },
     {
+        "dt": "Custom Field",
+        "filters": [
+            [
+                "dt",
+                "in",
+                [
+                    "Store Requisition",
+                    "Material Request",
+                    #"Purchase Order",
+                    # "Purchase Receipt",
+                    # "Purchase Invoice",
+                    # "Sales Invoice",
+                    # "Stock Entry",
+                    # "Payment Entry",
+                    # "Journal Entry",
+                    # "Customer",
+                    # "Asset",
+                    #"Supplier"
+                ],
+            ],
+    ],
+    },
+    {
         "doctype": "Role",
     }
-    #},
-    #{
-    #    "doctype": "Custom Field"
-    #},
-    #{
-    #    "doctype": "Property Setter"
-    #}
 ]
 

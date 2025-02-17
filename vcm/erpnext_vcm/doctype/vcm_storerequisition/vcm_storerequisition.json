@@ -15,13 +15,16 @@
   "l1_approver",
   "l2_approver",
   "final_approver",
+  "material_request_link",
   "accounting_dimensions_section",
   "cost_center",
   "column_break_lcho",
   "project",
   "section_break_xgjg",
   "items",
-  "amended_from"
+  "amended_from",
+  "section_break_rteu",
+  "table_cwab"
  ],
  "fields": [
   {
@@ -108,8 +111,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "options": "VCM Item Request Table",
-   "reqd": 1
+   "options": "VCM Item Request Table"
   },
   {
    "fieldname": "amended_from",
@@ -120,12 +122,29 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "allow_on_submit": 1,
+   "fieldname": "material_request_link",
+   "fieldtype": "Link",
+   "label": "Material Request Link",
+   "options": "Material Request"
+  },
+  {
+   "fieldname": "section_break_rteu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_cwab",
+   "fieldtype": "Table",
+   "options": "VCM StoreReq Items scratch"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-15 18:32:09.230949",
+ "modified": "2025-02-17 16:45:05.980089",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM StoreRequisition",

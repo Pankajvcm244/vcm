@@ -20,6 +20,7 @@ def get_MR_items(item_req_doc_id):
             "schedule_date": item.required_by,
             "uom": item.uom,
             "stock_uom": item.stock_uom,
+            
         })
     #logging.debug(f"Items:  {items} ")
     mr_receipt_entry_dict = frappe._dict(
@@ -28,6 +29,7 @@ def get_MR_items(item_req_doc_id):
 
     material_request_doc = frappe.new_doc("Material Request")   
     material_request_doc.update(mr_receipt_entry_dict)
+
     material_request_doc.purpose_subject = item_req_doc.purpose_subject
     material_request_doc.company = item_req_doc.company
     material_request_doc.cost_center = item_req_doc.cost_center
@@ -35,6 +37,7 @@ def get_MR_items(item_req_doc_id):
     material_request_doc.department = item_req_doc.department
     material_request_doc.purpose = item_req_doc.purpose_subject
     material_request_doc.description = item_req_doc.purpose_description
+    material_request_doc.custom_store_requisition_link = item_req_doc_id
     return material_request_doc
 
 @frappe.whitelist()
