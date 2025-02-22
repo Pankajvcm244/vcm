@@ -11,7 +11,9 @@
   "required_by",
   "qty",
   "uom",
-  "stock_uom"
+  "stock_uom",
+  "received_quantity",
+  "item_receive_status"
  ],
  "fields": [
   {
@@ -54,12 +56,22 @@
    "fieldtype": "Link",
    "label": "Stock UOM",
    "options": "UOM"
+  },
+  {
+   "fieldname": "received_quantity",
+   "fieldtype": "Float",
+   "label": "Received Quantity"
+  },
+  {
+   "fieldname": "item_receive_status",
+   "fieldtype": "Data",
+   "label": "Item Receive Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-08 17:42:17.820189",
+ "modified": "2025-02-18 17:10:51.010251",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Request Table",

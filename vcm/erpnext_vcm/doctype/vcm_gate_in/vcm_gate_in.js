@@ -1,8 +1,98 @@
 // Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("VCM Gate-In", {
-// 	refresh(frm) {
+frappe.ui.form.on("VCM Gate-In", {
+    //this refresh was added due to double pop-up when supplier is selected
+    refresh: function(frm) {
+        frm.meta.supplier_dialog_opened = false; // Reset flag when form refreshes
+    },
+    supplier: function(frm) {
+        if (!frm.doc.supplier || frm.supplier_dialog_opened) return;
+        frm.supplier_dialog_opened = true; // Prevent duplicate popups
+        //console.log("VCM Gate-In.js Supplier:", frm.supplier_dialog_opened, frm.doc.supplier);
+        //console.trace();
 
-// 	},
-// });
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Purchase Order",
+                filters: { "supplier": frm.doc.supplier, "status": "To Receive and Bill" },
+                fields: ["name", "transaction_date", "grand_total"]
+            },
+            callback: function(r) {                
+                if (r.message.length > 0) {
+                    let po_options = r.message.map(po => ({ label: `${po.name} - ${po.grand_total}`, value: po.name }));
+
+                    let d = new frappe.ui.Dialog({
+                        title: 'Select Purchase Order',
+                        fields: [
+                            { fieldname: 'po', fieldtype: 'Select', label: 'Purchase Order', options: po_options },
+                        ],
+                        primary_action_label: 'Select',
+                        primary_action(values) {
+                            frm.set_value("purchase_order", values.po);
+                            d.hide();
+                        }
+                    });
+
+                    d.show();
+                    //frm.supplier_dialog_opened = false; // Reset flag after response
+                    //console.log("VCM Gate-In.js Supplier 2:", frm.supplier_dialog_opened, frm.doc.supplier);
+                } else {
+                    frappe.msgprint("No Purchase Orders found for this supplier.");
+                }
+            }
+        });
+    },
+    purchase_order: function(frm) {
+        if (!frm.doc.purchase_order) return;
+
+        // Fetch all items from the selected Purchase Order
+        frappe.call({
+            method: "frappe.client.get",
+            args: {
+                doctype: "Purchase Order",
+                name: frm.doc.purchase_order
+            },
+            callback: function(r) {
+                if (r.message) {
+                    let po_data = r.message;
+                    frm.clear_table("items"); // Clear existing items before adding new ones
+
+                    po_data.items.forEach(item => {
+                        let row = frm.add_child("items");
+                        row.item_code = item.item_code;
+                        row.item_name = item.item_name;
+                        row.qty = item.qty;
+                        row.uom = item.uom;
+                        row.rate = item.rate;
+                        row.amount = item.amount;
+                        row.required_by = item.schedule_date;
+                    });
+
+                    frm.refresh_field("items"); // Refresh the table to show new items
+                }
+            }
+        });
+    },
+    validate: function(frm) {
+        if (!frm.doc.purchase_order && !frm.doc.bill_number && !frm.doc.challan_number) {
+            frappe.throw(__('Please enter at least one of PO Number, Bill Number, or Challan Number.'));
+        }
+    },
+    item_code: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        
+        if (!frm.doc.purchase_order && row.item_code) {
+            frappe.db.get_value('Item', row.item_code, ['item_name', 'uom'], function(value) {
+                if (value) {
+                    frappe.model.set_value(cdt, cdn, 'item_name', value.item_name);
+                    frappe.model.set_value(cdt, cdn, 'uom', value.uom);
+                    
+                }
+            });
+        }
+    }
+
+    
+});

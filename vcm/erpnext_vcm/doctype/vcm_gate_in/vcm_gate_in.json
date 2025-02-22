@@ -8,10 +8,12 @@
   "company",
   "cost_head",
   "supplier",
+  "status",
   "column_break_zooz",
   "purchase_order",
   "bill_number",
   "challan_number",
+  "bill_date",
   "section_break_tojo",
   "items"
  ],
@@ -35,8 +37,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "options": "Supplier",
-   "reqd": 1
+   "options": "Supplier"
   },
   {
    "fieldname": "column_break_zooz",
@@ -46,7 +47,8 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "options": "Purchase Order"
+   "options": "Purchase Order",
+   "read_only": 1
   },
   {
    "fieldname": "bill_number",
@@ -67,11 +69,24 @@
    "fieldtype": "Table",
    "label": "Items",
    "options": "VCM Item Request Table"
+  },
+  {
+   "fieldname": "bill_date",
+   "fieldtype": "Date",
+   "label": "Bill Date"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nReceived",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-17 18:06:53.485820",
+ "modified": "2025-02-22 12:54:15.244136",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",
