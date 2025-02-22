@@ -5,6 +5,23 @@ frappe.ui.form.on("VCM Gate-In", {
     //this refresh was added due to double pop-up when supplier is selected
     refresh: function(frm) {
         frm.meta.supplier_dialog_opened = false; // Reset flag when form refreshes
+        //In case User tagged Gate-In by mistake and wants to Free Gate-In
+        if (frm.doc.status === "Received" && frappe.user.has_role("System Manager")) {
+            frm.add_custom_button(__('Change Status to Pending'), function() {
+                frappe.call({
+                    method: "vcm.erpnext_vcm.doctype.vcm_gate_in.vcm_gate_in.update_gate_in_status",
+                    args: {
+                        gate_in_name: frm.doc.name,
+                        new_status: "Pending"
+                    },
+                    callback: function(response) {
+                        if (response.message) {
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            }).addClass("btn-danger");
+        }
     },
     supplier: function(frm) {
         if (!frm.doc.supplier || frm.supplier_dialog_opened) return;
