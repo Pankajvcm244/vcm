@@ -21,23 +21,7 @@ frappe.ui.form.on('Purchase Receipt', {
             });
           },
           "Utilities"
-        );
-        if (!frm.doc.gate_in_reference) {
-            frappe.call({
-                method: 'frappe.client.get_list',
-                args: {
-                    doctype: 'VCM Gate-In',
-                    filters: { status: 'Pending' },  // Fetch only pending Gate In entries
-                    fields: ['name'],
-                    limit_page_length: 1
-                },
-                callback: function(response) {
-                    if (response.message.length > 0) {
-                        frm.set_value('gate_in_reference', response.message[0].name);
-                    }
-                }
-            });
-        }
+        );        
     },
     on_submit: function(frm) {
         if (frm.doc.gate_in_reference) {  // Assuming there's a link field in Purchase Receipt pointing to Gate In
@@ -54,6 +38,14 @@ frappe.ui.form.on('Purchase Receipt', {
     },
 
     refresh(frm) {
+        //Show only Gate-In whose status is Pending
+        frm.fields_dict['gate_in_reference'].get_query = function(doc) {
+            return {
+                filters: {
+                    status: 'Pending'  // Only show Gate In records where status is 'Pending'
+                }
+            };
+        };
         frm.add_custom_button(__("Print VCM Labels directly"), function(){
             frappe.ui.form.qz_connect()
             .then(function () {
@@ -140,7 +132,10 @@ frappe.ui.form.on('Purchase Receipt', {
             });
             //perform desired action such as routing to new form or fetching etc.
         }, __("Utilities"));
+
+        
     },
+    
 
     get_EZPL_string:function(frm,data){
         // Please refer to documentation for seetings : https://www.godexprinters.co.uk/downloads/manuals/desktop/EZPL_EN_J_20180226.pdf
