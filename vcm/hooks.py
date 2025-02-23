@@ -264,15 +264,17 @@ HKMSalesInvoice = VCMSalesInv
 
 # Fixtures to add workflow in VCM Item Request
 fixtures = [
-    {
-        "doctype": "Workflow",
-        "filters": [["document_type", "=", "VCM Item Request"]]
-    },
-    {
+     {
         "doctype": "Report",
     },
     {
         "doctype": "POS Profile",
+    },
+    {
+        "doctype": "Workflow",
+    },
+        {
+        "doctype": "Workflow State",
     },
     {
         "dt": "Custom Field",
@@ -283,9 +285,10 @@ fixtures = [
                 [
                     "Store Requisition",
                     "Material Request",
-                    #"Purchase Order",
-                    # "Purchase Receipt",
-                    # "Purchase Invoice",
+                    "Purchase Order",
+                    "Purchase Receipt",
+                    #"Purchase Invoice",
+                    "VCM Gate-In",
                     # "Sales Invoice",
                     # "Stock Entry",
                     # "Payment Entry",

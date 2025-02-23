@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-02-23 10:35:37.127916",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vcm_budget_amendment_section",
+  "company",
+  "fiscal_year",
+  "cost_center",
+  "budget_amendment_items",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "vcm_budget_amendment_section",
+   "fieldtype": "Section Break",
+   "label": "VCM Budget Amendment"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_amendment_items",
+   "fieldtype": "Table",
+   "label": "Budget Amendment Items",
+   "options": "VCM Budget Amendment Child Table",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "VCM Budget Amendment",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-02-23 18:33:19.624258",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Budget Amendment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

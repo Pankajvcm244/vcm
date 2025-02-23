@@ -46,11 +46,6 @@ class VCMStoreRequisition(Document):
 	def validate(self):
 		#logging.debug(f"in VCMStoreRequisition validate  {self}  ")
 		check_approver_assigned(self)
-		#check_items_are_not_from_template(self)
-		#validate_work_order_item(self)
-		#validate_one_time_vendor(self)
-		#self.validate_mrn_availble()
-		#validate_buying_dates(self)
 		return
 	
 	
