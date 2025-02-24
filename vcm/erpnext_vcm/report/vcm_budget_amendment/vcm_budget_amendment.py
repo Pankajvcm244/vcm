@@ -23,6 +23,7 @@ def get_columns():
         {"fieldname": "used_budget", "label": _("Used Budget"), "fieldtype": "Float", "width": 150},
         {"fieldname": "balance_budget", "label": _("Balance Budget"), "fieldtype": "Float", "width": 150},
         {"fieldname": "proposed_by", "label": _("Amended By"), "fieldtype": "Link", "options": "Employee", "width": 150},
+        {"fieldname": "amendment_date", "label": "Amendment Date", "fieldtype": "Date"}  # 🔹 Include Date
 	]
 
 def get_data(filters):
@@ -32,12 +33,13 @@ def get_data(filters):
             ba.company,
             ba.fiscal_year,
             ba.cost_center,
-            bai.budget_head,
+            DATE(ba.modified) AS amendment_date,           
             bai.original_amount,
             bai.current_budget,
             bai.used_budget,
             bai.balance_budget, 
             bai.amended_till_now, 
+            bai.budget_head,
             bai.proposed_amendment, 
             bai.proposed_by,         
             (
@@ -47,7 +49,7 @@ def get_data(filters):
             ) AS amendment_details
         FROM `tabVCM Budget Amendment` ba
         JOIN `tabVCM Budget Amendment Child Table` bai ON bai.parent = ba.name
-        WHERE ba.docstatus = 1
+        WHERE ba.docstatus IN (0, 1)
         {conditions}
         ORDER BY ba.cost_center DESC
     """

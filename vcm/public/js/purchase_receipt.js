@@ -39,13 +39,13 @@ frappe.ui.form.on('Purchase Receipt', {
 
     refresh(frm) {
         //Show only Gate-In whose status is Pending
-        frm.fields_dict['gate_in_reference'].get_query = function(doc) {
-            return {
-                filters: {
-                    status: 'Pending'  // Only show Gate In records where status is 'Pending'
-                }
-            };
-        };
+        // frm.fields_dict['gate_in_reference'].get_query = function(doc) {
+        //     return {
+        //         filters: {
+        //             status: 'Pending'  // Only show Gate In records where status is 'Pending'
+        //         }
+        //     };
+        // };
         frm.add_custom_button(__("Print VCM Labels directly"), function(){
             frappe.ui.form.qz_connect()
             .then(function () {

@@ -9,7 +9,8 @@
   "company",
   "fiscal_year",
   "cost_center",
-  "budget_items"
+  "budget_items",
+  "amended_from"
  ],
  "fields": [
   {
@@ -45,11 +46,22 @@
    "label": "Budget Items",
    "options": "VCM Budget Child Table",
    "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "VCM Budget",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-02-23 16:59:44.703216",
+ "modified": "2025-02-24 12:05:49.996934",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
