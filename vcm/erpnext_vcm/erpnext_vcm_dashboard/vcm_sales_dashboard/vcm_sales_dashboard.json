@@ -28,27 +28,27 @@
   },
   {
    "chart": "Avg Bill Value",
-   "width": "Half"
+   "width": "Full"
   },
   {
    "chart": "Avg Bill Size",
-   "width": "Half"
+   "width": "Full"
   },
   {
    "chart": "Avg Discount Value",
-   "width": "Half"
+   "width": "Full"
   },
   {
    "chart": "Avg Discount Percent",
-   "width": "Half"
-  },
-  {
-   "chart": "VCM Sales Performance",
    "width": "Full"
   },
   {
    "chart": "VCM Sales Comparison",
-   "width": "Half"
+   "width": "Full"
+  },
+  {
+   "chart": "VCM Sales Performance",
+   "width": "Full"
   }
  ],
  "creation": "2025-02-25 10:59:04.117153",
@@ -58,7 +58,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2025-02-25 11:05:22.743922",
+ "modified": "2025-02-25 11:55:21.408289",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Sales Dashboard",
