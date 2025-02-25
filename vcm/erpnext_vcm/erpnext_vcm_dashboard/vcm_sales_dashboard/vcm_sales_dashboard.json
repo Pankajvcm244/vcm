@@ -1,0 +1,66 @@
+{
+ "cards": [
+  {
+   "card": "Balram Counter"
+  },
+  {
+   "card": "Krishna Counter"
+  },
+  {
+   "card": "Gita Counter"
+  },
+  {
+   "card": "Jagannath Counter"
+  },
+  {
+   "card": "Annakoot Counter"
+  },
+  {
+   "card": "Brajras Counter"
+  }
+ ],
+ "charts": [
+  {
+   "width": "Half"
+  },
+  {
+   "width": "Half"
+  },
+  {
+   "chart": "Avg Bill Value",
+   "width": "Half"
+  },
+  {
+   "chart": "Avg Bill Size",
+   "width": "Half"
+  },
+  {
+   "chart": "Avg Discount Value",
+   "width": "Half"
+  },
+  {
+   "chart": "Avg Discount Percent",
+   "width": "Half"
+  },
+  {
+   "chart": "VCM Sales Performance",
+   "width": "Full"
+  },
+  {
+   "chart": "VCM Sales Comparison",
+   "width": "Half"
+  }
+ ],
+ "creation": "2025-02-25 10:59:04.117153",
+ "dashboard_name": "VCM Sales Dashboard",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2025-02-25 11:05:22.743922",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Sales Dashboard",
+ "owner": "Administrator"
+}
