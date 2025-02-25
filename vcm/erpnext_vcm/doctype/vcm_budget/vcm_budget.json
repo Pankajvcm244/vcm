@@ -9,6 +9,12 @@
   "company",
   "fiscal_year",
   "cost_center",
+  "column_break_fgta",
+  "total_amount",
+  "total_amended_amount",
+  "total_used_amount",
+  "total_balance_amount",
+  "section_break_jqpw",
   "budget_items",
   "amended_from"
  ],
@@ -48,6 +54,38 @@
    "reqd": 1
   },
   {
+   "fieldname": "total_amount",
+   "fieldtype": "Float",
+   "label": "Total Original Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_fgta",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jqpw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_amended_amount",
+   "fieldtype": "Float",
+   "label": "Total Amended Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_used_amount",
+   "fieldtype": "Float",
+   "label": "Total Used Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_balance_amount",
+   "fieldtype": "Float",
+   "label": "Total Balance Amount",
+   "read_only": 1
+  },
+  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -61,7 +99,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-24 12:05:49.996934",
+ "modified": "2025-02-25 12:18:29.018255",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",

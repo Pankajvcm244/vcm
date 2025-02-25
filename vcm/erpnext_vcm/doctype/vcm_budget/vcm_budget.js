@@ -3,6 +3,24 @@
 
 
 frappe.ui.form.on('VCM Budget', {
+    refresh: function(frm) {
+        calculate_total_amount(frm);
+        calculate_amended_amount(frm);
+        calculate_used_amount(frm);
+        calculate_balance_amount(frm);
+    },
+    budget_items_add: function(frm, cdt, cdn) {
+        calculate_total_amount(frm);
+        calculate_amended_amount(frm);
+        calculate_used_amount(frm);
+        calculate_balance_amount(frm);
+    },
+    budget_items_remove: function(frm, cdt, cdn) {
+        calculate_total_amount(frm);
+        calculate_amended_amount(frm);
+        calculate_used_amount(frm);
+        calculate_balance_amount(frm);
+    },
     before_save: function(frm) {
         console.log("Before Save: Child Table Data", frm.doc.budget_items);
         frm.doc.budget_items.forEach(row => {
@@ -13,12 +31,80 @@ frappe.ui.form.on('VCM Budget', {
             row.used_budget = row.used_budget || 0.00;            
             row.proposed_amendment = row.proposed_amendment || 0.00;
             row.proposed_by = row.proposed_by || "Unknown";
-
         });
     },
     after_save: function(frm) {
         console.log("After Save: Child Table Data", frm.doc.budget_items);
-    }
-    
+    },
+    validate: function(frm) {
+        let budget_heads = [];
+        let duplicate_found = false;
 
+        $.each(frm.doc.budget_items || [], function(i, row) {
+            if (budget_heads.includes(row.budget_head)) {
+                frappe.msgprint(__('Duplicate Budget Head: {0}', [row.budget_head]));
+                frappe.validated = false;
+                duplicate_found = true;
+                return false;  // Exit loop early
+            }
+            budget_heads.push(row.budget_head);
+        });
+
+        if (duplicate_found) {
+            frappe.throw(__('Each Budget Head must be unique.'));
+        }
+    }
 });
+
+frappe.ui.form.on('VCM Budget Child Table', {
+    original_amount: function(frm, cdt, cdn) {
+        calculate_total_amount(frm);
+        calculate_amended_amount(frm);
+        calculate_used_amount(frm);
+        calculate_balance_amount(frm);
+    }
+});
+
+function calculate_total_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.original_amount || 0;
+    });
+    frm.set_value("total_amount", total);
+    frm.refresh_field("total_amount");
+}
+
+function calculate_amended_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.amended_till_now || 0;
+    });
+    frm.set_value("total_amended_amount", total);
+    frm.refresh_field("total_amended_amount");
+}
+
+function calculate_balance_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.balance_budget || 0;
+    });
+    frm.set_value("total_balance_amount", total);
+    frm.refresh_field("total_balance_amount");
+}
+
+function calculate_used_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.used_budget || 0;
+    });
+    frm.set_value("total_used_amount", total);
+    frm.refresh_field("total_used_amount");
+}
