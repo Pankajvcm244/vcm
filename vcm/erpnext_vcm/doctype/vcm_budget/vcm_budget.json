@@ -14,6 +14,11 @@
   "total_amended_amount",
   "total_used_amount",
   "total_balance_amount",
+  "column_break_cdac",
+  "total_paid_payment_entry",
+  "total_unpaid_purchase_invoice",
+  "total_unpaid_purchase_order",
+  "total_additional_je",
   "section_break_jqpw",
   "budget_items",
   "amended_from"
@@ -25,11 +30,12 @@
    "label": "VCM Budget"
   },
   {
+   "default": "2024-2025",
    "fieldname": "fiscal_year",
-   "fieldtype": "Link",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Fiscal Year",
-   "options": "Fiscal Year",
+   "options": "2024-2025\n2025-2026",
    "reqd": 1
   },
   {
@@ -54,6 +60,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_amount",
    "fieldtype": "Float",
    "label": "Total Original Amount",
@@ -68,18 +75,21 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_amended_amount",
    "fieldtype": "Float",
    "label": "Total Amended Amount",
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_used_amount",
    "fieldtype": "Float",
    "label": "Total Used Amount",
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_balance_amount",
    "fieldtype": "Float",
    "label": "Total Balance Amount",
@@ -94,12 +104,44 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_cdac",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_paid_payment_entry",
+   "fieldtype": "Float",
+   "label": "Total Paid Payment Entry",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_unpaid_purchase_invoice",
+   "fieldtype": "Float",
+   "label": "Total UnPaid Purchase Invoice",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_unpaid_purchase_order",
+   "fieldtype": "Float",
+   "label": "Total UnPaid Purchase Order",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "total_additional_je",
+   "fieldtype": "Float",
+   "label": "Total Additional JE",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-25 12:18:29.018255",
+ "modified": "2025-02-26 16:21:19.233053",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",

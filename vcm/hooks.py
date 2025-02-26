@@ -165,6 +165,13 @@ HKMSalesInvoice = VCMSalesInv
 # 	}
 # }
 
+doc_events = {
+    "Journal Entry": {
+        "on_submit": "vcm.erpnext_vcm.utilities.vcm_budget_update_usage.update_budget_from_jv",
+        "on_cancel": "vcm.erpnext_vcm.utilities.vcm_budget_update_usage.reverse_budget_from_jv"
+    }
+}
+
 # Scheduled Tasks
 # ---------------
 

@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-02-26 14:43:38.717358",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vcm_budget_settings_section",
+  "po_budget_enabled",
+  "pi_budget_enabled",
+  "expense_budget_enabled",
+  "jv_budget_enabled"
+ ],
+ "fields": [
+  {
+   "default": "No",
+   "fieldname": "po_budget_enabled",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "PO Budget Enabled",
+   "options": "No\nYes",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vcm_budget_settings_section",
+   "fieldtype": "Section Break",
+   "label": "VCM Budget Settings"
+  },
+  {
+   "default": "No",
+   "fieldname": "pi_budget_enabled",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "PI Budget Enabled",
+   "options": "No\nYes",
+   "reqd": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "expense_budget_enabled",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Expense Budget Enabled",
+   "options": "No\nYes",
+   "reqd": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "jv_budget_enabled",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "JV Budget Enabled",
+   "options": "No\nYes",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-02-26 14:54:52.716342",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Budget Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

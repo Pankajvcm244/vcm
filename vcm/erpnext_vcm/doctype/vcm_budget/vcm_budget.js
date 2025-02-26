@@ -8,22 +8,35 @@ frappe.ui.form.on('VCM Budget', {
         calculate_amended_amount(frm);
         calculate_used_amount(frm);
         calculate_balance_amount(frm);
+        calculate_Payment_Entry_amount(frm);
+        calculate_Purchase_Invoice_amount(frm);
+        calculate_Purchase_Order_amount(frm);
+        calculate_JE_amount(frm);
     },
     budget_items_add: function(frm, cdt, cdn) {
         calculate_total_amount(frm);
         calculate_amended_amount(frm);
         calculate_used_amount(frm);
         calculate_balance_amount(frm);
+        calculate_Payment_Entry_amount(frm);
+        calculate_Purchase_Invoice_amount(frm);
+        calculate_Purchase_Order_amount(frm);
+        calculate_JE_amount(frm);
     },
     budget_items_remove: function(frm, cdt, cdn) {
         calculate_total_amount(frm);
         calculate_amended_amount(frm);
         calculate_used_amount(frm);
         calculate_balance_amount(frm);
+        calculate_Payment_Entry_amount(frm);
+        calculate_Purchase_Invoice_amount(frm);
+        calculate_Purchase_Order_amount(frm);
+        calculate_JE_amount(frm);
     },
     before_save: function(frm) {
         console.log("Before Save: Child Table Data", frm.doc.budget_items);
         frm.doc.budget_items.forEach(row => {
+            row.current_budget = row.original_amount || 0.00;
             row.budget_head = row.budget_head || "Unknown";  // Default value
             row.current_budget = row.original_amount || 0.00;
             row.balance_budget = row.original_amount || 0.00;
@@ -107,4 +120,48 @@ function calculate_used_amount(frm) {
     });
     frm.set_value("total_used_amount", total);
     frm.refresh_field("total_used_amount");
+}
+
+function calculate_Payment_Entry_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.paid_payment_entry || 0;
+    });
+    frm.set_value("total_paid_payment_entry", total);
+    frm.refresh_field("total_paid_payment_entry");
+}
+
+function calculate_Purchase_Invoice_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.unpaid_purchase_invoice || 0;
+    });
+    frm.set_value("total_unpaid_purchase_invoice", total);
+    frm.refresh_field("total_unpaid_purchase_invoice");
+}
+
+function calculate_Purchase_Order_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.unpaid_purchase_order || 0;
+    });
+    frm.set_value("total_unpaid_purchase_order", total);
+    frm.refresh_field("total_unpaid_purchase_order");
+}
+
+function calculate_JE_amount(frm) {
+    let total = 0;
+    $.each(frm.doc.budget_items || [], function(i, row) {
+        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //We are doing this for origional amount as for budget creation based upon this value ALM will follow
+        total += row.additional_je || 0;
+    });
+    frm.set_value("total_additional_je", total);
+    frm.refresh_field("total_additional_je");
 }
