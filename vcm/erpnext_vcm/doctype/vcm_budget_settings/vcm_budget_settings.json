@@ -8,8 +8,10 @@
   "vcm_budget_settings_section",
   "po_budget_enabled",
   "pi_budget_enabled",
+  "payment_entry_budget_enabled",
   "expense_budget_enabled",
-  "jv_budget_enabled"
+  "jv_budget_enabled",
+  "financial_year"
  ],
  "fields": [
   {
@@ -52,12 +54,28 @@
    "label": "JV Budget Enabled",
    "options": "No\nYes",
    "reqd": 1
+  },
+  {
+   "default": "2025-2026",
+   "fieldname": "financial_year",
+   "fieldtype": "Select",
+   "label": "Financial Year",
+   "options": "2025-2026"
+  },
+  {
+   "default": "No",
+   "fieldname": "payment_entry_budget_enabled",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment Entry Budget Enabled",
+   "options": "No\nYes",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-26 14:54:52.716342",
+ "modified": "2025-02-28 15:29:48.428597",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Settings",

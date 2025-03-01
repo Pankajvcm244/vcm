@@ -30,12 +30,12 @@
    "label": "VCM Budget"
   },
   {
-   "default": "2024-2025",
+   "default": "2025-2026",
    "fieldname": "fiscal_year",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Fiscal Year",
-   "options": "2024-2025\n2025-2026",
+   "options": "2025-2026",
    "reqd": 1
   },
   {
@@ -141,7 +141,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-26 16:21:19.233053",
+ "modified": "2025-03-01 13:33:04.041354",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
@@ -152,6 +152,19 @@
    "delete": 1,
    "email": 1,
    "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
    "print": 1,
    "read": 1,
    "report": 1,

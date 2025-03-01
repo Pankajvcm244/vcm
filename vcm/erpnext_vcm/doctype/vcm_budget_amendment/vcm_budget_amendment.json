@@ -30,11 +30,11 @@
    "reqd": 1
   },
   {
-   "default": "2024-2025",
+   "default": "2025-2026",
    "fieldname": "fiscal_year",
    "fieldtype": "Select",
    "label": "Fiscal Year",
-   "options": "2024-2025\n2025-2026",
+   "options": "2025-2026",
    "reqd": 1
   },
   {
@@ -57,6 +57,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "total_proposed_amendment",
    "fieldtype": "Float",
    "label": "Total Proposed Amendment",
@@ -77,22 +78,12 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "VCM Budget Amendment",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-26 16:22:20.815833",
+ "modified": "2025-02-28 16:00:19.073153",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Amendment",
@@ -107,6 +98,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
    "share": 1,
    "write": 1
   }
