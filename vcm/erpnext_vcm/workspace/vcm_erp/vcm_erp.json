@@ -16,35 +16,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Other Reports",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "GST Sales Register Beta",
-   "link_count": 0,
-   "link_to": "GST Sales Register Beta",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "GST Itemised Purchase Register",
-   "link_count": 0,
-   "link_to": "GST Itemised Purchase Register",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Customer and Supplier Reports",
    "link_count": 3,
    "link_type": "DocType",
@@ -242,95 +213,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Stock Report",
-   "link_count": 8,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Total Stock Summary",
-   "link_count": 0,
-   "link_to": "Total Stock Summary",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Ledger Variance",
-   "link_count": 0,
-   "link_to": "Stock Ledger Variance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Ledger",
-   "link_count": 0,
-   "link_to": "Stock Ledger",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stock Balance",
-   "link_count": 0,
-   "link_to": "Stock Balance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Total Stock Summary - Gifts and Books",
-   "link_count": 0,
-   "link_to": "Total Stock Summary - Gifts and Books",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Billed Items To Be Received",
-   "link_count": 0,
-   "link_to": "Billed Items To Be Received",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Warehouse Wise Stock Balance",
-   "link_count": 0,
-   "link_to": "Warehouse Wise Stock Balance",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Warehouse Sales & Stock Analysis",
-   "link_count": 0,
-   "link_to": "Warehouse Sales & Stock Analysis",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Finance Reports",
    "link_count": 9,
    "link_type": "DocType",
@@ -496,9 +378,157 @@
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Report",
+   "link_count": 9,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Total Stock Summary",
+   "link_count": 0,
+   "link_to": "Total Stock Summary",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Ledger Variance",
+   "link_count": 0,
+   "link_to": "Stock Ledger Variance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Ledger",
+   "link_count": 0,
+   "link_to": "Stock Ledger",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock Balance",
+   "link_count": 0,
+   "link_to": "Stock Balance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Total Stock Summary - Gifts and Books",
+   "link_count": 0,
+   "link_to": "Total Stock Summary - Gifts and Books",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Billed Items To Be Received",
+   "link_count": 0,
+   "link_to": "Billed Items To Be Received",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Wise Stock Balance",
+   "link_count": 0,
+   "link_to": "Warehouse Wise Stock Balance",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse Sales & Stock Analysis",
+   "link_count": 0,
+   "link_to": "Warehouse Sales & Stock Analysis",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Warehouse wise Item Balance Age and Value",
+   "link_count": 0,
+   "link_to": "Warehouse wise Item Balance Age and Value",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Other Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "GST Itemised Purchase Register",
+   "link_count": 0,
+   "link_to": "GST Itemised Purchase Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "GST Sales Register",
+   "link_count": 0,
+   "link_to": "GST Sales Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "GST Purchase Register",
+   "link_count": 0,
+   "link_to": "GST Purchase Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "GST Itemised Sales Register",
+   "link_count": 0,
+   "link_to": "GST Itemised Sales Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
   }
  ],
- "modified": "2025-02-12 13:29:06.283476",
+ "modified": "2025-03-01 15:55:47.175923",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",
