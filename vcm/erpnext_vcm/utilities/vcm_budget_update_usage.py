@@ -28,15 +28,13 @@ def update_vcm_po_budget_usage(po_doc):
                 #logging.debug(f"update_vcm_po_budget_usage6, {budget_item.budget_head},{po_doc.rounded_total}")  
                            
                 break
-    if budget_updated_flag:
-        frappe.throw(f"Budget not found for Budget Head: {po_doc.budget_head}")
-        return False
+
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
-    #if not budget_updated_flag:
-    #    frappe.throw(f"Budget not found for Budget Head{po_doc.budget_head}")
-    #    return False
+    if budget_updated_flag:
+        frappe.throw(f"Budget not found for Budget Head: {po_doc.budget_head}")
+        return False
     return True
 
 @frappe.whitelist()
@@ -55,17 +53,14 @@ def revert_vcm_po_budget_usage(po_doc):
             budget_item.used_budget -= po_doc.rounded_total  # Revert Used Budget
             budget_item.balance_budget += po_doc.rounded_total  # Restore Balance
             budget_item.unpaid_purchase_order -= po_doc.rounded_total
-            #logging.debug(f"revert vcm_po_budget -1, {budget_item.budget_head},{po_doc.rounded_total}")
-            
+            #logging.debug(f"revert vcm_po_budget -1, {budget_item.budget_head},{po_doc.rounded_total}")            
             break
+
+    budget_doc.save(ignore_permissions=True)
+    frappe.db.commit()
     if budget_updated_flag:
         frappe.throw(f"Budget not found for Budget Head: {po_doc.budget_head}")
         return False
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()
-    #if not budget_updated_flag:
-    #    frappe.throw(f"Budget Head not found for {po_doc.budget_head}")
-    #    return False
     return True
 
 @frappe.whitelist()
@@ -106,7 +101,7 @@ def update_vcm_pi_budget_usage(pi_doc):
                     logging.debug(f"PI With PO , {pi_doc.budget_head},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                 else:
                     #reduce and check budget for PI without PO
-                    if (pi_doc.rounded_total - total_advance ) > budget_item.balance_budget:
+                    if (pi_doc.rounded_total - total_vcm_advance ) > budget_item.balance_budget:
                         frappe.throw(f"Budget exceeded for: {pi_doc.budget_head},Balance:{budget_item.balance_budget},Request:{pi_doc.rounded_total}, Adv: {total_vcm_advance}")
                         return False
                     else:
@@ -114,14 +109,13 @@ def update_vcm_pi_budget_usage(pi_doc):
                         budget_item.balance_budget -= (pi_doc.rounded_total -total_vcm_advance)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance)  # Adjust Remaining Budget
                         logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
-                         
                 break
-    if budget_updated_flag:
-        frappe.throw(f"Budget not found for Budget Head: {pi_doc.budget_head}")
-        return False
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
+    if budget_updated_flag:
+        frappe.throw(f"Budget not found for Budget Head: {pi_doc.budget_head}")
+        return False
     return True
 
 @frappe.whitelist()
@@ -165,12 +159,13 @@ def revert_vcm_pi_budget_usage(pi_doc):
                     budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance)  # Adjust Remaining Budget
                     logging.debug(f"Direct PI revert W/O PO , {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}")           
                 break
-    if budget_updated_flag:
-        frappe.throw(f"Budget not found for Budget Head: {pi_doc.budget_head}")
-        return False
+
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
+    if budget_updated_flag:
+        frappe.throw(f"Budget not found for Budget Head: {pi_doc.budget_head}")
+        return False
     return True
     
 def update_vcm_budget_on_payment_submit(pe_doc):
@@ -225,12 +220,12 @@ def update_vcm_budget_on_payment_submit(pe_doc):
                     budget_item.paid_payment_entry += total_vcm_paid_amount 
                     logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
                 break 
-    if budget_updated_flag:
-        frappe.throw(f"Budget not found for Budget Head:{pe_doc.budget_head} {budget_updated_flag},{budget_item.budget_head}")
-        return False
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
+    if budget_updated_flag:
+        frappe.throw(f"Budget not found for Budget Head:{pe_doc.budget_head} {budget_updated_flag},{budget_item.budget_head}")
+        return False
 
 def revert_vcm_budget_on_payment_submit(pe_doc):
     """Update budget used when a Payment Entry is submitted."""
@@ -281,12 +276,13 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
                 logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")  
                           
                 break 
-    if budget_updated_flag:
-        frappe.throw(f"Budget not found for Budget Head: {pe_doc.budget_head}")
-        return False
+
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
+    if budget_updated_flag:
+        frappe.throw(f"Budget not found for Budget Head: {pe_doc.budget_head}")
+        return False
 
 
 def update_vcm_budget_from_jv(jv_doc):    

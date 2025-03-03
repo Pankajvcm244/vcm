@@ -141,10 +141,10 @@ doctype_js = {
 override_doctype_class = {
     "POS Invoice": "vcm.erpnext_vcm.overrides.VCMPOSInv.VCMPOSInv",
     "Sales Invoice": "vcm.erpnext_vcm.overrides.VCMSalesInv.VCMSalesInv",
-    "Purchase Order": "vcm.erpnext_vcm.overrides.VCMPurchaseOrder.VCMPurchaseOrder",
-    "Purchase Invoice": "vcm.erpnext_vcm.overrides.VCMPurchaseInvoice.VCMPurchaseInvoice",
-    "Journal Entry": "vcm.erpnext_vcm.overrides.VCMJournalEntry.VCMJournalEntry",
-    "Payment Entry": "vcm.erpnext_vcm.overrides.VCMPaymentEntry.VCMPaymentEntry",
+    #"Purchase Order": "vcm.erpnext_vcm.overrides.VCMPurchaseOrder.VCMPurchaseOrder",
+    #"Purchase Invoice": "vcm.erpnext_vcm.overrides.VCMPurchaseInvoice.VCMPurchaseInvoice",
+    #"Journal Entry": "vcm.erpnext_vcm.overrides.VCMJournalEntry.VCMJournalEntry",
+    #"Payment Entry": "vcm.erpnext_vcm.overrides.VCMPaymentEntry.VCMPaymentEntry",
 }
 
 
@@ -155,21 +155,21 @@ from vcm.erpnext_vcm.overrides import VCMPOSInv
 from hkm.erpnext___custom.overrides import HKMSalesInvoice
 from vcm.erpnext_vcm.overrides import VCMSalesInv
 
-from hkm.erpnext___custom.overrides.purchase_order import HKMPurchaseOrder
-from vcm.erpnext_vcm.overrides import VCMPurchaseOrder
+#from hkm.erpnext___custom.overrides.purchase_order import HKMPurchaseOrder
+#from vcm.erpnext_vcm.overrides import VCMPurchaseOrder
 
-from hkm.erpnext___custom.overrides import HKMPurchaseInvoice
-from vcm.erpnext_vcm.overrides import VCMPurchaseInvoice
+#from hkm.erpnext___custom.overrides import HKMPurchaseInvoice
+#from vcm.erpnext_vcm.overrides import VCMPurchaseInvoice
 
-from hkm.erpnext___custom.overrides import HKMJournalEntry
-from vcm.erpnext_vcm.overrides import VCMJournalEntry
+#from hkm.erpnext___custom.overrides import HKMJournalEntry
+#from vcm.erpnext_vcm.overrides import VCMJournalEntry
 
 # Reassigning HKMPOS/SalesInvoice to use VCMPOSInv for unified behavior
 HKMPOSInvoice = VCMPOSInv
 HKMSalesInvoice = VCMSalesInv
-HKMPurchaseInvoice = VCMPurchaseInvoice
-HKMPurchaseOrder = VCMPurchaseOrder
-HKMJournalEntry = VCMJournalEntry
+#HKMPurchaseInvoice = VCMPurchaseInvoice
+#HKMPurchaseOrder = VCMPurchaseOrder
+#HKMJournalEntry = VCMJournalEntry
 
 # Document Events
 # ---------------
