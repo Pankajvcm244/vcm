@@ -42,7 +42,8 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         self.name = prefix + getseries(prefix, 5)
 
     
-    def before_submit(self):        
+    def before_submit(self):
+        super().before_submit()       
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
@@ -50,12 +51,14 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             update_vcm_pi_budget_usage(self)
 
     def on_submit(self):
+        super().on_submit()
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         #if vcm_budget_settings.pi_budget_enabled == "Yes":
         #    create_vcm_transaction_log(self, "PI Submitted")
 
     def on_cancel(self):
+        super().on_cancel()
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":

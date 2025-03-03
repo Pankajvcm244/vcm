@@ -81,13 +81,13 @@ def update_vcm_pi_budget_usage(pi_doc):
         frappe.throw(f"No budget found for Cost Center: {pi_doc.cost_center}")
         return False
     budget_updated_flag = True
+
     total_vcm_advance = 0.0  # Initialize advance amount
-    if pi_doc.allocate_advances_automatically:        
-        # Check if advances exist
-        if pi_doc.advances:
-            for advance in pi_doc.advances:
-                total_vcm_advance += flt(advance.allocated_amount)  # Sum allocated advances
-        logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
+    # Check if advances exist
+    if pi_doc.advances:
+        for advance in pi_doc.advances:
+            total_vcm_advance += flt(advance.allocated_amount)  # Sum allocated advances
+    logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
 
     for budget_item in budget_doc.get("budget_items") or []:
             if budget_item.budget_head == pi_doc.budget_head:
@@ -96,8 +96,8 @@ def update_vcm_pi_budget_usage(pi_doc):
                 
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
                 if PI_FLAG_WITH_PO:  
-                    budget_item.unpaid_purchase_order -= pi_doc.rounded_total
-                    budget_item.unpaid_purchase_invoice += pi_doc.rounded_total  #Increase PI amount
+                    budget_item.unpaid_purchase_order -= (pi_doc.rounded_total - total_vcm_advance)
+                    budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance)  #Increase PI amount
                     logging.debug(f"PI With PO , {pi_doc.budget_head},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                 else:
                     #reduce and check budget for PI without PO
@@ -106,7 +106,7 @@ def update_vcm_pi_budget_usage(pi_doc):
                         return False
                     else:
                         budget_item.used_budget += (pi_doc.rounded_total - total_vcm_advance)  # Update Used Budget
-                        budget_item.balance_budget -= (pi_doc.rounded_total -total_vcm_advance)  # Adjust Remaining Budget
+                        budget_item.balance_budget -= (pi_doc.rounded_total - total_vcm_advance)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance)  # Adjust Remaining Budget
                         logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
                 break
@@ -135,13 +135,12 @@ def revert_vcm_pi_budget_usage(pi_doc):
         frappe.throw(f"No budget found for Cost Center: {pi_doc.cost_center}")
         return False
     budget_updated_flag = True
-    total_vcm_advance = 0.0  # Initialize advance amount
-    if pi_doc.allocate_advances_automatically:        
-        # Check if advances exist
-        if pi_doc.advances:
-            for advance in pi_doc.advances:
-                total_advance += flt(advance.allocated_amount)  # Sum allocated advances
-        logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
+    total_vcm_advance = 0.0  # Initialize advance amount     
+    # Check if advances exist
+    if pi_doc.advances:
+        for advance in pi_doc.advances:
+            total_advance += flt(advance.allocated_amount)  # Sum allocated advances
+    logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
   
     for budget_item in budget_doc.get("budget_items") or []:
             logging.debug(f"in update_vcm_pi_budget_usage 2 {pi_doc.budget_head}")
@@ -149,8 +148,8 @@ def revert_vcm_pi_budget_usage(pi_doc):
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
                 if PI_FLAG_WITH_PO:  
-                    budget_item.unpaid_purchase_order += pi_doc.rounded_total
-                    budget_item.unpaid_purchase_invoice -= pi_doc.rounded_total  
+                    budget_item.unpaid_purchase_order += (pi_doc.rounded_total - total_vcm_advance)
+                    budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance)  
                     logging.debug(f"PI With PO revert , {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                 else:
                     #reduce and check budget for PI without PO

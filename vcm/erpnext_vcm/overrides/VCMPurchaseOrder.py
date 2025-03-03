@@ -68,6 +68,7 @@ class VCMPurchaseOrder(PurchaseOrder):
         return
     
     def before_submit(self):
+        #super().before_submit() Nothing before submit in PO
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
@@ -75,19 +76,25 @@ class VCMPurchaseOrder(PurchaseOrder):
             update_vcm_po_budget_usage(self)
 
     def on_submit(self):
+        super().on_submit() 
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             create_vcm_transaction_log(self, "PO Submitted") 
 
     def on_cancel(self):
+        super().on_cancel() 
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             logging.debug(f"HKM PO Submit-2 calling revert budget")
             revert_vcm_po_budget_usage(self)
             delete_vcm_transaction_log(self,"PO Cancelled")
-
+    
+    def before_insert(self):
+        # super().before_insert() #Since there is no before_insert in parent
+        self.set_naming_series()
+        self.validate_work_request_status()
 
     def update_extra_description_from_mrn(self):
         descriptions = []
@@ -117,10 +124,7 @@ class VCMPurchaseOrder(PurchaseOrder):
                 )
         return
 
-    def before_insert(self):
-        # super().before_insert() #Since there is no before_insert in parent
-        self.set_naming_series()
-        self.validate_work_request_status()
+
 
     def set_naming_series(self):
         if self.meta.get_field("for_a_work_order") and self.for_a_work_order:

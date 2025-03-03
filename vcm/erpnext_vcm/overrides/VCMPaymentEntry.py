@@ -13,9 +13,9 @@ from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     delete_vcm_transaction_log,
 )
 
-
 class VCMPaymentEntry(PaymentEntry):    
-    def before_submit(self):     
+    def before_submit(self):
+        #super().before_submit()  # there is no before Submit in super   
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PE Submit-1 {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
@@ -23,6 +23,7 @@ class VCMPaymentEntry(PaymentEntry):
             update_vcm_budget_on_payment_submit(self)
     
     def on_submit(self):
+        super().on_submit() 
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
