@@ -25,6 +25,11 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     revert_vcm_po_budget_usage,
 )
 
+from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+    create_vcm_transaction_log,
+    delete_vcm_transaction_log,
+)
+
 # from hkm.erpnext___custom.po_approval.po_workflow_trigger import check_alm
 
 
@@ -69,12 +74,19 @@ class VCMPurchaseOrder(PurchaseOrder):
             logging.debug(f"HKM PO Submit-2 calling update budget")
             update_vcm_po_budget_usage(self)
 
+    def on_submit(self):
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
+        if vcm_budget_settings.po_budget_enabled == "Yes":
+            create_vcm_transaction_log(self, "PO Submitted") 
+
     def on_cancel(self):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             logging.debug(f"HKM PO Submit-2 calling revert budget")
             revert_vcm_po_budget_usage(self)
+            delete_vcm_transaction_log(self,"PO Cancelled")
 
 
     def update_extra_description_from_mrn(self):

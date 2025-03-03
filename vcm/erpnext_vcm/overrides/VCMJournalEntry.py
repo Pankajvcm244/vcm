@@ -17,6 +17,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_from_jv,
     reverse_vcm_budget_from_jv,
 )
+from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+    create_vcm_transaction_log,
+    delete_vcm_transaction_log,
+)
 
 from hkm.erpnext___custom.extend.accounts_controller import validate_gst_entry
 
@@ -33,6 +37,11 @@ class VCMJournalEntry(JournalEntry):
         self.validate_gst_entry()
         self.reconcile_bank_transaction_for_entries_from_statement()
         super(VCMJournalEntry, self).on_submit()
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.jv_budget_enabled}")
+        if vcm_budget_settings.jv_budget_enabled == "Yes":
+            create_vcm_transaction_log(self, "JV Submitted")
+
 
     def before_submit(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -48,6 +57,7 @@ class VCMJournalEntry(JournalEntry):
         if vcm_budget_settings.jv_budget_enabled == "Yes":
             logging.debug(f"VCM JV Submit-2 calling revert budget")
             reverse_vcm_budget_from_jv(self)
+            delete_vcm_transaction_log(self,"JV Cancelled")
 
     def validate_gst_entry(self):
         validate_gst_entry(self)

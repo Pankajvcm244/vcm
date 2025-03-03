@@ -16,6 +16,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_pi_budget_usage,
     revert_vcm_pi_budget_usage,
 )
+from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+    create_vcm_transaction_log,
+    delete_vcm_transaction_log,
+)
 
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 import frappe
@@ -44,13 +48,20 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         if vcm_budget_settings.pi_budget_enabled == "Yes":
             logging.debug(f"VCM PI Submit-2 calling  budget")
             update_vcm_pi_budget_usage(self)
-    
+
+    def on_submit(self):
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.pi_budget_enabled}")
+        if vcm_budget_settings.pi_budget_enabled == "Yes":
+            create_vcm_transaction_log(self, "PI Submitted")
+
     def on_cancel(self):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
             logging.debug(f"VCM PI Submit-2 calling revert budget")
             revert_vcm_pi_budget_usage(self)
+            delete_vcm_transaction_log(self,"PI Cancelled")
 
     def validate(self):
         super().validate()
