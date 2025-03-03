@@ -26,7 +26,6 @@
    "in_list_view": 1,
    "label": "Budget Head",
    "options": "Budget Head",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -62,9 +61,11 @@
    "read_only": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "default": "0.00",
    "fieldname": "proposed_amendment",
    "fieldtype": "Float",
+   "in_standard_filter": 1,
    "label": "Proposed Amendment",
    "options": "Employee",
    "reqd": 1
@@ -119,7 +120,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-02-27 14:48:30.307463",
+ "modified": "2025-03-03 12:46:47.560028",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Amendment Child Table",

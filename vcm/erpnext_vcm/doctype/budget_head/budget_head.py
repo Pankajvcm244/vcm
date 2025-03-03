@@ -6,4 +6,5 @@ from frappe.model.document import Document
 
 
 class BudgetHead(Document):
-	pass
+	def autoname(self):
+		self.name = f"{self.budget_head_name}"

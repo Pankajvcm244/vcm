@@ -2,16 +2,26 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe.model.naming import getseries
 from frappe.model.document import Document
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-class VCMBudgetAmendment(Document):		
+class VCMBudgetAmendment(Document):	
+	def autoname(self):
+		prefix = f"{self.fiscal_year}-BUDGET-AMEND-{self.cost_center}-"         
+		self.name = prefix + getseries(prefix, 4)
+
+
 	def on_submit(self):  
 		logging.debug(f"in VCMBudgetAmendment on_submit  {self}  ")
         # Ensure the Budget Amendment is linked to a valid Budget document
-		budget_exists = frappe.db.exists("VCM Budget", {"company": self.company, "fiscal_year": self.fiscal_year, "cost_center": self.cost_center})
+		budget_exists = frappe.db.exists("VCM Budget", {
+				"company": self.company, 
+				"fiscal_year": self.fiscal_year,
+					"cost_center": self.cost_center
+					})
 		if not budget_exists:
 			frappe.throw("Budget does not exist for {self.fiscal_year}-BUDGET-{self.cost_center} .")
 
@@ -27,9 +37,9 @@ class VCMBudgetAmendment(Document):
 		
 			# Attempt to locate the corresponding child record in the Budget doc
 			for budget_item in budget_doc.get("budget_items") or []:
-				#logging.debug(f"Budget Amend-3  {budget_item}, {budget_item.budget_head}, {amend_item.budget_head} ")
+				logging.debug(f"Budget Amend-3  {budget_item}, {budget_item.budget_head}, {amend_item.budget_head} ")
                 # Use a unique identifier for matching (e.g., budget_head)
-				if budget_item.budget_head == amend_item.budget_head:
+				if (budget_item.budget_head == amend_item.budget_head) and (amend_item.proposed_amendment != 0):
 					#logging.debug(f"Budget Amend-1 {amend_item.proposed_amendment}")
                     # Update desired fields. For example:
 					budget_item.current_budget += amend_item.proposed_amendment
@@ -41,14 +51,24 @@ class VCMBudgetAmendment(Document):
 					amend_item.balance_budget = budget_item.balance_budget
 					budget_item.db_update() # Save individual Budget child row to DB
 					amend_item.db_update() # Save amendment child table also
-					#logging.debug(f"in Budget Amend-1 {budget_item.current_budget},{budget_item.amended_till_now},{budget_item.balance_budget}")
-					#logging.debug(f" Budget Amend-1-1 {amend_item.current_budget},{amend_item.amended_till_now},{amend_item.balance_budget}")			
+					logging.debug(f" Budget Amend-1-1 {budget_item.current_budget},{amend_item.proposed_amendment},{budget_item.balance_budget}")			
 					updated = True
 					break   
 
             # Optional: notify if a matching Budget Item was not found
 			if not updated:
-				frappe.msgprint(f"No matching Budget Item found for {amend_item.budget_head}")
+				#existing_heads = {item.budget_head for item in budget_doc.get("budget_items") or []}
+				#if amend_item.budget_head not in existing_heads:
+				#	logging.debug(f" Budget Amend-4 {existing_heads},{amend_item.budget_head}") 
+				#	budget_doc.append("budget_items", {
+				#		"budget_head": amend_item.budget_head,
+				#		"current_budget": amend_item.proposed_amendment,
+				#		"amended_till_now": amend_item.proposed_amendment,
+				#		"balance_budget": amend_item.proposed_amendment,  # Assuming no used_budget yet
+				#		"proposed_by": self.proposed_by
+				#	})
+
+				frappe.msgprint(f"New Budget Head added: {amend_item.budget_head}, {amend_item.proposed_amendment}")
 
         # Save the updated Budget document so the changes persist
 		try:
