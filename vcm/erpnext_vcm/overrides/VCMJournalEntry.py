@@ -33,11 +33,10 @@ class VCMJournalEntry(JournalEntry):
         prefix = f"{company_abbr}-JV-{year}{month}-"
         self.name = prefix + getseries(prefix, 5)
 
-    def on_submit(self):
-        super().on_submit()  
+    def on_submit(self):         
         self.validate_gst_entry()
         self.reconcile_bank_transaction_for_entries_from_statement()
-        super(VCMJournalEntry, self).on_submit()
+        super(VCMJournalEntry, self).on_submit() 
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
