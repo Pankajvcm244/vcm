@@ -290,7 +290,7 @@ def update_vcm_budget_from_jv(jv_doc):
     """
     #child table of JV, as Cost center is not in JV form, we need to pull from child table
     for account in jv_doc.accounts:  
-        logging.debug(f"update_vcm_JV 2 {account.budget_head},{account.cost_center},{account.debit}")
+        logging.debug(f"update_vcm_JV 2 {account.cost_center},{account.debit}")
         if account.cost_center and account.debit > 0:  # Consider only debit entries for expenses
             vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
             budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
@@ -299,7 +299,7 @@ def update_vcm_budget_from_jv(jv_doc):
             if not budget_doc:
                 frappe.throw(f"No budget found for JV Cost Center: {account.cost_center}")                
             for budget_item in budget_doc.get("budget_items") or []: 
-                logging.debug(f"update_vcm_JV 3 {budget_item.budget_head}, {account.budget_head},{budget_item.balance_budget}") 
+                logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
                 if budget_item.budget_head == account.budget_head:
                     if account.debit > budget_item.balance_budget:
                         frappe.throw(f"Budget Exceeded for JV {jv_doc.name}, Balance: {budget_item.balance_budget}, Request: {account.debit}")

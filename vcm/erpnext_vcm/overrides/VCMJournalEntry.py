@@ -18,7 +18,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     reverse_vcm_budget_from_jv,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-    create_vcm_transaction_log,
+    create_vcm_jv_transaction_log,
     delete_vcm_transaction_log,
 )
 
@@ -41,11 +41,11 @@ class VCMJournalEntry(JournalEntry):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            create_vcm_transaction_log(self, "JV Submitted")
+            create_vcm_jv_transaction_log(self, "JV Submitted")
 
 
     def before_submit(self):  
-        super().before_submit()      
+        #super().before_submit()     # no before_submit in Journal Entry 
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"HKM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
