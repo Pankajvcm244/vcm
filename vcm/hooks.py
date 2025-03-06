@@ -319,28 +319,24 @@ fixtures = [
         "doctype": "Workflow State",
     },
     {
-        "dt": "Custom Field",
+        "doctype": "Custom Field",
         "filters": [
-            [
-                "dt",
-                "in",
-                [
-                    "Store Requisition",
-                    "Material Request",
-                    "Purchase Order",
-                    "Purchase Receipt",
-                    #"Purchase Invoice",
-                    "VCM Gate-In",
-                    # "Sales Invoice",
-                    # "Stock Entry",
-                    # "Payment Entry",
-                    # "Journal Entry",
-                    # "Customer",
-                    # "Asset",
-                    #"Supplier"
-                ],
-            ],
-    ],
+            [ "dt", "in", [
+                "Store Requisition",
+                "Material Request",
+                "Purchase Order",
+                "Purchase Receipt",
+                "Purchase Invoice",
+                "VCM Gate-In",
+                # "Sales Invoice",
+                # "Stock Entry",
+                "Payment Entry",
+                "Journal Entry",
+                # "Customer",
+                # "Asset",
+                #"Supplier"
+            ],],
+        ],
     },
     {
         "doctype": "Role",

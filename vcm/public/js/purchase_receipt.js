@@ -24,36 +24,36 @@ frappe.ui.form.on('Purchase Receipt', {
         );        
     },
     on_submit: function(frm) {
-        if (frm.doc.gate_in_reference) {  // Assuming there's a link field in Purchase Receipt pointing to Gate In
+        if (frm.doc.custom_gate_in_reference) {  // Assuming there's a link field in Purchase Receipt pointing to Gate In
             frappe.call({
                 method: 'frappe.client.set_value',
                 args: {
                     doctype: 'VCM Gate-In',
-                    name: frm.doc.gate_in_reference, // The linked Gate In document
+                    name: frm.doc.custom_gate_in_reference, // The linked Gate In document
                     fieldname: 'status',
                     value: 'Received'
                 }
             });
         }
     },
-    gate_in_reference: function(frm) {
-        if (!frm.doc.gate_in_reference) return;
+    custom_gate_in_reference: function(frm) {
+        if (!frm.doc.custom_gate_in_reference) return;
 
         // Fetch all items from the selected Purchase Order
         frappe.call({
             method: "frappe.client.get",
             args: {
                 doctype: "VCM Gate-In",
-                name: frm.doc.gate_in_reference
+                name: frm.doc.custom_gate_in_reference
             },
             callback: function(r) {
                 if (r.message) {
                     let gatein_data = r.message;
                     // Fetch and set the Purchase Person
-                    if (gatein_data.purchase_person) {
-                        frm.set_value("purchase_person", gatein_data.purchase_person);
+                    if (gatein_data.custom_purchase_person) {
+                        frm.set_value("custom_purchase_person", gatein_data.custom_purchase_person);
                     } else {
-                        frm.set_value("purchase_person", "Not Available");
+                        frm.set_value("custom_purchase_person", "Not Available");
                     }                    
                 }
             }
@@ -62,7 +62,7 @@ frappe.ui.form.on('Purchase Receipt', {
 
     refresh(frm) {
         //Show only Gate-In whose status is Pending
-        frm.fields_dict['gate_in_reference'].get_query = function(doc) {
+        frm.fields_dict['custom_gate_in_reference'].get_query = function(doc) {
             return {
                 filters: {
                     status: 'Pending'  // Only show Gate In records where status is 'Pending'
