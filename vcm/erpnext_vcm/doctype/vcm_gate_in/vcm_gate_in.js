@@ -74,6 +74,12 @@ frappe.ui.form.on("VCM Gate-In", {
             callback: function(r) {
                 if (r.message) {
                     let po_data = r.message;
+                    // Fetch and set the Purchase Person
+                    if (po_data.purchase_person) {
+                        frm.set_value("purchase_person", po_data.purchase_person);
+                    } else {
+                        frm.set_value("purchase_person", "Not Available");
+                    }
                     frm.clear_table("items"); // Clear existing items before adding new ones
 
                     po_data.items.forEach(item => {
@@ -90,6 +96,16 @@ frappe.ui.form.on("VCM Gate-In", {
                     frm.refresh_field("items"); // Refresh the table to show new items
                 }
             }
+        });
+    },
+    onload: function(frm) {
+        frm.set_query("purchase_person", function() {
+            return {
+                query: "vcm.erpnext_vcm.utilities.fetch_user_data.vcm_get_users_with_role",
+                filters: {
+                    role: "Purchase User"
+                }
+            };
         });
     },
     validate: function(frm) {

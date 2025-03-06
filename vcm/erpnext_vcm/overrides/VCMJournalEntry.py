@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_from_jv,
     reverse_vcm_budget_from_jv,
+    validate_vcm_budget_from_jv,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     create_vcm_jv_transaction_log,
@@ -35,30 +36,29 @@ class VCMJournalEntry(JournalEntry):
 
     def on_submit(self):         
         self.validate_gst_entry()
-        self.reconcile_bank_transaction_for_entries_from_statement()
-        super(VCMJournalEntry, self).on_submit() 
+        self.reconcile_bank_transaction_for_entries_from_statement()        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.jv_budget_enabled}")
+        #logging.debug(f"VCM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
+            update_vcm_budget_from_jv(self) 
             create_vcm_jv_transaction_log(self, "JV Submitted")
+        super(VCMJournalEntry, self).on_submit()
+   
 
-
-    def before_submit(self):  
-        #super().before_submit()     # no before_submit in Journal Entry 
+    def on_cancel(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
+        #logging.debug(f"HKM JV on cancel Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            logging.debug(f"VCM JV Submit-2 calling budget")
-            update_vcm_budget_from_jv(self)
-
-    def on_cancel(self):
-        super(VCMJournalEntry, self).on_cancel()
-        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM JV on cancel Submit-1 {vcm_budget_settings.jv_budget_enabled}")
-        if vcm_budget_settings.jv_budget_enabled == "Yes":
-            logging.debug(f"VCM JV Submit-2 calling revert budget")
-            reverse_vcm_budget_from_jv(self)
+            #logging.debug(f"VCM JV on_cancel budget")
+            reverse_vcm_budget_from_jv(self) 
             delete_vcm_transaction_log(self,"JV Cancelled")
+        super(VCMJournalEntry, self).on_cancel()
+
+    def validate(self):
+        super().validate()  
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        if vcm_budget_settings.jv_budget_enabled == "Yes":
+            validate_vcm_budget_from_jv(self)
 
     def validate_gst_entry(self):
         validate_gst_entry(self)

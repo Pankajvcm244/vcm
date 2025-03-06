@@ -1,8 +1,8 @@
 # Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 # For license information, please see license.txt
 
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 from datetime import date
 from hkm.erpnext___custom.overrides.purchase_order.whatsapp import (
@@ -53,7 +53,7 @@ def get_vcm_storereq_approval_level(doc):
 def assign_and_notify_next_authority(doc, method="Email"):
     user = None
     current_state = doc.workflow_state
-    #logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
+    logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
     states = ("Pending", "L1 Approved", "L2 Approved")
     approvers = (
         "l1_approver",
@@ -62,7 +62,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
     )
     if current_state in states:
         for i, state in enumerate(states):
-            #logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
+            logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
             if current_state == state:
                 for approver in approvers[i : len(approvers)]:
                     if (
@@ -124,13 +124,7 @@ def check_approver_assigned(doc):
     user = None
     proposed_state = doc.workflow_state    
 
-    #System Manager can approve any request
-    user = frappe.session.user  # Get current logged-in user
-    roles = frappe.get_roles(user)  # Get user roles
-    # Check if System Manager is in the user's roles
-    #logging.debug(f"in VCMStoreRequisition check_approver_assigned  {user}, {proposed_state} ")
-    if "System Manager" in roles:
-        return True
+    
     # when we reach here workflow state is already set to next proposed state
     # we are not check reject request as it can happen at any stage and we need to check doc is at what state to decide rejecter
     if (proposed_state == "L1 Approved"):

@@ -9,7 +9,7 @@
   "po_budget_enabled",
   "pi_budget_enabled",
   "payment_entry_budget_enabled",
-  "expense_budget_enabled",
+  "payment_reconciliation",
   "jv_budget_enabled",
   "financial_year"
  ],
@@ -39,15 +39,6 @@
   },
   {
    "default": "No",
-   "fieldname": "expense_budget_enabled",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Expense Budget Enabled",
-   "options": "No\nYes",
-   "reqd": 1
-  },
-  {
-   "default": "No",
    "fieldname": "jv_budget_enabled",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -70,12 +61,21 @@
    "label": "Payment Entry Budget Enabled",
    "options": "No\nYes",
    "reqd": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "payment_reconciliation",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment Reconciliation",
+   "options": "No\nYes",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-28 15:29:48.428597",
+ "modified": "2025-03-06 16:04:24.417146",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Settings",

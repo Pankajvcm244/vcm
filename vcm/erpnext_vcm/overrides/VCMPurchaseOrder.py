@@ -23,6 +23,7 @@ from frappe.workflow.doctype.workflow_action.workflow_action import (
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_po_budget_usage,
     revert_vcm_po_budget_usage,
+    validate_vcm_po_budget_amount_budgethead,
 )
 
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
@@ -65,31 +66,29 @@ class VCMPurchaseOrder(PurchaseOrder):
         validate_one_time_vendor(self)
         self.validate_mrn_availble()
         validate_buying_dates(self)
-        return
-    
-    def before_submit(self):
-        #super().before_submit() Nothing before submit in PO
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            logging.debug(f"HKM PO Submit-2 calling update budget")
-            update_vcm_po_budget_usage(self)
+            validate_vcm_po_budget_amount_budgethead(self)
+            #logging.debug(f"in PO Validate 3 {self.workflow_state}")
+        return        
 
-    def on_submit(self):
+    def on_submit(self):         
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        #logging.debug(f"VCM PO on_Submit-1 {vcm_budget_settings.po_budget_enabled}")
+        if vcm_budget_settings.po_budget_enabled == "Yes":
+            update_vcm_po_budget_usage(self)             
+            create_vcm_transaction_log(self, "PO Submitted")
+            #logging.debug(f"VCM PO on_Submit-2 created log")
         super().on_submit() 
-        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
-        if vcm_budget_settings.po_budget_enabled == "Yes":
-            create_vcm_transaction_log(self, "PO Submitted") 
 
-    def on_cancel(self):
-        super().on_cancel() 
+    def on_cancel(self):         
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.po_budget_enabled}")
+        logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             logging.debug(f"HKM PO Submit-2 calling revert budget")
-            revert_vcm_po_budget_usage(self)
+            revert_vcm_po_budget_usage(self) 
             delete_vcm_transaction_log(self,"PO Cancelled")
+        super().on_cancel()
     
     def before_insert(self):
         # super().before_insert() #Since there is no before_insert in parent

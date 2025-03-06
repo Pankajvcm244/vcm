@@ -52,6 +52,10 @@ doctype_js = {
     "Purchase Receipt": "public/js/purchase_receipt.js",
     "Sales Invoice": "public/js/sales_invoice.js",
     "Material Request": "public/js/material_request.js",
+    "Purchase Order": "public/js/purchase_order.js",
+    "Purchase Invoice": "public/js/purchase_invoice.js",
+    "Payment Entry": "public/js/payment_entry.js",
+
 }
 
 # Svg Icons

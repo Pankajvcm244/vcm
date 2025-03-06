@@ -10,7 +10,7 @@ from datetime import datetime
 class VCMGateIn(Document):
     def autoname(self):
         date_prefix = datetime.today().strftime("%y%m")  # Get YYMM format
-        self.name = make_autoname(f"Gate-in-{date_prefix}-####")
+        self.name = make_autoname(f"Gate-in-{date_prefix}-.####")
 
 
 @frappe.whitelist()

@@ -15,6 +15,7 @@ from hkm.erpnext___custom.overrides.buying_validations import (
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_pi_budget_usage,
     revert_vcm_pi_budget_usage,
+    validate_vcm_pi_budget_amount,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     create_vcm_transaction_log,
@@ -41,30 +42,21 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             prefix = "D-" + prefix
         self.name = prefix + getseries(prefix, 5)
 
-    
-    def before_submit(self):
-        super().before_submit()       
+    def on_submit(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
+        #logging.debug(f"VCM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
-            logging.debug(f"VCM PI Submit-2 calling  budget")
-            update_vcm_pi_budget_usage(self)
-
-    def on_submit(self):
+            update_vcm_pi_budget_usage(self) 
+            create_vcm_transaction_log(self, "PI Submitted")                
         super().on_submit()
-        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PO Submit-1 {vcm_budget_settings.pi_budget_enabled}")
-        #if vcm_budget_settings.pi_budget_enabled == "Yes":
-        #    create_vcm_transaction_log(self, "PI Submitted")
 
-    def on_cancel(self):
-        super().on_cancel()
+    def on_cancel(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
+        #logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
-            logging.debug(f"VCM PI Submit-2 calling revert budget")
-            revert_vcm_pi_budget_usage(self)
-            #delete_vcm_transaction_log(self,"PI Cancelled")
+            revert_vcm_pi_budget_usage(self) 
+            delete_vcm_transaction_log(self,"PI Cancelled")
+        super().on_cancel()
 
     def validate(self):
         super().validate()
@@ -72,6 +64,10 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         self.validate_expense_account()
         validate_one_time_vendor(self)
         validate_buying_dates(self)
+        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+        if vcm_budget_settings.pi_budget_enabled == "Yes":
+            validate_vcm_pi_budget_amount(self)
+            #logging.debug(f"in PI Validate 3 {self.workflow_state}")
         return
 
     def validate_expense_account(self):
