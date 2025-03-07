@@ -306,10 +306,12 @@ from vcm.erpnext_vcm.overrides import VCMJournalEntry
 
 # Fixtures to add workflow in VCM Item Request
 fixtures = [
-     {
+    {
         "doctype": "Report",
     },
-
+    {
+        "doctype": "Custom DocPerm",
+    },
     {
         "doctype": "POS Profile",
     },
@@ -318,10 +320,6 @@ fixtures = [
     },
         {
         "doctype": "Workflow State",
-    },
-    
-        {
-        "doctype": "Cost Center",
     },
     {
         "doctype": "Custom Field",
@@ -333,7 +331,6 @@ fixtures = [
                 "Purchase Receipt",
                 "Purchase Invoice",
                 "VCM Gate-In",
-                "Cost Center",
                 # "Sales Invoice",
                 # "Stock Entry",
                 "Payment Entry",
