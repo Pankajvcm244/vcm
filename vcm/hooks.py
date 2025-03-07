@@ -309,6 +309,7 @@ fixtures = [
      {
         "doctype": "Report",
     },
+
     {
         "doctype": "POS Profile",
     },
@@ -317,6 +318,10 @@ fixtures = [
     },
         {
         "doctype": "Workflow State",
+    },
+    
+        {
+        "doctype": "Cost Center",
     },
     {
         "doctype": "Custom Field",
@@ -328,7 +333,7 @@ fixtures = [
                 "Purchase Receipt",
                 "Purchase Invoice",
                 "VCM Gate-In",
-                "Cost Center"
+                "Cost Center",
                 # "Sales Invoice",
                 # "Stock Entry",
                 "Payment Entry",
