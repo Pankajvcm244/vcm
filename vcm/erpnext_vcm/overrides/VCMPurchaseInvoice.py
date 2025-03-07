@@ -16,6 +16,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_pi_budget_usage,
     revert_vcm_pi_budget_usage,
     validate_vcm_pi_budget_amount,
+    validate_budget_head_mandatory,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     create_vcm_transaction_log,
@@ -67,6 +68,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
             validate_vcm_pi_budget_amount(self)
+            validate_budget_head_mandatory(self)
             #logging.debug(f"in PI Validate 3 {self.workflow_state}")
         return
 

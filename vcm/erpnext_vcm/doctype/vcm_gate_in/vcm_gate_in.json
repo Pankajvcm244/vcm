@@ -6,15 +6,16 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "cost_head",
+  "cost_center",
+  "budget_head",
   "supplier",
   "status",
   "column_break_zooz",
   "purchase_order",
   "purchase_person",
   "bill_number",
-  "challan_number",
   "bill_date",
+  "comments",
   "section_break_tojo",
   "items"
  ],
@@ -28,17 +29,11 @@
    "reqd": 1
   },
   {
-   "fieldname": "cost_head",
-   "fieldtype": "Link",
-   "label": "Cost Head",
-   "options": "Budget Head",
-   "reqd": 1
-  },
-  {
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "options": "Supplier"
+   "options": "Supplier",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_zooz",
@@ -54,12 +49,8 @@
   {
    "fieldname": "bill_number",
    "fieldtype": "Data",
-   "label": "Bill Number"
-  },
-  {
-   "fieldname": "challan_number",
-   "fieldtype": "Data",
-   "label": "Challan Number"
+   "label": "Bill Number\\Challan Number",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_tojo",
@@ -74,7 +65,8 @@
   {
    "fieldname": "bill_date",
    "fieldtype": "Date",
-   "label": "Bill Date"
+   "label": "Bill Date \\Challan Date",
+   "reqd": 1
   },
   {
    "default": "Pending",
@@ -88,12 +80,32 @@
    "fieldname": "purchase_person",
    "fieldtype": "Link",
    "label": "Purchase Person",
-   "options": "User"
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "budget_head",
+   "fieldtype": "Link",
+   "label": "Budget Head",
+   "options": "Budget Head",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-05 17:10:52.073911",
+ "modified": "2025-03-07 11:26:11.785686",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",

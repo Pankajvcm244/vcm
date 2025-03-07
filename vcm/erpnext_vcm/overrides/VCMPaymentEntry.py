@@ -8,6 +8,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_on_payment_submit,
     revert_vcm_budget_on_payment_submit,
     validate_vcm_budget_on_payment_entry,
+    validate_budget_head_mandatory,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     create_vcm_pe_transaction_log,
@@ -36,5 +37,6 @@ class VCMPaymentEntry(PaymentEntry):
         super().validate()
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
+            validate_budget_head_mandatory(self)
             validate_vcm_budget_on_payment_entry(self)
         return

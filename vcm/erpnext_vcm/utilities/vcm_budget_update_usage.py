@@ -235,7 +235,7 @@ def revert_vcm_pi_budget_usage(pi_doc):
     frappe.db.commit()
     return True
 
-
+@frappe.whitelist()
 def validate_vcm_budget_on_payment_entry(pe_doc):
     """Update budget used when a Payment Entry is submitted."""
     # Ensure this is a Payment Entry affecting budget (Outgoing Payment)
@@ -291,7 +291,7 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
         return False
     return True
 
-    
+@frappe.whitelist()    
 def update_vcm_budget_on_payment_submit(pe_doc):
     """Update budget used when a Payment Entry is submitted."""
     # Ensure this is a Payment Entry affecting budget (Outgoing Payment)
@@ -345,6 +345,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     frappe.db.commit()
     return True
 
+@frappe.whitelist()
 def revert_vcm_budget_on_payment_submit(pe_doc):
     """Update budget used when a Payment Entry is submitted."""
     # Ensure this is a Payment Entry affecting budget (Outgoing Payment)
@@ -399,7 +400,7 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
     frappe.db.commit()
     return True
 
-
+@frappe.whitelist()
 def validate_vcm_budget_from_jv(jv_doc):    
     """
     Update Budget Used when a Journal Entry (JV) is submitted.
@@ -435,6 +436,7 @@ def validate_vcm_budget_from_jv(jv_doc):
                 return False
     return True
 
+@frappe.whitelist()
 def update_vcm_budget_from_jv(jv_doc):    
     """
     Update Budget Used when a Journal Entry (JV) is submitted.
@@ -467,6 +469,7 @@ def update_vcm_budget_from_jv(jv_doc):
                     frappe.db.commit()
     return True
 
+@frappe.whitelist()
 def reverse_vcm_budget_from_jv(jv_doc):
     """
     Update Budget Used when a Journal Entry (JV) is cancelled.
@@ -498,7 +501,8 @@ def reverse_vcm_budget_from_jv(jv_doc):
                     budget_doc.save()
                     frappe.db.commit()
     return True
-            
+
+@frappe.whitelist()          
 def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center):
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
@@ -534,7 +538,7 @@ def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center):
         return True
     
 
-
+@frappe.whitelist()
 def cancel_vcm_PI_reconciliation(purchase_invoice):
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
@@ -568,4 +572,16 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
         frappe.db.commit()
         return True
                             
-                            
+@frappe.whitelist()
+def validate_budget_head_mandatory(doc):
+        if frappe.db.exists("Cost Center", doc.cost_center):
+            cost_center_doc = frappe.get_doc("Cost Center", doc.cost_center)
+            # check if Budget is applicable for this cost center
+            if cost_center_doc.custom_vcm_budget_applicable ==  "Yes":
+                # is yes, then Budget Head is mandatory
+                if not doc.budget_head:
+                    frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {doc.cost_center}")
+        return  True
+
+
+        

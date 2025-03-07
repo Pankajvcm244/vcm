@@ -65,7 +65,8 @@ frappe.ui.form.on('Purchase Receipt', {
         frm.fields_dict['custom_gate_in_reference'].get_query = function(doc) {
             return {
                 filters: {
-                    status: 'Pending'  // Only show Gate In records where status is 'Pending'
+                    status: 'Pending',  // Only show Gate In records where status is 'Pending'
+                    supplier: frm.doc.supplier  // Show only records for the selected supplier
                 }
             };
         };

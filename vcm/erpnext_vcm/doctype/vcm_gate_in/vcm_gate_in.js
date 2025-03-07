@@ -63,6 +63,8 @@ frappe.ui.form.on("VCM Gate-In", {
     },
     purchase_order: function(frm) {
         if (!frm.doc.purchase_order) return;
+        //make Purchase person read only based upon PO field
+        toggle_purchase_person(frm);
 
         // Fetch all items from the selected Purchase Order
         frappe.call({
@@ -109,7 +111,7 @@ frappe.ui.form.on("VCM Gate-In", {
         });
     },
     validate: function(frm) {
-        if (!frm.doc.purchase_order && !frm.doc.bill_number && !frm.doc.challan_number) {
+        if (!frm.doc.purchase_order && !frm.doc.bill_number) {
             frappe.throw(__('Please enter at least one of PO Number, Bill Number, or Challan Number.'));
         }
     },
@@ -129,3 +131,11 @@ frappe.ui.form.on("VCM Gate-In", {
 
     
 });
+
+function toggle_purchase_person(frm) {
+    if (!frm.doc.purchase_order) {
+        frm.set_df_property('purchase_person', 'read_only', 0);  // Make editable
+    } else {
+        frm.set_df_property('purchase_person', 'read_only', 1);  // Make read-only
+    }
+}
