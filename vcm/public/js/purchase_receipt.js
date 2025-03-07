@@ -49,9 +49,10 @@ frappe.ui.form.on('Purchase Receipt', {
             callback: function(r) {
                 if (r.message) {
                     let gatein_data = r.message;
-                    // Fetch and set the Purchase Person
-                    if (gatein_data.custom_purchase_person) {
-                        frm.set_value("custom_purchase_person", gatein_data.custom_purchase_person);
+                    // Fetch and set the Purchase Person 
+                    //Gate in still has Purchase_person while oters are customized
+                    if (gatein_data.purchase_person) {
+                        frm.set_value("custom_purchase_person", gatein_data.purchase_person);
                     } else {
                         frm.set_value("custom_purchase_person", "Not Available");
                     }                    

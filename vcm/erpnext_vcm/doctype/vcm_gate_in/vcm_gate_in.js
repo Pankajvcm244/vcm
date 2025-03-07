@@ -77,8 +77,12 @@ frappe.ui.form.on("VCM Gate-In", {
                 if (r.message) {
                     let po_data = r.message;
                     // Fetch and set the Purchase Person
-                    if (po_data.purchase_person) {
-                        frm.set_value("purchase_person", po_data.purchase_person);
+                    if (po_data.custom_purchase_person) {
+                        //gate-in form still has purchase_person
+                        frm.set_value("purchase_person", po_data.custom_purchase_person);
+                        frm.set_value("company", po_data.company);
+                        frm.set_value("cost_center", po_data.cost_center);
+                        frm.set_value("budget_head", po_data.budget_head);
                     } else {
                         frm.set_value("purchase_person", "Not Available");
                     }
@@ -101,7 +105,7 @@ frappe.ui.form.on("VCM Gate-In", {
         });
     },
     onload: function(frm) {
-        frm.set_query("purchase_person", function() {
+        frm.set_query("custom_purchase_person", function() {
             return {
                 query: "vcm.erpnext_vcm.utilities.fetch_user_data.vcm_get_users_with_role",
                 filters: {
@@ -134,8 +138,8 @@ frappe.ui.form.on("VCM Gate-In", {
 
 function toggle_purchase_person(frm) {
     if (!frm.doc.purchase_order) {
-        frm.set_df_property('purchase_person', 'read_only', 0);  // Make editable
+        frm.set_df_property('custom_purchase_person', 'read_only', 0);  // Make editable
     } else {
-        frm.set_df_property('purchase_person', 'read_only', 1);  // Make read-only
+        frm.set_df_property('custom_purchase_person', 'read_only', 1);  // Make read-only
     }
 }
