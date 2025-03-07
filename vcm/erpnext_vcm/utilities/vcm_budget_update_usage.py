@@ -576,6 +576,7 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
 def validate_budget_head_mandatory(doc):
         if frappe.db.exists("Cost Center", doc.cost_center):
             cost_center_doc = frappe.get_doc("Cost Center", doc.cost_center)
+            logging.debug(f"validate_budget_head_mandatory 1 {cost_center_doc},{cost_center_doc.custom_vcm_budget_applicable},{doc.budget_head}  ")
             # check if Budget is applicable for this cost center
             if cost_center_doc.custom_vcm_budget_applicable ==  "Yes":
                 # is yes, then Budget Head is mandatory

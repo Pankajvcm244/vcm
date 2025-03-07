@@ -69,8 +69,8 @@ class VCMPurchaseOrder(PurchaseOrder):
         validate_buying_dates(self)
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            validate_vcm_po_budget_amount_budgethead(self)
-            validate_budget_head_mandatory(self)
+            if validate_budget_head_mandatory(self) == True:
+                validate_vcm_po_budget_amount_budgethead(self)            
             #logging.debug(f"in PO Validate 3 {self.workflow_state}")
         return        
 
@@ -78,9 +78,10 @@ class VCMPurchaseOrder(PurchaseOrder):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PO on_Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            update_vcm_po_budget_usage(self)             
-            create_vcm_transaction_log(self, "PO Submitted")
-            #logging.debug(f"VCM PO on_Submit-2 created log")
+            if validate_budget_head_mandatory(self) == True:
+                update_vcm_po_budget_usage(self)             
+                create_vcm_transaction_log(self, "PO Submitted")
+                #logging.debug(f"VCM PO on_Submit-2 created log")
         super().on_submit() 
 
     def on_cancel(self):         
