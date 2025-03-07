@@ -88,9 +88,10 @@ class VCMPurchaseOrder(PurchaseOrder):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            logging.debug(f"HKM PO Submit-2 calling revert budget")
-            revert_vcm_po_budget_usage(self) 
-            delete_vcm_transaction_log(self,"PO Cancelled")
+            if validate_budget_head_mandatory(self) == True:
+                #logging.debug(f"HKM PO Submit-2 calling revert budget")
+                revert_vcm_po_budget_usage(self) 
+                delete_vcm_transaction_log(self,"PO Cancelled")
         super().on_cancel()
     
     def before_insert(self):

@@ -17,6 +17,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_from_jv,
     reverse_vcm_budget_from_jv,
     validate_vcm_budget_from_jv,
+    validate_budget_head_mandatory,
 )
 from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
     create_vcm_jv_transaction_log,
@@ -40,8 +41,9 @@ class VCMJournalEntry(JournalEntry):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            update_vcm_budget_from_jv(self) 
-            create_vcm_jv_transaction_log(self, "JV Submitted")
+            if validate_budget_head_mandatory(self) == True:
+                update_vcm_budget_from_jv(self) 
+                create_vcm_jv_transaction_log(self, "JV Submitted")
         super(VCMJournalEntry, self).on_submit()
    
 
@@ -49,16 +51,18 @@ class VCMJournalEntry(JournalEntry):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"HKM JV on cancel Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            #logging.debug(f"VCM JV on_cancel budget")
-            reverse_vcm_budget_from_jv(self) 
-            delete_vcm_transaction_log(self,"JV Cancelled")
+            if validate_budget_head_mandatory(self) == True:
+                #logging.debug(f"VCM JV on_cancel budget")
+                reverse_vcm_budget_from_jv(self) 
+                delete_vcm_transaction_log(self,"JV Cancelled")
         super(VCMJournalEntry, self).on_cancel()
 
     def validate(self):
         super().validate()  
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            validate_vcm_budget_from_jv(self)
+            if validate_budget_head_mandatory(self) == True:
+                validate_vcm_budget_from_jv(self)
 
     def validate_gst_entry(self):
         validate_gst_entry(self)

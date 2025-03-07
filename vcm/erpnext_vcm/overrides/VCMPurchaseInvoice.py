@@ -47,16 +47,18 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
-            update_vcm_pi_budget_usage(self) 
-            create_vcm_transaction_log(self, "PI Submitted")                
+            if validate_budget_head_mandatory(self) == True:
+                update_vcm_pi_budget_usage(self) 
+                create_vcm_transaction_log(self, "PI Submitted")                
         super().on_submit()
 
     def on_cancel(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
-            revert_vcm_pi_budget_usage(self) 
-            delete_vcm_transaction_log(self,"PI Cancelled")
+            if validate_budget_head_mandatory(self) == True:
+                revert_vcm_pi_budget_usage(self) 
+                delete_vcm_transaction_log(self,"PI Cancelled")
         super().on_cancel()
 
     def validate(self):
@@ -67,9 +69,10 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         validate_buying_dates(self)
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
-            validate_vcm_pi_budget_amount(self)
-            validate_budget_head_mandatory(self)
-            #logging.debug(f"in PI Validate 3 {self.workflow_state}")
+            if validate_budget_head_mandatory(self) == True:
+                validate_vcm_pi_budget_amount(self)
+                validate_budget_head_mandatory(self)
+                #logging.debug(f"in PI Validate 3 {self.workflow_state}")
         return
 
     def validate_expense_account(self):

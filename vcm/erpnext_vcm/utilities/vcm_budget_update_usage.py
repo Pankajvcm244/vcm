@@ -25,7 +25,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
                 #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
                 return False
     if budget_validation_flag:
-        frappe.throw(f"PO Budget not found for Budget Head: {po_doc.budget_head}")
+        frappe.throw(f"PO Budget not found for Cost Center: {po_doc.cost_center}, Budget Head: {po_doc.budget_head}")
         return False        
     return True
 
@@ -582,7 +582,12 @@ def validate_budget_head_mandatory(doc):
                 # is yes, then Budget Head is mandatory
                 if not doc.budget_head:
                     frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {doc.cost_center}")
-        return  True
+                    return False
+                return True
+            else:
+                return False
+        else:
+            return  False
 
 
         

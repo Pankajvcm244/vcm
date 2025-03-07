@@ -20,8 +20,9 @@ class VCMPaymentEntry(PaymentEntry):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"HKM PE on_Submit {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
-            update_vcm_budget_on_payment_submit(self)
-            create_vcm_pe_transaction_log(self, "PE Submitted")
+            if validate_budget_head_mandatory(self) == True:
+                update_vcm_budget_on_payment_submit(self)
+                create_vcm_pe_transaction_log(self, "PE Submitted")
         super().on_submit() 
 
     def on_cancel(self):
@@ -29,14 +30,16 @@ class VCMPaymentEntry(PaymentEntry):
         #logging.debug(f"HKM PE on cancel Submit-1 {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
             #logging.debug(f"VCM PE Submit-2 calling revert budget")
-            revert_vcm_budget_on_payment_submit(self) 
-            delete_vcm_transaction_log(self,"PE Cancelled")
+            if validate_budget_head_mandatory(self) == True:
+                revert_vcm_budget_on_payment_submit(self) 
+                delete_vcm_transaction_log(self,"PE Cancelled")
         super().on_cancel()
 
     def validate(self):
         super().validate()
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
-            validate_budget_head_mandatory(self)
-            validate_vcm_budget_on_payment_entry(self)
+            if validate_budget_head_mandatory(self) == True:
+                validate_budget_head_mandatory(self)
+                validate_vcm_budget_on_payment_entry(self)
         return
