@@ -53,7 +53,7 @@ def get_vcm_storereq_approval_level(doc):
 def assign_and_notify_next_authority(doc, method="Email"):
     user = None
     current_state = doc.workflow_state
-    logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
+    #logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
     states = ("Pending", "L1 Approved", "L2 Approved")
     approvers = (
         "l1_approver",
@@ -62,7 +62,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
     )
     if current_state in states:
         for i, state in enumerate(states):
-            logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
+            #logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
             if current_state == state:
                 for approver in approvers[i : len(approvers)]:
                     if (
@@ -218,7 +218,6 @@ def get_allowed_options(user: str, doc: Document):
     roles = frappe.get_roles(user)
     workflow = get_workflow_name(doc.get("doctype"))
     if not workflow:
-        #logging.debug(f"Workflow not found for doctype {doc.get('doctype')}")
         return set()
     state = get_doc_workflow_state(doc)
     #logging.debug(f"**in get_allowed_options 1  ******{workflow }, {state}")
@@ -234,15 +233,49 @@ def get_allowed_options(user: str, doc: Document):
             ["state", "=", state],
         ],
     )
+    L1_APPROVER_FLAG = False
+    L2_APPROVER_FLAG = False
+    FINAL_APPROVER_FLAG = False
+    if (getattr(doc, "l1_approver") != ""):
+        L1_APPROVER_FLAG = True
+    if (getattr(doc, "l2_approver") != ""):
+        L2_APPROVER_FLAG = True 
+    if (getattr(doc, "final_approver") != ""):
+        FINAL_APPROVER_FLAG = True     
+    #logging.debug(f"**in get_allowed_options FLAGS {L1_APPROVER_FLAG},{L2_APPROVER_FLAG},{FINAL_APPROVER_FLAG} ")
     applicable_actions = []
+    # when we reach here state is next proposed state of document.
+    # is Draft document it will come here as pending
     for transition in transitions:
-        if transition["allowed"] in roles and (
-            (transition["condition"] is None)
-            or eval(transition["condition"].replace("frappe.session.user", "user"))
-        ):
-            condition = transition["condition"]
-            #logging.debug(f"Evaluating condition for {user}: {condition }")
-            applicable_actions.append(transition["action"])
-
+        if transition["allowed"] in roles:
+            condition = transition["action"]
+            #logging.debug(f"Evaluating condition {transition}, *{condition}  ")
+            if (state  == "Pending"):
+                if L1_APPROVER_FLAG:
+                    if transition["action"] in ["L1 Approve", "Reject"]:
+                        #logging.debug(f"**in get_allowed_options 2-1: {state}, {applicable_actions} ")
+                        applicable_actions.append(transition["action"])
+                elif L2_APPROVER_FLAG:
+                    if transition["action"] in ["L2 Approve", "Reject"]:
+                        logging.debug(f"**in get_allowed_options 3-1: {state}, {applicable_actions} ")
+                        applicable_actions.append(transition["action"])
+                elif FINAL_APPROVER_FLAG:
+                    if transition["action"] in ["Final Approve", "Reject"]:
+                        #logging.debug(f"**in get_allowed_options 4-1: {state}, {applicable_actions} ")
+                        applicable_actions.append(transition["action"])
+            elif (state  == "L1 Approved"):
+                if L2_APPROVER_FLAG:
+                    if transition["action"] in ["L2 Approve", "Reject"]:
+                        #logging.debug(f"**in get_allowed_options L2-1: {state}, {applicable_actions} ")
+                        applicable_actions.append(transition["action"])
+                elif FINAL_APPROVER_FLAG:
+                    if transition["action"] in ["Final Approve", "Reject"]:
+                        #logging.debug(f"**in get_allowed_options L2-2: {state}, {applicable_actions} ")
+                        applicable_actions.append(transition["action"])                            
+            elif (state == "L2 Approved"):
+                if FINAL_APPROVER_FLAG:
+                    if transition["action"] in ["Final Approve", "Reject"]:
+                        applicable_actions.append(transition["action"])                        
     #logging.debug(f"**in get_allowed_options 5  *************{applicable_actions} ")
     return set(applicable_actions)  ## Unique Actions
+
