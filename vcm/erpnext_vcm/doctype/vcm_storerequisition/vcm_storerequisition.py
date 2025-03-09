@@ -1,22 +1,34 @@
 # Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 # For license information, please see license.txt
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+
+
+
+
+
+import frappe
+from frappe.model.document import Document
+from datetime import date
+from frappe.utils.background_jobs import enqueue
+from datetime import datetime
+from frappe.model.naming import getseries
+import datetime
+
+
+
+
+from frappe.workflow.doctype.workflow_action.workflow_action import (
+    get_doc_workflow_state,
+)
+
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 from vcm.erpnext_vcm.doctype.vcm_storerequisition.vcm_storereq_approval_flow import (
     assign_and_notify_next_authority,
     get_vcm_storereq_approval_level,
 	check_approver_assigned,
 )
-
-import frappe
-from frappe.model.document import Document
-from datetime import date
-from frappe.utils.background_jobs import enqueue
-from frappe.workflow.doctype.workflow_action.workflow_action import (
-    get_doc_workflow_state,
-)
-
 class VCMStoreRequisition(Document):
 	def __init__(self, *args, **kwargs):
 		super(VCMStoreRequisition, self).__init__(*args, **kwargs)
@@ -29,6 +41,13 @@ class VCMStoreRequisition(Document):
 	def on_update(self):
 		#logging.debug(f"in VCMStoreRequisition on_update  -1  {self}  ")
 		assign_and_notify_next_authority(self)
+	
+	def autoname(self):
+		now = datetime.datetime.now()
+		month = now.strftime("%m")
+		year = now.strftime("%y")
+		prefix = f"VCMStoreReq-{year}{month}-"         
+		self.name = prefix + getseries(prefix, 5)
 
 	def refresh_alm(self):
 		#logging.debug(f"in VCMStoreRequisition refresh_alm  {self}  ")

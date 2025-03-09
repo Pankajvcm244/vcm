@@ -53,6 +53,7 @@ frappe.ui.form.on('Purchase Receipt', {
                     //Gate in still has Purchase_person while oters are customized
                     if (gatein_data.purchase_person) {
                         frm.set_value("custom_purchase_person", gatein_data.purchase_person);
+                        frm.set_df_property('custom_purchase_person', 'read_only', 1);  // Make read-only
                     } else {
                         frm.set_value("custom_purchase_person", "Not Available");
                     }                    

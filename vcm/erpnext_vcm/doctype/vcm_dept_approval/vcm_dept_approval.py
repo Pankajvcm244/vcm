@@ -3,11 +3,15 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.model.naming import make_autoname
 from datetime import datetime
+from frappe.model.naming import getseries
+from datetime import timedelta, datetime
 
 class VCMDEPTApproval(Document):
     def autoname(self):
+        now = datetime.datetime.now()
+        month = now.strftime("%m")
+        year = now.strftime("%y")
         company_abbr = frappe.get_value("Company", self.company, "abbr")
-        date_prefix = datetime.today().strftime("%y%m")  # Get YYMM format
-        self.name = make_autoname(f"{company_abbr}-{date_prefix}-####")
+        prefix = f"{company_abbr}-{year}{month}-"         
+        self.name = prefix + getseries(prefix, 5)

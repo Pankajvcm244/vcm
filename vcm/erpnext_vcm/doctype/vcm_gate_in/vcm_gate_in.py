@@ -3,15 +3,17 @@
 
 import frappe
 from frappe.model.document import Document
-
-from frappe.model.naming import make_autoname
 from datetime import datetime
+from frappe.model.naming import getseries
+import datetime
 
 class VCMGateIn(Document):
     def autoname(self):
-        date_prefix = datetime.today().strftime("%y%m")  # Get YYMM format
-        self.name = make_autoname(f"Gate-in-{date_prefix}-.####")
-
+        now = datetime.datetime.now()
+        month = now.strftime("%m")
+        year = now.strftime("%y")
+        prefix = f"GateIn-{year}{month}-"         
+        self.name = prefix + getseries(prefix, 5)
 
 @frappe.whitelist()
 def update_gate_in_status(gate_in_name, new_status):

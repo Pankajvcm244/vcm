@@ -6,7 +6,7 @@ frappe.ui.form.on("VCM Gate-In", {
     refresh: function(frm) {
         frm.meta.supplier_dialog_opened = false; // Reset flag when form refreshes
         //In case User tagged Gate-In by mistake and wants to Free Gate-In
-        if (frm.doc.status === "Received" && frappe.user.has_role("System Manager")) {
+        if (frm.doc.status === "Received" && frappe.user.has_role("Administrator")) {
             frm.add_custom_button(__('Change Status to Pending'), function() {
                 frappe.call({
                     method: "vcm.erpnext_vcm.doctype.vcm_gate_in.vcm_gate_in.update_gate_in_status",
@@ -80,12 +80,12 @@ frappe.ui.form.on("VCM Gate-In", {
                     if (po_data.custom_purchase_person) {
                         //gate-in form still has purchase_person
                         frm.set_value("purchase_person", po_data.custom_purchase_person);
-                        frm.set_value("company", po_data.company);
-                        frm.set_value("cost_center", po_data.cost_center);
-                        frm.set_value("budget_head", po_data.budget_head);
                     } else {
                         frm.set_value("purchase_person", "Not Available");
                     }
+                    frm.set_value("company", po_data.company);
+                    frm.set_value("cost_center", po_data.cost_center);
+                    frm.set_value("budget_head", po_data.budget_head);
                     frm.clear_table("items"); // Clear existing items before adding new ones
 
                     po_data.items.forEach(item => {

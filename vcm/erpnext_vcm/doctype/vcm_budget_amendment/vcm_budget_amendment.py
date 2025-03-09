@@ -7,12 +7,17 @@ from frappe.model.document import Document
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
+from frappe.utils.data import getdate
+from frappe.model.naming import getseries
+import datetime
 
 class VCMBudgetAmendment(Document):	
 	def autoname(self):
-		prefix = f"{self.fiscal_year}-BUDGET-AMEND-{self.cost_center}-"         
+		now = datetime.datetime.now()
+		month = now.strftime("%m")
+		year = now.strftime("%y")
+		prefix = f"BUDGET-AMEND-{self.cost_center}-{year}{month}-"         
 		self.name = prefix + getseries(prefix, 4)
-
 
 	def on_submit(self):  
 		logging.debug(f"in VCMBudgetAmendment on_submit  {self}  ")

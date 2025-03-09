@@ -41,11 +41,11 @@ def get_vcm_storereq_approval_level(doc):
                 ORDER BY level.idx
                     """,
         as_dict=1,
-    ):
-        
-    # frappe.errprint(f"{deciding_amount} {l.amount_condition}")
-    #logging.debug(f"in get_vcm_storereq_approval_level before_save3  {l}, {l.department} ")
+    ):     
+    
         if doc.department == l.department:
+            #frappe.errprint(f"{deciding_amount} {l.amount_condition}")
+            #logging.debug(f"in get_vcm_storereq_approval_level before_save3  {l}, {l.department} ")
             return l
     return None
 
@@ -84,7 +84,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
         else:
             send_email_approval(doc, user)
 
-    if current_state == "Final Level Approved":
+    if current_state in ("Final Level Approved", "Draft","Trashed"):
         #logging.debug(f"**in assign_and_notify_next_authority 8 {doc}, {current_state} ")
         close_assignments(doc, remove=True)
     frappe.db.commit()
@@ -121,7 +121,7 @@ def assign_to_next_approving_authority(doc, user):
     return
 
 def check_approver_assigned(doc):    
-    user = None
+    user = frappe.session.user
     proposed_state = doc.workflow_state    
 
     
@@ -212,10 +212,16 @@ def close_assignments(doc, remove=True):
         )
     return
 
-
+#this fucntions shows all possible next actions based upon current state
+# If L2 Approved then alowoable actions are Final Approve and Reject
 def get_allowed_options(user: str, doc: Document):
     roles = frappe.get_roles(user)
     workflow = get_workflow_name(doc.get("doctype"))
+    if not workflow:
+        #logging.debug(f"Workflow not found for doctype {doc.get('doctype')}")
+        return set()
+    state = get_doc_workflow_state(doc)
+    #logging.debug(f"**in get_allowed_options 1  ******{workflow }, {state}")
     transitions = frappe.get_all(
         "Workflow Transition",
         fields=[
@@ -225,7 +231,7 @@ def get_allowed_options(user: str, doc: Document):
         ],
         filters=[
             ["parent", "=", workflow],
-            ["state", "=", get_doc_workflow_state(doc)],
+            ["state", "=", state],
         ],
     )
     applicable_actions = []
@@ -234,5 +240,9 @@ def get_allowed_options(user: str, doc: Document):
             (transition["condition"] is None)
             or eval(transition["condition"].replace("frappe.session.user", "user"))
         ):
+            condition = transition["condition"]
+            #logging.debug(f"Evaluating condition for {user}: {condition }")
             applicable_actions.append(transition["action"])
+
+    #logging.debug(f"**in get_allowed_options 5  *************{applicable_actions} ")
     return set(applicable_actions)  ## Unique Actions
