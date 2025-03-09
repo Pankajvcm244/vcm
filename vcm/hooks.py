@@ -313,13 +313,19 @@ fixtures = [
         "doctype": "Custom DocPerm",
     },
     {
+        "doctype": "Property Setter",
+    },
+    {
         "doctype": "POS Profile",
     },
     {
         "doctype": "Workflow",
     },
-        {
+    {
         "doctype": "Workflow State",
+    },
+        {
+        "doctype": "Role",
     },
     {
         "doctype": "Custom Field",
@@ -331,6 +337,7 @@ fixtures = [
                 "Purchase Receipt",
                 "Purchase Invoice",
                 "VCM Gate-In",
+                "Material Request Item",
                 # "Sales Invoice",
                 # "Stock Entry",
                 "Payment Entry",
@@ -340,9 +347,6 @@ fixtures = [
                 #"Supplier"
             ],],
         ],
-    },
-    {
-        "doctype": "Role",
     }
 ]
 
