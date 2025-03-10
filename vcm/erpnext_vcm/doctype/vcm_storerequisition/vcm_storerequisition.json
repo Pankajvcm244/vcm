@@ -5,26 +5,28 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "workflow_state",
   "section_break_zzij",
   "company",
   "department",
   "purpose_subject",
-  "purpose_description",
   "column_break_uhcb",
-  "l1_approver",
-  "l2_approver",
-  "final_approver",
   "material_request_link",
+  "target_warehouse",
+  "section_break_xgjg",
+  "items",
   "accounting_dimensions_section",
   "cost_center",
   "column_break_lcho",
-  "project",
-  "section_break_xgjg",
-  "items",
-  "amended_from",
+  "budget_head",
   "section_break_rteu",
-  "table_cwab"
+  "table_cwab",
+  "section_break_wpfr",
+  "l1_approver",
+  "l2_approver",
+  "final_approver",
+  "column_break_zimg",
+  "workflow_state",
+  "amended_from"
  ],
  "fields": [
   {
@@ -41,24 +43,23 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "reqd": 1
   },
   {
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Department",
-   "options": "Department"
+   "options": "Department",
+   "reqd": 1
   },
   {
    "fieldname": "purpose_subject",
    "fieldtype": "Data",
    "label": "Purpose Subject"
-  },
-  {
-   "fieldname": "purpose_description",
-   "fieldtype": "Small Text",
-   "label": "Purpose Description"
   },
   {
    "fieldname": "column_break_uhcb",
@@ -90,18 +91,14 @@
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_lcho",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
   },
   {
    "fieldname": "section_break_xgjg",
@@ -139,12 +136,35 @@
    "fieldname": "table_cwab",
    "fieldtype": "Table",
    "options": "VCM StoreReq Items scratch"
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Target Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_wpfr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_zimg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "budget_head",
+   "fieldtype": "Link",
+   "label": "Budget Head",
+   "options": "Budget Head",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-17 16:45:05.980089",
+ "modified": "2025-03-10 16:42:51.718960",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM StoreRequisition",

@@ -29,14 +29,13 @@ def get_MR_items(item_req_doc_id):
 
     material_request_doc = frappe.new_doc("Material Request")   
     material_request_doc.update(mr_receipt_entry_dict)
-
     material_request_doc.purpose_subject = item_req_doc.purpose_subject
     material_request_doc.company = item_req_doc.company
     material_request_doc.cost_center = item_req_doc.cost_center
     material_request_doc.project = item_req_doc.project
     material_request_doc.department = item_req_doc.department
     material_request_doc.purpose = item_req_doc.purpose_subject
-    material_request_doc.description = item_req_doc.purpose_description
+    material_request_doc.set_warehouse = item_req_doc.target_warehouse
     material_request_doc.custom_store_requisition_link = item_req_doc_id
     return material_request_doc
 
