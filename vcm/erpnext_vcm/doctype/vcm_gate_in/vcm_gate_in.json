@@ -17,7 +17,8 @@
   "bill_date",
   "comments",
   "section_break_tojo",
-  "items"
+  "items",
+  "amended_from"
  ],
  "fields": [
   {
@@ -101,11 +102,22 @@
    "label": "Budget Head",
    "options": "Budget Head",
    "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "VCM Gate-In",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-03-07 19:27:08.302096",
+ "modified": "2025-03-10 14:15:11.520913",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",
@@ -120,6 +132,37 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Temple Security User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Temple Security User",
    "share": 1,
    "write": 1
   }
