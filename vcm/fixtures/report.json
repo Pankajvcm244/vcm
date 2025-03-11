@@ -11467,7 +11467,7 @@
   "javascript": null,
   "json": null,
   "letter_head": null,
-  "modified": "2022-02-11 10:18:36.956558",
+  "modified": "2025-03-10 22:20:54.728024",
   "module": "Accounts",
   "name": "Gross Profit",
   "prepared_report": 0,
@@ -11489,6 +11489,18 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Accounts User"
+   },
+   {
+    "parent": "Gross Profit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Gross Profit",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
    }
   ],
   "timeout": 0
