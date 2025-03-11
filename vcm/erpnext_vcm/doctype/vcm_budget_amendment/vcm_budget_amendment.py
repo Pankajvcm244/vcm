@@ -7,7 +7,6 @@ from frappe.model.document import Document
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
-from frappe.utils.data import getdate
 from frappe.model.naming import getseries
 import datetime
 

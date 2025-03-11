@@ -1,25 +1,13 @@
 # Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 # For license information, please see license.txt
-
-
-
-
-
 import frappe
 from frappe.model.document import Document
-from datetime import date
-from frappe.utils.background_jobs import enqueue
-from datetime import datetime
-from frappe.model.naming import getseries
 import datetime
-
-
-
+from frappe.model.naming import getseries
 
 from frappe.workflow.doctype.workflow_action.workflow_action import (
     get_doc_workflow_state,
 )
-
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -43,8 +31,9 @@ class VCMStoreRequisition(Document):
 		assign_and_notify_next_authority(self)
 	
 	def autoname(self):
-		now = datetime.now()
+		now = datetime.datetime.datetime.now()
 		month = now.strftime("%m")
+		
 		year = now.strftime("%y")
 		prefix = f"VCMStoreReq-{year}{month}-"         
 		self.name = prefix + getseries(prefix, 5)

@@ -3,7 +3,6 @@
 
 import frappe
 from frappe.model.document import Document
-from datetime import datetime
 from frappe.model.naming import getseries
 import datetime
 
