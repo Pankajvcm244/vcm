@@ -43,7 +43,7 @@ class VCMStoreRequisition(Document):
 		assign_and_notify_next_authority(self)
 	
 	def autoname(self):
-		now = datetime.datetime.now()
+		now = datetime.now()
 		month = now.strftime("%m")
 		year = now.strftime("%y")
 		prefix = f"VCMStoreReq-{year}{month}-"         
