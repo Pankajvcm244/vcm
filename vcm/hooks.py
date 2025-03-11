@@ -313,6 +313,9 @@ fixtures = [
         "doctype": "Custom DocPerm",
     },
     {
+        "doctype": "DocPerm",
+    },
+    {
         "doctype": "Property Setter",
     },
     {
