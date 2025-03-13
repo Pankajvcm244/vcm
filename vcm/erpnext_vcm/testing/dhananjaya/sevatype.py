@@ -1,6 +1,6 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.sevatype.add_sevatype
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.sevatype.add_sevatype
 # # exit
 
 import frappe
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 def add_sevatype():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/sevatype-test-1.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/sevatype_final-2.xlsx"  # Change as needed
 
     # Ensure file exists
     if not os.path.exists(file_path):

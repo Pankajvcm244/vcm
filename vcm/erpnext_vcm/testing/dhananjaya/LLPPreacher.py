@@ -1,6 +1,6 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# bench --site test.vcmerp.in execute vcm.erpnext_vcm.testing.LLPPreacher.add_llppreacher
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.LLPPreacher.add_llppreacher
 # # exit
 
 import frappe
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 def add_llppreacher():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Preacher_1.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/LLPPreacher_final-1.xlsx"  # Change as needed
 
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -37,6 +37,7 @@ def add_llppreacher():
     not_a_preacher = 0
     not_a_user = 0
     duplicate_user = 0
+    added_count = 0
     error  = 0
     errors = []
 
@@ -59,43 +60,54 @@ def add_llppreacher():
             print(f"Error: {preacher_email} is not a valid user in the system.")
             not_a_user += 1
             continue
+
+        # Check if LLP Preacher name already exists
+        #if frappe.db.exists("LLP Preacher", preacher_name):
+        #    frappe.msgprint(f"LLP Preacher {preacher_name} already exists.")
+        #    duplicate_user += 1
+        #    continue
         
         # Handle NaN values by replacing them with None
         preacher_ID = None if pd.isna(preacher_ID) else preacher_ID
         preacher_mobile = None if pd.isna(preacher_mobile) else preacher_mobile
-        preacher_email = None if pd.isna(preacher_email) else preacher_email
-
-        # Check if LLP Preacher already exists
-        if frappe.db.exists("LLP Preacher", preacher_name):
-            frappe.msgprint(f"LLP Preacher {preacher_name} already exists.")
-            duplicate_user += 1
-            continue
+        preacher_email = None if pd.isna(preacher_email) else preacher_email      
 
         #logging.debug(f"update-1 are: {preacher_name}, {preacher_ID} , {preacher_mobile}, {preacher_email}")
         # Debugging: Print existing child table entries
         #logging.debug(f"Existing users for {preacher_name}: {[user.email for user in preacher.get('llp_preacher_users', [])]}")
         try:
-            # Create new LLP Preacher entry
-            new_preacher = frappe.get_doc({
-                "doctype": "LLP Preacher",
-                "initial": preacher_ID,
-                "full_name": preacher_name,
-                "mobile_no": preacher_mobile,
-                "email": preacher_email,
-                "include_in_analysis": 1,
-                "allowed_users": []
-            })
+            # Check if LLP Preacher name already exists, we want to update child table
+            if frappe.db.exists("LLP Preacher", preacher_ID): 
+                # Here to update old subseva type or add cost centers                
+                if preacher_email: 
+                    old_doc = frappe.get_doc("LLP Preacher", preacher_ID)
+                    # Append child table  row 
+                    old_doc.append("allowed_users", {"user": preacher_email})
+                    old_doc.save()
+                    updated_count += 1                    
+                    print(f"LLP Preacher {preacher_name} updated successfully.")
 
-            if preacher_email:
-                #new_user = new_preacher.append("allowed_users", {})
-                #new_user.user = preacher_email
-                new_preacher.append("allowed_users", {"user": preacher_email})
+            else:  
+                # Create new LLP Preacher entry
+                new_preacher = frappe.get_doc({
+                    "doctype": "LLP Preacher",
+                    "initial": preacher_ID,
+                    "full_name": preacher_name,
+                    "mobile_no": preacher_mobile,
+                    "email": preacher_email,
+                    "include_in_analysis": 1,
+                    "allowed_users": []
+                })
+                if preacher_email:
+                    #new_user = new_preacher.append("allowed_users", {})
+                    #new_user.user = preacher_email
+                    new_preacher.append("allowed_users", {"user": preacher_email})
 
-            new_preacher.insert(ignore_permissions=True)
-            frappe.db.commit()
-            updated_count = updated_count + 1
-            print(f"LLP Preacher {preacher_name} added successfully.")
+                new_preacher.insert(ignore_permissions=True)
+                frappe.db.commit()
+                added_count += 1
+                print(f"LLP Preacher {preacher_name} added successfully.")
         except Exception as e:
             print(f"Error: {e}")
             error += 1
-    print(f"Preacher updated:{updated_count}, Error: {error} Duplicate {duplicate_user}, User missing {not_a_user},Preacher name missing: {not_a_preacher} added successfully.")
+    print(f"Preacher added: {added_count}, updated:{updated_count}, Error: {error} Duplicate {duplicate_user}, User missing {not_a_user},Preacher name missing: {not_a_preacher} added successfully.")

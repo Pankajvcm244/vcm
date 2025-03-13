@@ -1,6 +1,6 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.sevasubtype.add_sevasubtype
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.donationcreation_request.add_donation_creation_request
 # # exit
 
 import frappe
@@ -10,10 +10,10 @@ import os
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-def add_sevasubtype():
+def add_donation_creation_request():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/sevasubtype-final-2.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/donationcreation-try-1.xlsx"  # Change as needed
 
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -27,7 +27,7 @@ def add_sevasubtype():
     df = df.dropna(how="all")
 
     # Validate columns
-    required_columns = {"Company (Cost Centers)", "Seva Name", "Enabled","Include in Analysis"}
+    required_columns = {"ID", "Full Name", "LLP Preacher","Status"}
     if not required_columns.issubset(df.columns):
         frappe.throw("Missing required columns in the Excel file.")
         return
@@ -46,36 +46,38 @@ def add_sevasubtype():
             skipped_count += 1
             continue
               
-        seva_name = row.get("Seva Name")
-        priority = row.get("Priority")
-        enabled_flag = row.get("Enabled") 
-        amount = row.get("Amount")
-        old_parent = row.get("Old Parent")
-        parent_seva_type = row.get("Parent Seva Subtype")        
-        is_group = row.get("Is Group")
-        patronship_flag = row.get("Patronship Allowed")
-        analysis_flag = row.get("Include in Analysis")
-        is_a_yatra = row.get("Is a Yatra")
-        from_date = row.get("From Date")
-        to_date = row.get("To Date")  
-        company_cost_centers = row.get("Company (Cost Centers)")
-        cost_cost_center = row.get("Cost Center (Cost Centers)")      
+        id_no = row.get("ID")
+        fullname = row.get("Full Name")
+        contact_number = row.get("Contact Number") 
+        address_type = row.get("Address Type")
+        add_line1 = row.get("Address Line 1")
+        city = row.get("City/Town")        
+        state = row.get("State")
+        status = row.get("Status")
+        llp_preacher = row.get("LLP Preacher")
+        email = row.get("Email")
+        add_line2 = row.get("Address Line 2")
+        country = row.get("Country")  
+        pincode = row.get("PIN Code")
+        pan_no = row.get("PAN Number") 
+        aadhar_no = row.get("Aadhar Number") 
+             
         
-        if not seva_name:
-                not_a_seva_sub_type += 1
+        if not id_no:
+                not_a_req_type += 1
                 continue  # Skip rows without a name        
         
         # Handle NaN values by replacing them with None        
-        old_parent = None if pd.isna(old_parent) else old_parent
-        parent_seva_type = None if pd.isna(parent_seva_type) else parent_seva_type
-        from_date = None if pd.isna(from_date) else from_date
-        to_date = None if pd.isna(to_date) else to_date
-        company_cost_centers = None if pd.isna(company_cost_centers) else company_cost_centers
-        cost_cost_center = None if pd.isna(cost_cost_center) else cost_cost_center
+        email = None if pd.isna(email) else email
+        add_line2 = None if pd.isna(add_line2) else add_line2
+        country = None if pd.isna(country) else country
+        pincode = None if pd.isna(pincode) else pincode
+        pan_no = None if pd.isna(pan_no) else pan_no
+        aadhar_no = None if pd.isna(aadhar_no) else aadhar_no
 
         try:
             # Check if LLP Preacher already exists
-            if frappe.db.exists("Seva Subtype", seva_name):                
+            if frappe.db.exists("Donor Creation Request", id_no):                
                 # Here to update old subseva type or add cost centers                
                 if cost_cost_center:
                     old_doc = frappe.get_doc("Seva Subtype", seva_name)
