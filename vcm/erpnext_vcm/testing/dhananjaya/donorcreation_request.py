@@ -1,6 +1,6 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.donationcreation_request.add_donation_creation_request
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.donorcreation_request.donor_creation_request
 # # exit
 
 import frappe
@@ -10,10 +10,10 @@ import os
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-def add_donation_creation_request():
+def donor_creation_request():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/donationcreation-try-1.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/donor_creation_request-final-1.xlsx"  # Change as needed
 
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -33,16 +33,16 @@ def add_donation_creation_request():
         return
 
     #logging.debug(f"required columns are: {required_columns} ")
-    updated_count = 0
     added_count = 0
-    not_a_seva_sub_type = 0
     error  = 0
     skipped_count = 0
     duplicate_count  = 0
+    not_a_req_type = 0
+    submitted_count = 0
 
     for index, row in df.iterrows():
         # Skip rows where essential values are missing
-        if pd.isna(row["Seva Name"] ):
+        if pd.isna(row["Full Name"] ):
             skipped_count += 1
             continue
               
@@ -60,12 +60,11 @@ def add_donation_creation_request():
         country = row.get("Country")  
         pincode = row.get("PIN Code")
         pan_no = row.get("PAN Number") 
-        aadhar_no = row.get("Aadhar Number") 
-             
+        aadhar_no = row.get("Aadhar Number")              
         
         if not id_no:
-                not_a_req_type += 1
-                continue  # Skip rows without a name        
+            not_a_req_type += 1
+            continue  # Skip rows without a name        
         
         # Handle NaN values by replacing them with None        
         email = None if pd.isna(email) else email
@@ -77,49 +76,51 @@ def add_donation_creation_request():
 
         try:
             # Check if LLP Preacher already exists
-            if frappe.db.exists("Donor Creation Request", id_no):                
-                # Here to update old subseva type or add cost centers                
-                if cost_cost_center:
-                    old_doc = frappe.get_doc("Seva Subtype", seva_name)
-                    # Append one row with both 'company' and 'cost_center' fields
-                    old_doc.append("cost_centers", {
-                        "company": company_cost_centers,
-                        "cost_center": cost_cost_center
-                    })
-                    old_doc.save()
-                    updated_count = updated_count + 1
-                    #frappe.db.commit()
-                    print(f"SevaSubType {seva_name} updated successfully.")
+            if frappe.db.exists("Donor Creation Request", id_no): 
+                    duplicate_count += 1
+                    print(f"Error: Donor Creation Request {id_no} already exists.")
             else:
                 #create new doc type
-                new_sevasubtype = frappe.get_doc({
-                    "doctype": "Seva Subtype",
-                    "initial": seva_name, 
-                    "enabled": enabled_flag,
-                    "seva_name": seva_name,
-                    "account": amount,
-                    "old_parent": old_parent,
-                    "parent_seva_subtype": parent_seva_type,
-                    "is_group": is_group,
-                    "patronship_allowed": patronship_flag,
-                    "include_in_analysis": analysis_flag,
-                    "priority": priority,
-                    "cost_centers": []
+                #"name": id_no,  # Explicitly setting the name
+                donrcreation_request = frappe.get_doc({
+                    "doctype": "Donor Creation Request",
+                    "initial": id_no,
+                    "name": id_no, 
+                    "status": status,
+                    "full_name": fullname,
+                    "llp_preacher": llp_preacher,
+                    "email": email,
+                    "contact_number": contact_number,
+                    "address_type": address_type,
+                    "address_line_1": add_line1,
+                    "address_line_2": add_line2,
+                    "city": city,
+                    "state": state,
+                    "country": country,
+                    "pin_code": pincode,
+                    "pan_number": pan_no,
+                    "aadhar_number": aadhar_no
                 })
-
-                if cost_cost_center:
-                    # Append one row with both 'company' and 'cost_center' fields
-                    new_sevasubtype.append("cost_centers", {
-                        "company": company_cost_centers,
-                        "cost_center": cost_cost_center
-                    })
-
-                new_sevasubtype.insert(ignore_permissions=True)
-                added_count += 1 
-                frappe.db.commit()
-                print(f"SevaSubType {seva_name} added successfully.")
+                donrcreation_request.insert(ignore_permissions=True)
+                
+                if status == "Closed" :
+                    submitted_count += 1
+                    #donrcreation_request.set_status_closed()  # This submits the document
+                    #donrcreation_request.db_set("status", "Closed", commit=True)
+                    donrcreation_request.submit()  # Submitting the document
+                    # dwe have changed class for "Open" to "Closed" change it to Open after migration
+                    # on_submit(self):
+                    #    self.db_set("status", "Closed", commit=True)
+                    frappe.db.commit()
+                    #print(f"donrcreation_request {id_no} submitted successfully.")
+                else:
+                    #donrcreation_request.set_status_open()  # This keeps the document Open
+                    donrcreation_request.set_status_open()
+                    frappe.db.commit()
+                    added_count += 1
+                    #print(f"donrcreation_request {id_no} added successfully.")
         
         except Exception as e:
             error += 1
             print(f"Error: {e}")
-    print(f"SevaSubType added:{added_count}, updated:{updated_count}, Error: {error}, notseva {not_a_seva_sub_type}, skipped{skipped_count}, duplicate {duplicate_count} added successfully.")
+    print(f"****donrcreation Open:{added_count}, submitted: {submitted_count}, already exists:{duplicate_count}, Error: {error}, Name missing{skipped_count}, ID missing {not_a_req_type} added successfully.")
