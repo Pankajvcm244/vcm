@@ -18,9 +18,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
 class VCMPaymentEntry(PaymentEntry):        
     def on_submit(self):        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        #logging.debug(f"HKM PE on_Submit {vcm_budget_settings.payment_entry_budget_enabled}")
+        #logging.debug(f"VCM PE on_Submit {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
+                #logging.debug(f"VCM PE on_Submit -2 ")
                 update_vcm_budget_on_payment_submit(self)
                 create_vcm_pe_transaction_log(self, "PE Submitted")
         super().on_submit() 
@@ -37,6 +38,7 @@ class VCMPaymentEntry(PaymentEntry):
 
     def validate(self):
         super().validate()
+        #logging.debug(f"VCM PE validate")
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:

@@ -1,6 +1,7 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# clear
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.dhananjaya.patronpriveledgeseva.add_patronpriveledgeseva
+# # exit
 
 # # exit
 
