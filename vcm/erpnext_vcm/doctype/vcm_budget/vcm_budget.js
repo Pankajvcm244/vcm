@@ -12,6 +12,8 @@ frappe.ui.form.on('VCM Budget', {
         calculate_Purchase_Invoice_amount(frm);
         calculate_Purchase_Order_amount(frm);
         calculate_JE_amount(frm);
+        calculate_used_percentage(frm);
+
     },
     budget_items_add: function(frm, cdt, cdn) {
         calculate_total_amount(frm);
@@ -87,6 +89,13 @@ function calculate_total_amount(frm) {
     });
     frm.set_value("total_amount", total);
     frm.refresh_field("total_amount");
+}
+
+function calculate_used_percentage(frm) {
+    let percent = 0;
+    percent = (frm.doc.total_used_amount / (frm.doc.total_amount + frm.doc.total_amended_amount )) * 100;
+    frm.set_value("used_percent", percent);
+    frm.refresh_field("used_percent");
 }
 
 function calculate_amended_amount(frm) {

@@ -9,6 +9,7 @@
   "company",
   "fiscal_year",
   "cost_center",
+  "used_percent",
   "column_break_fgta",
   "total_amount",
   "total_amended_amount",
@@ -136,12 +137,20 @@
    "fieldtype": "Float",
    "label": "Total Additional JE",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "used_percent",
+   "fieldtype": "Float",
+   "label": "Used %",
+   "precision": "2",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-01 16:32:32.078104",
+ "modified": "2025-03-17 07:49:01.562286",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
@@ -149,7 +158,6 @@
  "permissions": [
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -161,7 +169,6 @@
    "write": 1
   },
   {
-   "delete": 1,
    "email": 1,
    "export": 1,
    "permlevel": 1,
@@ -180,6 +187,19 @@
    "read": 1,
    "report": 1,
    "role": "All",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
    "share": 1,
    "submit": 1,
    "write": 1
