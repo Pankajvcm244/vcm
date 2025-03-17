@@ -8,9 +8,15 @@
  "field_order": [
   "budget_head_name",
   "old_parent",
+  "parent_budget_head",
   "column_break_diyr",
   "disabled",
-  "amended_from"
+  "amended_from",
+  "lft",
+  "rgt",
+  "is_group",
+  "old_parent",
+  "parent_budget_head"
  ],
  "fields": [
   {
@@ -45,16 +51,57 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "parent_budget_head",
+   "fieldtype": "Link",
+   "label": "Parent Budget Head",
+   "options": "Budget Head"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "label": "Old Parent",
+   "options": "Budget Head"
+  },
+  {
+   "fieldname": "parent_budget_head",
+   "fieldtype": "Link",
+   "label": "Parent Budget Head",
+   "options": "Budget Head"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
+ "is_tree": 1,
  "links": [],
- "modified": "2025-03-03 17:20:52.801572",
+ "modified": "2025-03-17 16:00:30.154735",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Head",
  "naming_rule": "Expression",
+ "nsm_parent_field": "parent_budget_head",
  "owner": "Administrator",
  "permissions": [
   {

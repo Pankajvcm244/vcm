@@ -307,23 +307,25 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PAYMENT_FLAG_WITH_PI: 
-                    #logging.debug(f"in update_vcm_pE_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
-                    if total_vcm_paid_amount > budget_item.unpaid_purchase_invoice:
-                        frappe.throw(f"Unpaid Purchase Invoice is not available {pe_doc.budget_head}, Balance: {budget_item.unpaid_purchase_invoice}, Request: {total_vcm_paid_amount}")
-                        return False  
-                elif PAYMENT_FLAG_WITH_PO:
-                    #logging.debug(f"in update_vcm_pe_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
-                    if total_vcm_paid_amount > budget_item.unpaid_purchase_order:
-                        frappe.throw(f"Unpaid Purchase Order is not available {pe_doc.budget_head}, Balance: {budget_item.unpaid_purchase_order}, Request: {total_vcm_paid_amount}")
-                        return False
-                else:
-                    #reduce and check budget for PI without PO
-                    if total_vcm_paid_amount > budget_item.balance_budget:
-                        frappe.throw(f"Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {total_vcm_paid_amount}")
-                        return False                    
-                    #logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
-                break     
+                # In reeive dont check amount limit
+                if pe_doc.payment_type != "Receive":
+                    if PAYMENT_FLAG_WITH_PI: 
+                        #logging.debug(f"in update_vcm_pE_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
+                        if total_vcm_paid_amount > budget_item.unpaid_purchase_invoice:
+                            frappe.throw(f"Unpaid Purchase Invoice is not available {pe_doc.budget_head}, Balance: {budget_item.unpaid_purchase_invoice}, Request: {total_vcm_paid_amount}")
+                            return False  
+                    elif PAYMENT_FLAG_WITH_PO:
+                        #logging.debug(f"in update_vcm_pe_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
+                        if total_vcm_paid_amount > budget_item.unpaid_purchase_order:
+                            frappe.throw(f"Unpaid Purchase Order is not available {pe_doc.budget_head}, Balance: {budget_item.unpaid_purchase_order}, Request: {total_vcm_paid_amount}")
+                            return False
+                    else:
+                        #reduce and check budget for PI without PO
+                        if total_vcm_paid_amount > budget_item.balance_budget:
+                            frappe.throw(f"Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {total_vcm_paid_amount}")
+                            return False                    
+                            #logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
+                        break     
     if budget_updated_flag:
         frappe.throw(f"PE Budget not found for Budget Head:{pe_doc.budget_head} {budget_updated_flag},{budget_item.budget_head}")
         return False
@@ -604,13 +606,13 @@ def reverse_vcm_budget_from_jv(jv_doc):
     return True
 
 @frappe.whitelist()          
-def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center):
+def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budget_head):
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
     Explicitly fetches and processes related Payment Entries & Purchase Invoices.
     """
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation}")
+    #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation},{vcm_cost_center},{vcm_budget_head}")
     if vcm_budget_settings.payment_reconciliation == "Yes":
         #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {payment_details}")
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -624,8 +626,9 @@ def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center):
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
-                #logging.debug(f"vcm_budget_reconc 2-2 {payment_details.allocated_amount},{vcm_cost_center}, {payment_details.budget_head}")           
-                if budget_item.budget_head == payment_details.budget_head:
+                #logging.debug(f"vcm_budget_reconc 2-2 {payment_details.allocated_amount},{vcm_cost_center}, {budget_item.budget_head}, {vcm_budget_head},{payment_details.budget_head}")           
+                #if budget_item.budget_head == payment_details.budget_head:
+                if budget_item.budget_head == vcm_budget_head:
                     budget_updated_flag = False                
                     #logging.debug(f"vcm_budget_reconc 3 {payment_details.allocated_amount},{vcm_cost_center}, {payment_details.budget_head}")
                     budget_item.unpaid_purchase_invoice -= payment_details.allocated_amount
@@ -646,7 +649,7 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
     Explicitly fetches and processes related Payment Entries & Purchase Invoices.
     """
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation}")
+    logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation}")
     if vcm_budget_settings.payment_reconciliation == "Yes":
         #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {purchase_invoice}, {purchase_invoice.cost_center}")
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -656,14 +659,14 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
             budget_doc = frappe.get_doc("VCM Budget", budget_name)
         else:
             #If there is no busget for this cost center then just move on
-            #logging.debug(f"in cancel_vcm_budget_reconciliation 2 {budget_name}")
+            logging.debug(f"in cancel_vcm_budget_reconciliation 2 {budget_name}")
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
                 #logging.debug(f"cancel vcm_budget_reconc 2-2 {purchase_invoice.grand_total},{purchase_invoice.budget_head}")           
                 if budget_item.budget_head == purchase_invoice.budget_head:
                     budget_updated_flag = False                
-                    #logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
+                    logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
                     budget_item.unpaid_purchase_invoice += purchase_invoice.grand_total
                     budget_item.used_budget += purchase_invoice.grand_total
                     budget_item.balance_budget -= purchase_invoice.grand_total                
@@ -684,7 +687,7 @@ def validate_budget_head_mandatory(doc):
             if cost_center_doc.custom_vcm_budget_applicable ==  "Yes":
                 # is yes, then Budget Head is mandatory
                 if not row.budget_head:
-                    frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {doc.cost_center}")
+                    frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {row.cost_center}")
                     return False
                 return True
             else:
