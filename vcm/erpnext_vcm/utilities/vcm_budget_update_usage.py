@@ -340,7 +340,9 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     PAYMENT_FLAG_WITH_PI = False
     PAYMENT_FLAG_WITH_PO = False 
     PAYMENT_TYPE_RECEIVE = False
-    DEBIT_NOTE_SUPPLIER = False     
+    DEBIT_NOTE_SUPPLIER = False  
+    PARTY_TYPE_CUSTOMER = False
+       
     # Iterate through the references table to check for Purchase Order or Purchase Invoice
     for reference in pe_doc.references:
         #logging.debug(f" in Payment Entry DOc Ref: {reference.reference_doctype} {reference.reference_name}")
@@ -356,6 +358,10 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     # If Payment Receive entry reverse budget entry
     if pe_doc.party_type == "Supplier":
         DEBIT_NOTE_SUPPLIER = True
+
+    if pe_doc.party_type in {"Shareholder", "Customer"}:
+        #logging.debug(f"in payment entryparty  type custonmer {pe_doc.party_type}")
+        PARTY_TYPE_CUSTOMER = True
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{pe_doc.cost_center}"
@@ -396,17 +402,18 @@ def update_vcm_budget_on_payment_submit(pe_doc):
                     else:
                         budget_item.paid_payment_entry += total_vcm_paid_amount
                 else:
-                    #reduce and check budget for PI without PO
-                    if PAYMENT_TYPE_RECEIVE:
-                        budget_item.used_budget -= total_vcm_paid_amount  # Update Used Budget
-                        budget_item.balance_budget += total_vcm_paid_amount  # Adjust Remaining Budget
-                        budget_item.paid_payment_entry -= total_vcm_paid_amount 
-                        #logging.debug(f"in Payment entry -25  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
-                    else:
-                        budget_item.used_budget += total_vcm_paid_amount  # Update Used Budget
-                        budget_item.balance_budget -= total_vcm_paid_amount  # Adjust Remaining Budget
-                        budget_item.paid_payment_entry += total_vcm_paid_amount 
-                        #logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
+                    if PARTY_TYPE_CUSTOMER == False:
+                        #reduce and check budget for PI without PO
+                        if PAYMENT_TYPE_RECEIVE:
+                            budget_item.used_budget -= total_vcm_paid_amount  # Update Used Budget
+                            budget_item.balance_budget += total_vcm_paid_amount  # Adjust Remaining Budget
+                            budget_item.paid_payment_entry -= total_vcm_paid_amount 
+                            #logging.debug(f"in Payment entry -25  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
+                        else:
+                            budget_item.used_budget += total_vcm_paid_amount  # Update Used Budget
+                            budget_item.balance_budget -= total_vcm_paid_amount  # Adjust Remaining Budget
+                            budget_item.paid_payment_entry += total_vcm_paid_amount 
+                            #logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
                 break 
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
@@ -424,6 +431,7 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
     PAYMENT_FLAG_WITH_PO = False 
     PAYMENT_TYPE_RECEIVE = False  
     DEBIT_NOTE_SUPPLIER = False 
+    PARTY_TYPE_CUSTOMER = False
         # If Payment Receive entry reverse budget entry
     if pe_doc.payment_type == "Receive":
         PAYMENT_TYPE_RECEIVE = True
@@ -438,6 +446,11 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
         # If Payment Receive entry reverse budget entry
     if pe_doc.party_type == "Supplier":
         DEBIT_NOTE_SUPPLIER = True
+
+    if pe_doc.party_type in {"Shareholder", "Customer"}:
+        #logging.debug(f"in payment entryparty  type custonmer {pe_doc.party_type}")
+        PARTY_TYPE_CUSTOMER = True
+
     # Iterate through the references table to check for Purchase Order or Purchase Invoice
     #for reference in pe_doc.references:
         #logging.debug(f"in Payment Entry revert DOc Ref: {reference.reference_doctype} {reference.reference_name}")
@@ -477,15 +490,16 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
                     else:
                         budget_item.paid_payment_entry -= total_paid_amount
                 else:
-                    if PAYMENT_TYPE_RECEIVE:
-                        budget_item.used_budget += total_paid_amount  # Update Used Budget
-                        budget_item.balance_budget -= total_paid_amount  # Adjust Remaining Budget
-                        budget_item.paid_payment_entry += total_paid_amount
-                    else:
-                        budget_item.used_budget -= total_paid_amount  # Update Used Budget
-                        budget_item.balance_budget += total_paid_amount  # Adjust Remaining Budget
-                        budget_item.paid_payment_entry -= total_paid_amount 
-                        #logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
+                    if PARTY_TYPE_CUSTOMER == False:
+                        if PAYMENT_TYPE_RECEIVE:
+                            budget_item.used_budget += total_paid_amount  # Update Used Budget
+                            budget_item.balance_budget -= total_paid_amount  # Adjust Remaining Budget
+                            budget_item.paid_payment_entry += total_paid_amount
+                        else:
+                            budget_item.used_budget -= total_paid_amount  # Update Used Budget
+                            budget_item.balance_budget += total_paid_amount  # Adjust Remaining Budget
+                            budget_item.paid_payment_entry -= total_paid_amount 
+                            #logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
                 #logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")                           
                 break 
     # Save and commit changes
