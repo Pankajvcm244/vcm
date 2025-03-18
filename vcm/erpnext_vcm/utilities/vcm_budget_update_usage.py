@@ -179,8 +179,7 @@ def update_vcm_pi_budget_usage(pi_doc):
                 if PI_FLAG_WITH_PO:
                     if PI_FLAG_WITH_RETURN:
                         # return amount comes as -ve number
-                        logging.debug(f"in PI-PO - with return: {pi_doc.rounded_total} ")
-                        budget_item.unpaid_purchase_order -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
+                        logging.debug(f"in PI-PO - with return: {pi_doc.rounded_total}")
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted )  #Increase PI amount
                     else:
                         budget_item.unpaid_purchase_order -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
@@ -340,7 +339,8 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     # Fetch related Purchase Invoice
     PAYMENT_FLAG_WITH_PI = False
     PAYMENT_FLAG_WITH_PO = False 
-    PAYMENT_TYPE_RECEIVE = False      
+    PAYMENT_TYPE_RECEIVE = False
+    DEBIT_NOTE_SUPPLIER = False     
     # Iterate through the references table to check for Purchase Order or Purchase Invoice
     for reference in pe_doc.references:
         #logging.debug(f" in Payment Entry DOc Ref: {reference.reference_doctype} {reference.reference_name}")
@@ -352,6 +352,10 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     # If Payment Receive entry reverse budget entry
     if pe_doc.payment_type == "Receive":
         PAYMENT_TYPE_RECEIVE = True
+
+    # If Payment Receive entry reverse budget entry
+    if pe_doc.party_type == "Supplier":
+        DEBIT_NOTE_SUPPLIER = True
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{pe_doc.cost_center}"
@@ -370,7 +374,12 @@ def update_vcm_budget_on_payment_submit(pe_doc):
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PAYMENT_FLAG_WITH_PI: 
+                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER:
+                    #this is supplier Debit note and it will be positive  number
+                    #logging.debug(f"in update_vcm_pE_budget_usage debit note {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
+                    budget_item.paid_payment_entry -= total_vcm_paid_amount 
+                    budget_item.unpaid_purchase_invoice += total_vcm_paid_amount
+                elif PAYMENT_FLAG_WITH_PI: 
                     #logging.debug(f"in update_vcm_pE_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
                     budget_item.unpaid_purchase_invoice -= total_vcm_paid_amount  #Decrease PI amount
                     if PAYMENT_TYPE_RECEIVE:
@@ -413,7 +422,8 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
      # Fetch related Purchase Invoice
     PAYMENT_FLAG_WITH_PI = False
     PAYMENT_FLAG_WITH_PO = False 
-    PAYMENT_TYPE_RECEIVE = False   
+    PAYMENT_TYPE_RECEIVE = False  
+    DEBIT_NOTE_SUPPLIER = False 
         # If Payment Receive entry reverse budget entry
     if pe_doc.payment_type == "Receive":
         PAYMENT_TYPE_RECEIVE = True
@@ -424,6 +434,10 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
            PAYMENT_FLAG_WITH_PO = True
         elif reference.reference_doctype == "Purchase Invoice":
             PAYMENT_FLAG_WITH_PI = True
+
+        # If Payment Receive entry reverse budget entry
+    if pe_doc.party_type == "Supplier":
+        DEBIT_NOTE_SUPPLIER = True
     # Iterate through the references table to check for Purchase Order or Purchase Invoice
     #for reference in pe_doc.references:
         #logging.debug(f"in Payment Entry revert DOc Ref: {reference.reference_doctype} {reference.reference_name}")
@@ -443,7 +457,12 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PAYMENT_FLAG_WITH_PI: 
+                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER:
+                    #this is supplier Debit note and it will be positive  number
+                    #logging.debug(f"in update_vcm_pE_budget_usage debit note cancell {total_paid_amount},{budget_item.paid_payment_entry}")
+                    budget_item.paid_payment_entry += total_paid_amount 
+                    budget_item.unpaid_purchase_invoice -= total_paid_amount
+                elif PAYMENT_FLAG_WITH_PI: 
                     #logging.debug(f"revert update_vcm_pE_budget_usage 3 {total_paid_amount},{budget_item.paid_payment_entry}")
                     budget_item.unpaid_purchase_invoice += total_paid_amount  #Decrease PI amount
                     if PAYMENT_TYPE_RECEIVE:
@@ -466,8 +485,8 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
                         budget_item.used_budget -= total_paid_amount  # Update Used Budget
                         budget_item.balance_budget += total_paid_amount  # Adjust Remaining Budget
                         budget_item.paid_payment_entry -= total_paid_amount 
-                        logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
-                logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")                           
+                        #logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
+                #logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")                           
                 break 
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
@@ -488,7 +507,7 @@ def validate_vcm_budget_from_jv(jv_doc):
         
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        #logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
             # Consider only debit entries for expenses , as they consume budget
             # Don't worry about credit entry as they free budget
@@ -525,7 +544,7 @@ def update_vcm_budget_from_jv(jv_doc):
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        #logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
         # now we will ajust budget only for expense entries    
             vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -542,14 +561,14 @@ def update_vcm_budget_from_jv(jv_doc):
                     # Adjust budget based on Debit and Credit values
                     if account.debit > 0:
                         # Increase budget usage
-                        logging.debug(f"in update_JV Debit {account.budget_head}, {account.debit}")
+                        #logging.debug(f"in update_JV Debit {account.budget_head}, {account.debit}")
                         budget_item.used_budget += account.debit
                         budget_item.balance_budget -= account.debit
                         budget_item.additional_je += account.debit
                         budget_updated_flag = False
                     elif account.credit > 0:
                         # Reduce budget usage (refund)
-                        logging.debug(f"in update_JV Credit {account.budget_head}, {account.credit}")
+                        #logging.debug(f"in update_JV Credit {account.budget_head}, {account.credit}")
                         budget_item.used_budget -= account.credit
                         budget_item.balance_budget += account.credit
                         budget_item.additional_je -= account.credit
@@ -569,9 +588,9 @@ def reverse_vcm_budget_from_jv(jv_doc):
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        #logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
-            logging.debug(f"cancel_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, ,{account.credit}")
+            #logging.debug(f"cancel_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, ,{account.credit}")
             # now we will ajust budget only for expense entries      
             vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
             budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
@@ -587,14 +606,14 @@ def reverse_vcm_budget_from_jv(jv_doc):
                     # Adjust budget based on Debit and Credit values
                     if account.debit > 0:
                         # Decrease budget usage as we canceleld JV
-                        logging.debug(f"in cancel_JV Debit {account.budget_head},, {account.debit}")
+                        #logging.debug(f"in cancel_JV Debit {account.budget_head},, {account.debit}")
                         budget_item.used_budget -= account.debit
                         budget_item.balance_budget += account.debit
                         budget_item.additional_je -= account.debit
                         budget_updated_flag = False
                     elif account.credit > 0:
                         # Increase budget usage (refund) as we canceleld JV
-                        logging.debug(f"in cancel_JV Credit {account.budget_head},{account.credit}")
+                        #logging.debug(f"in cancel_JV Credit {account.budget_head},{account.credit}")
                         budget_item.used_budget += account.credit
                         budget_item.balance_budget -= account.credit
                         budget_item.additional_je += account.credit
@@ -659,14 +678,14 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
             budget_doc = frappe.get_doc("VCM Budget", budget_name)
         else:
             #If there is no busget for this cost center then just move on
-            logging.debug(f"in cancel_vcm_budget_reconciliation 2 {budget_name}")
+            #logging.debug(f"in cancel_vcm_budget_reconciliation 2 {budget_name}")
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
                 #logging.debug(f"cancel vcm_budget_reconc 2-2 {purchase_invoice.grand_total},{purchase_invoice.budget_head}")           
                 if budget_item.budget_head == purchase_invoice.budget_head:
                     budget_updated_flag = False                
-                    logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
+                    #logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
                     budget_item.unpaid_purchase_invoice += purchase_invoice.grand_total
                     budget_item.used_budget += purchase_invoice.grand_total
                     budget_item.balance_budget -= purchase_invoice.grand_total                
