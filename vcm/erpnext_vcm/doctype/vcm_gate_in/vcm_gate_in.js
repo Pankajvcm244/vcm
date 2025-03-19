@@ -131,9 +131,18 @@ frappe.ui.form.on("VCM Gate-In", {
                 }
             });
         }
-    }
-
-    
+    },
+    company: function(frm) {
+        if (frm.doc.company) {
+            frm.set_query('cost_center', function() {
+                return {
+                    filters: {
+                        company: frm.doc.company  // Filtering Cost Centers by selected Company
+                    }
+                };
+            });       
+        }
+    },    
 });
 
 function toggle_purchase_person(frm) {

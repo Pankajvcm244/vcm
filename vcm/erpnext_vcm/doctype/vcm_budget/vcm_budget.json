@@ -8,6 +8,7 @@
   "hkm_budget_section",
   "company",
   "fiscal_year",
+  "location",
   "cost_center",
   "used_percent",
   "column_break_fgta",
@@ -31,12 +32,12 @@
    "label": "VCM Budget"
   },
   {
-   "default": "2025-2026",
+   "default": "25-26",
    "fieldname": "fiscal_year",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Fiscal Year",
-   "options": "2025-2026",
+   "options": "25-26",
    "reqd": 1
   },
   {
@@ -54,6 +55,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "budget_items",
    "fieldtype": "Table",
    "label": "Budget Items",
@@ -145,12 +147,19 @@
    "label": "Used %",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Budget Location",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-17 07:49:01.562286",
+ "modified": "2025-03-19 16:00:56.493616",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
@@ -164,32 +173,16 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
-   "share": 1,
-   "submit": 1,
-   "write": 1
+   "share": 1
   },
   {
-   "email": 1,
-   "export": 1,
-   "permlevel": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
    "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "All",
-   "share": 1,
-   "submit": 1,
-   "write": 1
+   "share": 1
   },
   {
    "create": 1,
@@ -201,8 +194,17 @@
    "report": 1,
    "role": "Administrator",
    "share": 1,
-   "submit": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1
   }
  ],
  "sort_field": "modified",

@@ -5,8 +5,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_zzij",
   "company",
+  "location",
+  "column_break_yihs",
+  "cost_center",
+  "budget_head",
+  "section_break_zzij",
   "department",
   "purpose_subject",
   "column_break_uhcb",
@@ -14,10 +18,6 @@
   "target_warehouse",
   "section_break_xgjg",
   "items",
-  "accounting_dimensions_section",
-  "cost_center",
-  "column_break_lcho",
-  "budget_head",
   "section_break_rteu",
   "table_cwab",
   "section_break_wpfr",
@@ -84,21 +84,12 @@
    "read_only": 1
   },
   {
-   "fieldname": "accounting_dimensions_section",
-   "fieldtype": "Section Break",
-   "label": "Accounting Dimensions"
-  },
-  {
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Cost Center",
    "options": "Cost Center",
    "reqd": 1
-  },
-  {
-   "fieldname": "column_break_lcho",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "section_break_xgjg",
@@ -159,12 +150,23 @@
    "label": "Budget Head",
    "options": "Budget Head",
    "reqd": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Budget Location",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_yihs",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-10 16:42:51.718960",
+ "modified": "2025-03-19 15:50:23.361288",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM StoreRequisition",

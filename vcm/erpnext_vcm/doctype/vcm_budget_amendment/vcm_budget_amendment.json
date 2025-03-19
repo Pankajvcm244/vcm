@@ -8,6 +8,7 @@
   "vcm_budget_amendment_section",
   "company",
   "fiscal_year",
+  "location",
   "cost_center",
   "column_break_mhdp",
   "total_proposed_amendment",
@@ -30,11 +31,11 @@
    "reqd": 1
   },
   {
-   "default": "2025-2026",
+   "default": "25-26",
    "fieldname": "fiscal_year",
    "fieldtype": "Select",
    "label": "Fiscal Year",
-   "options": "2025-2026",
+   "options": "25-26",
    "reqd": 1
   },
   {
@@ -78,12 +79,19 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Budget Location",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-28 16:00:19.073153",
+ "modified": "2025-03-19 10:03:57.619955",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Amendment",

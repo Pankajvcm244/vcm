@@ -23,8 +23,36 @@ frappe.ui.form.on("VCM StoreRequisition", {
             "Utilities"
             );
         }
-        }
-    });
+        },
+        company: function(frm) {
+            if (frm.doc.company) {
+                frm.set_query('cost_center', function() {
+                    return {
+                        filters: {
+                            company: frm.doc.company  // Filtering Cost Centers by selected Company
+                        }
+                    };
+                });
+                frm.set_query('department', function() {
+                    return {
+                        filters: {
+                            company: frm.doc.company  // Filtering Cost Centers by selected Company
+                        }
+                    };
+                });
+                frm.set_query('target_warehouse', function() {
+                    return {
+                        filters: {
+                            company: frm.doc.company  // Filtering Cost Centers by selected Company
+                        }
+                    };
+                });
+
+            }
+        },
+
+
+});
 
 //make_custom_buttons: function (frm) {
 //  if (frm.doc.docstatus == 0 && frm.doc.status == "Draft") {

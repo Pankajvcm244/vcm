@@ -11,7 +11,17 @@ frappe.ui.form.on("VCM Budget Amendment", {
     budget_items_remove: function(frm, cdt, cdn) { 
         calculate_proposed_amended_amount(frm);
     },
-
+    company: function(frm) {
+        if (frm.doc.company) {
+            frm.set_query('cost_center', function() {
+                return {
+                    filters: {
+                        company: frm.doc.company  // Filtering Cost Centers by selected Company
+                    }
+                };
+            });
+        }
+    },
     cost_center: function(frm) {
         //console.log("Cost center calling fetch_budget_data.js entry:", frm.doc.name);
         fetch_budget_data(frm);
@@ -69,12 +79,13 @@ function fetch_budget_data(frm) {
         args: {
             company: frm.doc.company,
             fiscal_year: frm.doc.fiscal_year,
-            cost_center: frm.doc.cost_center
+            cost_center: frm.doc.cost_center,
+            location: frm.doc.location
         },
         callback: function(response) {
 
             if (response.message.length === 0) {
-                frappe.msgprint(__('No budget records found for this Company, Fiscal Year, and Cost Center.'));
+                frappe.msgprint(__('No budget records found for this Company, LOcation, Fiscal Year, Location, and Cost Center.'));
                 return;
             }            
             //console.log("in fetch_budget_data entry -2 :", response.message);
@@ -84,7 +95,6 @@ function fetch_budget_data(frm) {
             response.message.forEach(item => {
                 let row = frm.add_child('budget_amendment_items');
                 //console.log("in fetch_budget_data entry 2-1-1 :", item.budget_head, item.original_amount,  );
-
                 row.budget_head = item.budget_head;
                 row.original_amount = item.original_amount || 0;  
                 row.current_budget = item.original_amount || 0; //initialize current budget as original amount
@@ -93,11 +103,8 @@ function fetch_budget_data(frm) {
                 row.balance_budget = item.original_amount || 0; //initialize balance budget as original amount
                 row.proposed_amendment = 0;
             });
-
             // Refresh the child table to update UI
-            frm.refresh_field('budget_amendment_items');
-            
-            
+            frm.refresh_field('budget_amendment_items');     
         }
     });
 }
