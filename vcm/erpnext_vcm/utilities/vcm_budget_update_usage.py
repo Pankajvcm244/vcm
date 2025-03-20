@@ -9,9 +9,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     company_name = frappe.get_doc("Company", po_doc.company)
     company_abbr = company_name.abbr
-    #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{pe_doc.cost_center}"
     budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{po_doc.location}-{po_doc.cost_center}"
-
     
     #logging.debug(f"in validate_vcm_po_ 2 {budget_name}")
     if frappe.db.exists("VCM Budget", budget_name):
@@ -41,7 +39,7 @@ def update_vcm_po_budget_usage(po_doc):
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     company_name = frappe.get_doc("Company", po_doc.company)
     company_abbr = company_name.abbr
-    #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{pe_doc.cost_center}"
+    #logging.debug(f"PO entry {company_abbr}-{vcm_budget_settings.financial_year}-{po_doc.location}-{po_doc.cost_center}")
     budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{po_doc.location}-{po_doc.cost_center}"
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
@@ -157,10 +155,10 @@ def update_vcm_pi_budget_usage(pi_doc):
             PI_FLAG_WITH_PO = True
             break  # Exit loop as soon as we find a linked PO        
     
-    logging.debug(f"in PI -1: {pi_doc.is_return} ")
+    #logging.debug(f"in PI -1: {pi_doc.is_return} ")
     # this is Return/Debit nore entry from Purchase Invocie
     if pi_doc.is_return == 1:
-        logging.debug(f"in PI_FLAG_WITH_RETURN: {pi_doc.rounded_total} , PI_FLAG_WITH_RETURN")
+        #logging.debug(f"in PI_FLAG_WITH_RETURN: {pi_doc.rounded_total} , PI_FLAG_WITH_RETURN")
         PI_FLAG_WITH_RETURN = True
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -193,15 +191,15 @@ def update_vcm_pi_budget_usage(pi_doc):
                 if PI_FLAG_WITH_PO:
                     if PI_FLAG_WITH_RETURN:
                         # return amount comes as -ve number
-                        logging.debug(f"in PI-PO - with return: {pi_doc.rounded_total}")
+                        #logging.debug(f"in PI-PO - with return: {pi_doc.rounded_total}")
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted )  #Increase PI amount
                     else:
                         budget_item.unpaid_purchase_order -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted )  #Increase PI amount
-                        logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
+                        #logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                 else:
                     if PI_FLAG_WITH_RETURN:
-                        logging.debug(f"in PI - with return: {pi_doc.rounded_total} ")
+                        #logging.debug(f"in PI - with return: {pi_doc.rounded_total} ")
                         budget_item.used_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
                         budget_item.balance_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted) 
@@ -210,7 +208,7 @@ def update_vcm_pi_budget_usage(pi_doc):
                         budget_item.used_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
                         budget_item.balance_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
+                        #logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
                 break
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
@@ -232,7 +230,7 @@ def revert_vcm_pi_budget_usage(pi_doc):
     # this is Return/Debit nore entry from Purchase Invocie
     if pi_doc.is_return == 1:
         PI_FLAG_WITH_RETURN = True
-        logging.debug(f"in revert PI return flag: {pi_doc.is_return} , PI_FLAG_WITH_RETURN ")
+        #logging.debug(f"in revert PI return flag: {pi_doc.is_return} , PI_FLAG_WITH_RETURN ")
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     company_name = frappe.get_doc("Company", pi_doc.company)
@@ -262,17 +260,17 @@ def revert_vcm_pi_budget_usage(pi_doc):
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
                 if PI_FLAG_WITH_PO:
                     if PI_FLAG_WITH_RETURN:
-                        logging.debug(f"PI With PO return, {pi_doc.rounded_total}, {PI_FLAG_WITH_RETURN}")
+                        #logging.debug(f"PI With PO return, {pi_doc.rounded_total}, {PI_FLAG_WITH_RETURN}")
                         budget_item.unpaid_purchase_order += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
                         budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  
-                        logging.debug(f"PI With PO revert return, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
+                        #logging.debug(f"PI With PO revert return, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                     else:
                         budget_item.unpaid_purchase_order += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
                         budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  
-                        logging.debug(f"PI With PO revert , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
+                        #logging.debug(f"PI With PO revert , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
                 else:
                     if PI_FLAG_WITH_RETURN:
-                        logging.debug(f"PI return, {pi_doc.rounded_total}")
+                        #logging.debug(f"PI return, {pi_doc.rounded_total}")
                         budget_item.used_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
                         budget_item.balance_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
@@ -281,7 +279,7 @@ def revert_vcm_pi_budget_usage(pi_doc):
                         budget_item.used_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
                         budget_item.balance_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
                         budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        logging.debug(f"Direct PI revert W/O PO , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}")           
+                        #logging.debug(f"Direct PI revert W/O PO , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}")           
                 break
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
@@ -368,7 +366,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
            PAYMENT_FLAG_WITH_PO = True
         elif reference.reference_doctype == "Purchase Invoice":
             PAYMENT_FLAG_WITH_PI = True
-    logging.debug(f"in Payment entry   {pe_doc.payment_type}, {PAYMENT_TYPE_RECEIVE}")
+    #logging.debug(f"in Payment entry   {pe_doc.payment_type}, {PAYMENT_TYPE_RECEIVE}")
     # If Payment Receive entry reverse budget entry
     if pe_doc.payment_type == "Receive":
         PAYMENT_TYPE_RECEIVE = True
@@ -378,7 +376,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
         DEBIT_NOTE_SUPPLIER = True
 
     if pe_doc.party_type in {"Shareholder", "Customer"}:
-        logging.debug(f"in payment entryparty  type custonmer {pe_doc.party_type}")
+        #logging.debug(f"in payment entryparty  type custonmer {pe_doc.party_type}")
         PARTY_TYPE_CUSTOMER = True
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -418,7 +416,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
                     #logging.debug(f"in update_vcm_pe_budget_usage 3 {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
                     budget_item.unpaid_purchase_order -= total_vcm_paid_amount  #Decrease PO amount
                     if PAYMENT_TYPE_RECEIVE:
-                        logging.debug(f"in Payment entry -4  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
+                        #logging.debug(f"in Payment entry -4  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
                         budget_item.paid_payment_entry -= total_vcm_paid_amount
                     else:
                         budget_item.paid_payment_entry += total_vcm_paid_amount
@@ -429,12 +427,12 @@ def update_vcm_budget_on_payment_submit(pe_doc):
                             budget_item.used_budget -= total_vcm_paid_amount  # Update Used Budget
                             budget_item.balance_budget += total_vcm_paid_amount  # Adjust Remaining Budget
                             budget_item.paid_payment_entry -= total_vcm_paid_amount 
-                            logging.debug(f"in Payment entry -25  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
+                            #logging.debug(f"in Payment entry -25  {total_vcm_paid_amount}, {PAYMENT_TYPE_RECEIVE}")
                         else:
                             budget_item.used_budget += total_vcm_paid_amount  # Update Used Budget
                             budget_item.balance_budget -= total_vcm_paid_amount  # Adjust Remaining Budget
                             budget_item.paid_payment_entry += total_vcm_paid_amount 
-                            logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
+                            #logging.debug(f"update_vcm_ w/O PI pi_budget_usage6, {budget_updated_flag}{budget_item.budget_head},{total_vcm_paid_amount}")           
                 break 
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
@@ -539,10 +537,13 @@ def validate_vcm_budget_from_jv(jv_doc):
         if not account.budget_head:  # Consider only debit entries for expenses
             frappe.throw(f"Budget Head is mandatory for JV entry: {jv_doc.name}")
             return False
+        if not account.location:  # Consider only debit entries for expenses
+            frappe.throw(f"Budget Location is mandatory for JV entry: {jv_doc.name}")
+            return False
         
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        #logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
             # Consider only debit entries for expenses , as they consume budget
             # Don't worry about credit entry as they free budget
@@ -550,7 +551,7 @@ def validate_vcm_budget_from_jv(jv_doc):
                 #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
                 #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
                 vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-                company_name = frappe.get_doc("Company", account.company)
+                company_name = frappe.get_doc("Company", jv_doc.company)
                 company_abbr = company_name.abbr
                 budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{account.location}-{account.cost_center}"
                 # Fetch budget settings based on Cost Center or Project
@@ -583,20 +584,22 @@ def update_vcm_budget_from_jv(jv_doc):
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        #logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
         # now we will ajust budget only for expense entries    
             #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
             #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
             vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-            company_name = frappe.get_doc("Company", account.company)
+            company_name = frappe.get_doc("Company", jv_doc.company)
             company_abbr = company_name.abbr
             budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{account.location}-{account.cost_center}"
+            logging.debug(f"In JV budget: {budget_name}")
             # Fetch budget settings based on Cost Center or Project
             if frappe.db.exists("VCM Budget", budget_name):
                 budget_doc = frappe.get_doc("VCM Budget", budget_name)
             else:
                 #If there is no budget for this cost center then just move on
+                logging.debug(f"In JV submit budget name not found: {budget_name}")
                 return True                
             for budget_item in budget_doc.get("budget_items") or []: 
                 #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
@@ -631,24 +634,26 @@ def reverse_vcm_budget_from_jv(jv_doc):
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        #logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
             #logging.debug(f"cancel_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, ,{account.credit}")
             # now we will ajust budget only for expense entries      
             #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
             #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
             vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-            company_name = frappe.get_doc("Company", account.company)
+            company_name = frappe.get_doc("Company", jv_doc.company)
             company_abbr = company_name.abbr
             budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{account.location}-{account.cost_center}"
+            logging.debug(f"name: {budget_name}")
             # Fetch budget settings based on Cost Center or Project
             if frappe.db.exists("VCM Budget", budget_name):
                 budget_doc = frappe.get_doc("VCM Budget", budget_name)
             else:
                 #If there is no budget for this cost center then just move on
+                logging.debug(f"In JV reverse budget name not found: {budget_name}")
                 return True                
             for budget_item in budget_doc.get("budget_items") or []: 
-                #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
+                logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
                 if budget_item.budget_head == account.budget_head:
                     # Adjust budget based on Debit and Credit values
                     if account.debit > 0:
@@ -665,33 +670,32 @@ def reverse_vcm_budget_from_jv(jv_doc):
                         budget_item.balance_budget -= account.credit
                         budget_item.additional_je += account.credit
                         budget_updated_flag = False
-                    #logging.debug(f"revert_JV budget_usage6, {budget_item.used_budget},{account.debit}")
+                    logging.debug(f"revert_JV budget_usage6, {budget_item.used_budget},{account.debit}")
                     # save doc and DB commit here as JV may have naother cost center which will change the budget doc                
                 budget_doc.save()
                 frappe.db.commit()
     return True
 
 @frappe.whitelist()          
-def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budget_head):
+def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budget_head, vcm_company):
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
     Explicitly fetches and processes related Payment Entries & Purchase Invoices.
     """
     #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation},{vcm_cost_center},{vcm_budget_head}")
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     if vcm_budget_settings.payment_reconciliation == "Yes":
-        #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {payment_details}")
-        #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{vcm_cost_center}"
-        vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        company_name = frappe.get_doc("Company", payment_details.company)
+        #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {payment_details}")       
+        company_name = frappe.get_doc("Company", vcm_company)
         company_abbr = company_name.abbr
         budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{payment_details.location}-{vcm_cost_center}"
+        #logging.debug(f"in adjust_vcm_budget_reconciliation Budget name {budget_name}") 
         # Fetch budget settings based on Cost Center or Project
         if frappe.db.exists("VCM Budget", budget_name):
             budget_doc = frappe.get_doc("VCM Budget", budget_name)
         else:
             #If there is no busget for this cost center then just move on
-            #logging.debug(f"in adjust_vcm_budget_reconciliation 2 {budget_name}")
+            logging.debug(f"in adjust_vcm_budget_reconciliation  Budget not found error {budget_name}")
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
@@ -699,7 +703,6 @@ def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budge
                 #if budget_item.budget_head == payment_details.budget_head:
                 if budget_item.budget_head == vcm_budget_head:
                     budget_updated_flag = False                
-                    #logging.debug(f"vcm_budget_reconc 3 {payment_details.allocated_amount},{vcm_cost_center}, {payment_details.budget_head}")
                     budget_item.unpaid_purchase_invoice -= payment_details.allocated_amount
                     budget_item.used_budget -= payment_details.allocated_amount
                     budget_item.balance_budget += payment_details.allocated_amount                
@@ -708,20 +711,17 @@ def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budge
         # Save and commit changes
         budget_doc.save(ignore_permissions=True)
         frappe.db.commit()
-        return True
-    
+        return True    
 
 @frappe.whitelist()
 def cancel_vcm_PI_reconciliation(purchase_invoice):
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
-    Explicitly fetches and processes related Payment Entries & Purchase Invoices.
-    """
+    Explicitly fetches and processes related Payment Entries & Purchase Invoices. """
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation}")
     if vcm_budget_settings.payment_reconciliation == "Yes":
-        #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {purchase_invoice}, {purchase_invoice.cost_center}")
-        #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{purchase_invoice.cost_center}"
+        logging.debug(f"in adjust_vcm_budget_reconciliation 1 {purchase_invoice}, {purchase_invoice.cost_center}")
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         company_name = frappe.get_doc("Company", purchase_invoice.company)
         company_abbr = company_name.abbr
@@ -731,18 +731,40 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
             budget_doc = frappe.get_doc("VCM Budget", budget_name)
         else:
             #If there is no busget for this cost center then just move on
-            #logging.debug(f"in cancel_vcm_budget_reconciliation 2 {budget_name}")
+            logging.debug(f"in cancel_vcm_budget_reconciliation Budget Not found {budget_name}")
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
-                #logging.debug(f"cancel vcm_budget_reconc 2-2 {purchase_invoice.grand_total},{purchase_invoice.budget_head}")           
+                logging.debug(f"cancel vcm_budget_reconc 2-2 {purchase_invoice.name},{purchase_invoice.budget_head}")           
                 if budget_item.budget_head == purchase_invoice.budget_head:
-                    budget_updated_flag = False                
-                    #logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
+                    budget_updated_flag = False
+                    # Here we have two cases , when PI amount is less then we will free PI amount
+                    # But if Payment entry amount was less then we need to free Payment entry amount
+                    # # lets find Payment ENtry 
+                    # 
+                    # payment_entries = frappe.get_all(
+                    #     "Payment Entry Reference",
+                    #     filters={"reference_doctype": "Purchase Invoice", "reference_name": purchase_invoice.name, "parent": },
+                    #     fields=["allocated_amount"]
+                    # )
+                    #logging.debug(f"vcm_budget_reconc 2-1 {payment_entries}")
+                    #for entry in payment_entries:                        
+                        #reco_payment = entry['allocated_amount']
+                        #logging.debug(f"vcm_budget_reconc 2-3 {reco_payment}, {entry}")
+                                        
+                    #if (purchase_invoice.grand_total <=  reco_payment):              
+                    #logging.debug(f"vcm_budget_reconc 3 {purchase_invoice.grand_total},{reco_payment}, {purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
                     budget_item.unpaid_purchase_invoice += purchase_invoice.grand_total
                     budget_item.used_budget += purchase_invoice.grand_total
                     budget_item.balance_budget -= purchase_invoice.grand_total                
                     break 
+                   # else:
+                        #logging.debug(f"vcm_budget_reconc 3-1 {purchase_invoice.grand_total},{reco_payment}, {purchase_invoice.cost_center}, {purchase_invoice.budget_head}")
+                    #    budget_item.unpaid_purchase_invoice += reco_payment
+                    #    budget_item.used_budget += reco_payment
+                    #    budget_item.balance_budget -= reco_payment                
+                    #    break 
+
         # Save and commit changes
         budget_doc.save(ignore_permissions=True)
         frappe.db.commit()
