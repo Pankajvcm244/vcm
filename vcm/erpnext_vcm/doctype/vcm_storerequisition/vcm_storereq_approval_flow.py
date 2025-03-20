@@ -84,7 +84,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
         else:
             send_email_approval(doc, user)
 
-    if current_state in ("Final Level Approved", "Draft","Trashed"):
+    if current_state in ("Final Level Approved", "Draft","Rejected"):
         #logging.debug(f"**in assign_and_notify_next_authority 8 {doc}, {current_state} ")
         close_assignments(doc, remove=True)
     frappe.db.commit()

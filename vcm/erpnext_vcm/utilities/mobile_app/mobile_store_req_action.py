@@ -127,16 +127,16 @@ def storeRequisition_mobile_rejection(docname=None):
     if not hasattr(doc, "workflow_state"):
         frappe.throw(_("Workflow state is missing in this document."))
 
-    doc.workflow_state = "Draft"
+    doc.workflow_state = "Rejected"
     doc.save(ignore_permissions=True)
 
 
-    if doc.workflow_state != "Draft":
+    if doc.workflow_state != "Rejected":
         frappe.throw(_("Workflow state update failed."))
 
 
     # Log the workflow change for tracking
-    doc.add_comment("Workflow", _("Draft"))
+    doc.add_comment("Workflow", _("Rejected"))
        
 
     return {
