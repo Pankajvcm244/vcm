@@ -113,6 +113,9 @@ frappe.ui.form.on("VCM Gate-In", {
                 }
             };
         });
+        if (!frm.doc.date) {  // Only set if the date is empty
+            frm.set_value("gatein_date_time", frappe.datetime.now_datetime());
+        }
     },
     validate: function(frm) {
         if (!frm.doc.purchase_order && !frm.doc.bill_number) {

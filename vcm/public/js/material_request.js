@@ -6,5 +6,23 @@ frappe.ui.form.on("Material Request", {
             frappe.msgprint(__("Cost Center is mandatory."));
             frappe.validated = false;
         }
+        // Check if Material Request Type is "Purchase" or "Material Transfer"
+        if (frm.doc.material_request_type == "Purchase" || frm.doc.material_request_type == "Material Transfer") {
+            if (!frm.doc.set_warehouse) {  // Replace with your Target Warehouse fieldname if different
+                frappe.msgprint({
+                    title: __("Validation Error"),
+                    message: __("Target Warehouse is mandatory for Purchase and Material Transfer requests."),
+                    indicator: "red"
+                });
+                frappe.validated = false;
+            }
+        }
+    }
+});
+
+
+frappe.ui.form.on("Material Request", {
+    validate: function(frm) {
+        
     }
 });

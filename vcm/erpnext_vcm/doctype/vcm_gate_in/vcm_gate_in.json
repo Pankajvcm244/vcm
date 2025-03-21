@@ -11,11 +11,13 @@
   "cost_center",
   "budget_head",
   "status",
+  "gatein_date_time",
   "column_break_zooz",
   "purchase_order",
   "purchase_person",
   "bill_number",
   "bill_date",
+  "vehicle_number",
   "comments",
   "section_break_tojo",
   "items",
@@ -101,8 +103,7 @@
    "fieldname": "budget_head",
    "fieldtype": "Link",
    "label": "Budget Head",
-   "options": "Budget Head",
-   "reqd": 1
+   "options": "Budget Head"
   },
   {
    "fieldname": "amended_from",
@@ -120,12 +121,23 @@
    "label": "Location",
    "options": "Budget Location",
    "reqd": 1
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Data",
+   "label": "Vehicle Number"
+  },
+  {
+   "fieldname": "gatein_date_time",
+   "fieldtype": "Datetime",
+   "label": "GateIn Date Time",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-19 15:53:36.689892",
+ "modified": "2025-03-21 05:41:31.460130",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",
