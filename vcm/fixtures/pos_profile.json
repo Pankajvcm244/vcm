@@ -149,114 +149,6 @@
   "account_for_change_amount": null,
   "allow_discount_change": 0,
   "allow_rate_change": 0,
-  "applicable_for_users": [],
-  "apply_discount_on": "Grand Total",
-  "auto_add_item_to_cart": 0,
-  "budget_head": null,
-  "campaign": null,
-  "company": "TOUCHSTONE FOUNDATION VRINDAVAN - NCR",
-  "company_address": null,
-  "cost_center": null,
-  "country": "India",
-  "currency": "INR",
-  "customer": null,
-  "customer_groups": [],
-  "disable_rounded_total": 0,
-  "disabled": 1,
-  "docstatus": 0,
-  "doctype": "POS Profile",
-  "expense_account": null,
-  "hide_images": 0,
-  "hide_unavailable_items": 0,
-  "ignore_pricing_rule": 0,
-  "income_account": null,
-  "item_groups": [],
-  "letter_head": null,
-  "location": null,
-  "modified": "2025-03-07 09:08:08.892840",
-  "name": "test",
-  "payments": [
-   {
-    "allow_in_returns": 0,
-    "default": 1,
-    "mode_of_payment": "Cash",
-    "parent": "test",
-    "parentfield": "payments",
-    "parenttype": "POS Profile"
-   }
-  ],
-  "print_format": "GST POS Invoice",
-  "select_print_heading": null,
-  "selling_price_list": "Standard Selling",
-  "tax_category": null,
-  "taxes_and_charges": null,
-  "tc_name": null,
-  "update_stock": 1,
-  "validate_stock_on_save": 0,
-  "vcm_account_head_1": null,
-  "warehouse": "Annakoot POS - TSF",
-  "write_off_account": "Cost of Goods Sold - TSF",
-  "write_off_cost_center": "Books - TSF",
-  "write_off_limit": 1.0
- },
- {
-  "account_for_change_amount": "1425 - AXIS Bank- Guest House - TSF",
-  "allow_discount_change": 0,
-  "allow_rate_change": 0,
-  "applicable_for_users": [],
-  "apply_discount_on": "Grand Total",
-  "auto_add_item_to_cart": 0,
-  "budget_head": null,
-  "campaign": null,
-  "company": "TOUCHSTONE FOUNDATION VRINDAVAN - NCR",
-  "company_address": null,
-  "cost_center": "Gifts - TSF",
-  "country": "India",
-  "currency": "INR",
-  "customer": null,
-  "customer_groups": [],
-  "disable_rounded_total": 0,
-  "disabled": 1,
-  "docstatus": 0,
-  "doctype": "POS Profile",
-  "expense_account": null,
-  "hide_images": 0,
-  "hide_unavailable_items": 0,
-  "ignore_pricing_rule": 0,
-  "income_account": null,
-  "item_groups": [],
-  "letter_head": null,
-  "location": null,
-  "modified": "2025-03-07 09:07:59.789946",
-  "name": "test1",
-  "payments": [
-   {
-    "allow_in_returns": 0,
-    "default": 1,
-    "mode_of_payment": "Cash",
-    "parent": "test1",
-    "parentfield": "payments",
-    "parenttype": "POS Profile"
-   }
-  ],
-  "print_format": "HKM - POS Annakoot",
-  "select_print_heading": null,
-  "selling_price_list": "Standard Selling",
-  "tax_category": null,
-  "taxes_and_charges": null,
-  "tc_name": null,
-  "update_stock": 1,
-  "validate_stock_on_save": 0,
-  "vcm_account_head_1": null,
-  "warehouse": "Annakoot POS - TSF",
-  "write_off_account": "Food and Beverages Expense - TSF",
-  "write_off_cost_center": "Annakoot - TSF",
-  "write_off_limit": 1.0
- },
- {
-  "account_for_change_amount": null,
-  "allow_discount_change": 0,
-  "allow_rate_change": 0,
   "applicable_for_users": [
    {
     "default": 1,
@@ -359,14 +251,14 @@
   "applicable_for_users": [
    {
     "default": 1,
-    "parent": "Pushpanjali Seva Counter",
+    "parent": "Pushpanjali POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "ps_pos@gmail.com"
    },
    {
     "default": 0,
-    "parent": "Pushpanjali Seva Counter",
+    "parent": "Pushpanjali POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "teena.arora@vcm.org.in"
@@ -385,7 +277,7 @@
   "customer_groups": [
    {
     "customer_group": "Pushpanjali Customer Group",
-    "parent": "Pushpanjali Seva Counter",
+    "parent": "Pushpanjali POS",
     "parentfield": "customer_groups",
     "parenttype": "POS Profile"
    }
@@ -402,7 +294,7 @@
   "item_groups": [
    {
     "item_group": "Pushpanjali",
-    "parent": "Pushpanjali Seva Counter",
+    "parent": "Pushpanjali POS",
     "parentfield": "item_groups",
     "parenttype": "POS Profile"
    }
@@ -410,13 +302,13 @@
   "letter_head": null,
   "location": "VRN",
   "modified": "2025-03-20 15:56:49.616425",
-  "name": "Pushpanjali Seva Counter",
+  "name": "Pushpanjali POS",
   "payments": [
    {
     "allow_in_returns": 0,
     "default": 1,
     "mode_of_payment": "General Method",
-    "parent": "Pushpanjali Seva Counter",
+    "parent": "Pushpanjali POS",
     "parentfield": "payments",
     "parenttype": "POS Profile"
    }
@@ -442,28 +334,28 @@
   "applicable_for_users": [
    {
     "default": 1,
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "nvgd@vcm.org.in"
    },
    {
     "default": 1,
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "btdd@vcm.org.in"
    },
    {
     "default": 1,
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "preetitrivedi0608@gmail.com"
    },
    {
     "default": 1,
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "applicable_for_users",
     "parenttype": "POS Profile",
     "user": "riya.sardana@vcm.org.in"
@@ -482,7 +374,7 @@
   "customer_groups": [
    {
     "customer_group": "Noida Customer Group",
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "customer_groups",
     "parenttype": "POS Profile"
    }
@@ -500,13 +392,13 @@
   "letter_head": null,
   "location": null,
   "modified": "2025-03-07 10:36:40.368414",
-  "name": "NOIDA POS",
+  "name": "Noida POS",
   "payments": [
    {
     "allow_in_returns": 0,
     "default": 1,
     "mode_of_payment": "UPI",
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "payments",
     "parenttype": "POS Profile"
    },
@@ -514,7 +406,7 @@
     "allow_in_returns": 0,
     "default": 0,
     "mode_of_payment": "Cash",
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "payments",
     "parenttype": "POS Profile"
    },
@@ -522,7 +414,7 @@
     "allow_in_returns": 0,
     "default": 0,
     "mode_of_payment": "BM_Coupon",
-    "parent": "NOIDA POS",
+    "parent": "Noida POS",
     "parentfield": "payments",
     "parenttype": "POS Profile"
    }
