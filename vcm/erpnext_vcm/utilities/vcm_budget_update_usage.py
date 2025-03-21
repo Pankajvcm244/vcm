@@ -15,8 +15,9 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
-        #If there is no busget for this cost center then just move on
+        #If there is no budget for this cost center then throw error as Budget is enabled for this cost cenetr
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
+        frappe.throw(f"Budget not available for Cost Center:{po_doc.cost_center}, Location:{po_doc.location}, Budget Head:{po_doc.budget_head}")
         return True    
     budget_validation_flag = True  
     for budget_item in budget_doc.get("budget_items") or []:
@@ -109,6 +110,7 @@ def validate_vcm_pi_budget_amount(pi_doc):
     else:
         #If there is no busget for this cost center then just move on
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
+        frappe.throw(f"Budget not available for Cost Center:{pi_doc.cost_center}, Location:{pi_doc.location}, Budget Head:{pi_doc.budget_head}")
         return True 
     budget_updated_flag = True
     total_vcm_advance = 0.0  # Initialize advance amount
@@ -313,6 +315,7 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
     else:
         #If there is no busget for this cost center then just move on
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
+        frappe.throw(f"Budget not available for Cost Center:{pe_doc.cost_center}, Location:{pe_doc.location}, Budget Head:{pe_doc.budget_head}")
         return True 
     # Calculate the paid amount impacting budget
     total_vcm_paid_amount = flt(pe_doc.paid_amount)
@@ -532,7 +535,9 @@ def validate_vcm_budget_from_jv(jv_doc):
     Update Budget Used when a Journal Entry (JV) is submitted.
     """    
     #child table of JV, as Cost center is not in JV form, we need to pull from child table
+
     for account in jv_doc.accounts:  
+        budget_updated_flag = False
         #logging.debug(f"update_vcm_JV 2 {account.cost_center},{account.debit}")
         if not account.budget_head:  # Consider only debit entries for expenses
             frappe.throw(f"Budget Head is mandatory for JV entry: {jv_doc.name}")
@@ -559,20 +564,23 @@ def validate_vcm_budget_from_jv(jv_doc):
                     budget_doc = frappe.get_doc("VCM Budget", budget_name)
                 else:
                     #If there is no budget for this cost center then just move on
-                    return True                
+                    frappe.throw(f"Budget not available for Cost Center:{account.cost_center}, Location:{account.location}, Budget Head:{account.budget_head}")
+                    return False                
                 for budget_item in budget_doc.get("budget_items") or []: 
-                    #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
-                    if budget_item.budget_head == account.budget_head:                    
+                    logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
+                    if budget_item.budget_head == account.budget_head: 
+                        logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
                         if account.debit > budget_item.balance_budget:
                             frappe.throw(f"Budget Exceeded for JV {jv_doc.name}, Balance: {budget_item.balance_budget}, Request: {account.debit}")
                             return False
                         else:
-                            budget_updated_flag = False
-                            #logging.debug(f"revert_JV budget_usage6, {budget_item.used_budget},{account.debit}")
-                            # save doc and DB commit here as JV may have naother cost center which will change the budget doc                
-                if budget_updated_flag:
-                    frappe.throw(f"JV Budget not found for Budget Head: {account.budget_head}")
+                            budget_updated_flag = True
+                            logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
+                            # save doc and DB commit here as JV may have naother cost center which will change the budget doc  
+                if budget_updated_flag is False:
+                    frappe.throw(f"Budget not available for Cost Center:{account.cost_center}, Location:{account.location}, Budget Head:{account.budget_head}")
                     return False
+
     return True
 
 @frappe.whitelist()
@@ -600,21 +608,21 @@ def update_vcm_budget_from_jv(jv_doc):
             else:
                 #If there is no budget for this cost center then just move on
                 logging.debug(f"In JV submit budget name not found: {budget_name}")
-                return True                
+                return False                
             for budget_item in budget_doc.get("budget_items") or []: 
-                #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
+                logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
                 if budget_item.budget_head == account.budget_head:
                     # Adjust budget based on Debit and Credit values
                     if account.debit > 0:
                         # Increase budget usage
-                        #logging.debug(f"in update_JV Debit {account.budget_head}, {account.debit}")
+                        logging.debug(f"in update_JV Debit {account.budget_head}, {account.debit}")
                         budget_item.used_budget += account.debit
                         budget_item.balance_budget -= account.debit
                         budget_item.additional_je += account.debit
                         budget_updated_flag = False
                     elif account.credit > 0:
                         # Reduce budget usage (refund)
-                        #logging.debug(f"in update_JV Credit {account.budget_head}, {account.credit}")
+                        logging.debug(f"in update_JV Credit {account.budget_head}, {account.credit}")
                         budget_item.used_budget -= account.credit
                         budget_item.balance_budget += account.credit
                         budget_item.additional_je -= account.credit
@@ -634,7 +642,7 @@ def reverse_vcm_budget_from_jv(jv_doc):
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
-        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        logging.debug(f"reverse_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
         if account_type == "Expense":
             #logging.debug(f"cancel_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, ,{account.credit}")
             # now we will ajust budget only for expense entries      
@@ -644,16 +652,16 @@ def reverse_vcm_budget_from_jv(jv_doc):
             company_name = frappe.get_doc("Company", jv_doc.company)
             company_abbr = company_name.abbr
             budget_name = f"{company_abbr}-{vcm_budget_settings.financial_year}-{account.location}-{account.cost_center}"
-            logging.debug(f"name: {budget_name}")
+            logging.debug(f" reverse JV name: {budget_name}")
             # Fetch budget settings based on Cost Center or Project
             if frappe.db.exists("VCM Budget", budget_name):
                 budget_doc = frappe.get_doc("VCM Budget", budget_name)
             else:
                 #If there is no budget for this cost center then just move on
                 logging.debug(f"In JV reverse budget name not found: {budget_name}")
-                return True                
+                return False                
             for budget_item in budget_doc.get("budget_items") or []: 
-                logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
+                logging.debug(f"reverse _vcm_JV 3 , {account.budget_head},{budget_item.balance_budget}") 
                 if budget_item.budget_head == account.budget_head:
                     # Adjust budget based on Debit and Credit values
                     if account.debit > 0:
@@ -732,6 +740,7 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
         else:
             #If there is no busget for this cost center then just move on
             logging.debug(f"in cancel_vcm_budget_reconciliation Budget Not found {budget_name}")
+            frappe.throw(f"Budget not available for Cost Center:{purchase_invoice.cost_center}, Location:{purchase_invoice.location}, Budget Head:{purchase_invoice.budget_head}")
             return True
         budget_updated_flag = True
         for budget_item in budget_doc.get("budget_items") or []: 
@@ -771,7 +780,7 @@ def cancel_vcm_PI_reconciliation(purchase_invoice):
         return True
                             
 @frappe.whitelist()
-def validate_budget_head_mandatory(doc):
+def validate_budget_head_n_location_mandatory(doc):
         #Journal Entry has cost center in child table, rest other doc have in main doc
         if doc.doctype == "Journal Entry":
             for row in doc.accounts:  # Assuming 'accounts' is the child table in Journal Entry
@@ -782,6 +791,9 @@ def validate_budget_head_mandatory(doc):
                 # is yes, then Budget Head is mandatory
                 if not row.budget_head:
                     frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {row.cost_center}")
+                    return False
+                if not row.location:
+                    frappe.throw(f"Location is mandatory for Cost Center where Budget is applicable: {row.cost_center}")
                     return False
                 return True
             else:

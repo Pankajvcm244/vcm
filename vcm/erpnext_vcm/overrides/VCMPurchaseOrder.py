@@ -24,7 +24,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_po_budget_usage,
     revert_vcm_po_budget_usage,
     validate_vcm_po_budget_amount_budgethead,
-    validate_budget_head_mandatory,
+    validate_budget_head_n_location_mandatory,
 )
 
 # from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
@@ -67,33 +67,40 @@ class VCMPurchaseOrder(PurchaseOrder):
         check_items_are_not_from_template(self)
         validate_work_order_item(self)
         validate_one_time_vendor(self)
+        validate_cost_center(self)
         #self.validate_mrn_availble()
         validate_buying_dates(self)
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            if validate_budget_head_mandatory(self) == True:
-                validate_vcm_po_budget_amount_budgethead(self)            
-            #logging.debug(f"in PO Validate 3 {self.workflow_state}")
+            vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
+            if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
+                if validate_budget_head_n_location_mandatory(self) == True:
+                    validate_vcm_po_budget_amount_budgethead(self)            
+            logging.debug(f"in PO Validate 3 {self.workflow_state}")
         return        
 
     def on_submit(self):         
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PO on_Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            if validate_budget_head_mandatory(self) == True:
-                update_vcm_po_budget_usage(self)             
-                #create_vcm_transaction_log(self, "PO Submitted")
-                #logging.debug(f"VCM PO on_Submit-2 created log")
+            vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
+            if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
+                if validate_budget_head_n_location_mandatory(self) == True:
+                    update_vcm_po_budget_usage(self)             
+                    #create_vcm_transaction_log(self, "PO Submitted")
+                    #logging.debug(f"VCM PO on_Submit-2 created log")
         super().on_submit() 
 
     def on_cancel(self):         
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
-            if validate_budget_head_mandatory(self) == True:
-                #logging.debug(f"VCM PO Submit-2 calling revert budget")
-                revert_vcm_po_budget_usage(self) 
-                #delete_vcm_transaction_log(self,"PO Cancelled")
+            vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
+            if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
+                if validate_budget_head_n_location_mandatory(self) == True:
+                    #logging.debug(f"VCM PO Submit-2 calling revert budget")
+                    revert_vcm_po_budget_usage(self) 
+                    #delete_vcm_transaction_log(self,"PO Cancelled")
         super().on_cancel()
     
     def before_insert(self):
@@ -161,3 +168,10 @@ def resend_approver_request(docname, method):
     frappe.only_for(["Purchase User", "Purchase Manager"])
     doc = frappe.get_doc("Purchase Order", docname)
     assign_and_notify_next_authority(doc, method)
+
+@frappe.whitelist()
+def validate_cost_center(self):
+    if not self.cost_center:
+         frappe.throw( f"Cost Center is mandatory in Purchase Odrer " )
+    if not self.set_warehouse:
+         frappe.throw( f"Target Warehouse is mandatory in Purchase Odrer " )

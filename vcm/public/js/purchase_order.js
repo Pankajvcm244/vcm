@@ -21,5 +21,12 @@ frappe.ui.form.on("Purchase Order", {
                 order_by: "full_name ASC"  // Sort alphabetically
             };
         });
+    },
+    validate: function(frm) {
+        if (!frm.doc.cost_center) {
+            frappe.msgprint(__("Cost Center is mandatory."));
+            frappe.validated = false;
+        }
+        
     }
 });
