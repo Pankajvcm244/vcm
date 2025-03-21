@@ -18,10 +18,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_vcm_pi_budget_amount,
     validate_budget_head_mandatory,
 )
-from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-    create_vcm_transaction_log,
-    delete_vcm_transaction_log,
-)
+# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+#     create_vcm_transaction_log,
+#     delete_vcm_transaction_log,
+# )
 
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 import frappe
@@ -49,7 +49,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         if vcm_budget_settings.pi_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
                 update_vcm_pi_budget_usage(self) 
-                create_vcm_transaction_log(self, "PI Submitted")                
+                #create_vcm_transaction_log(self, "PI Submitted")                
         super().on_submit()
 
     def on_cancel(self):        
@@ -58,7 +58,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
         if vcm_budget_settings.pi_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
                 revert_vcm_pi_budget_usage(self) 
-                delete_vcm_transaction_log(self,"PI Cancelled")
+                #delete_vcm_transaction_log(self,"PI Cancelled")
         super().on_cancel()
 
     def validate(self):

@@ -16,7 +16,7 @@ frappe.ui.form.on("Purchase Order", {
         frm.set_query("custom_purchase_person", function() {
             return {
                 filters: {
-                    role_profile_name: "Purchase User"
+                    role: "Purchase User"
                 },
                 order_by: "full_name ASC"  // Sort alphabetically
             };

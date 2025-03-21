@@ -103,7 +103,7 @@
  "is_submittable": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-19 18:12:56.576600",
+ "modified": "2025-03-21 13:06:16.114132",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Head",
@@ -113,7 +113,6 @@
  "permissions": [
   {
    "create": 1,
-   "delete": 1,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -131,6 +130,18 @@
    "report": 1,
    "role": "All",
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",

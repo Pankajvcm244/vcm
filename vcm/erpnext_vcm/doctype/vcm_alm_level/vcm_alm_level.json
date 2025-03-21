@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-21 12:18:19.386421",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "department",
+  "location",
+  "expense_type",
+  "amount_condition",
+  "recommender",
+  "first_approver",
+  "final_approver"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Department",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "ANY",
+   "fieldname": "expense_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Expense Type",
+   "options": "ANY\nREVEX\nCAPEX",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "options": "Budget Location",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount_condition",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Amount Condition",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "recommender",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Recommender",
+   "options": "User"
+  },
+  {
+   "columns": 1,
+   "fieldname": "first_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "First Approver",
+   "options": "User"
+  },
+  {
+   "columns": 2,
+   "fieldname": "final_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Final Approver",
+   "options": "User",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-21 12:30:26.736974",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM ALM Level",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

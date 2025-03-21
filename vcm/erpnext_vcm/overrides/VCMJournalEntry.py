@@ -19,10 +19,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_vcm_budget_from_jv,
     validate_budget_head_mandatory,
 )
-from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-    create_vcm_jv_transaction_log,
-    delete_vcm_transaction_log,
-)
+# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+#     create_vcm_jv_transaction_log,
+#     delete_vcm_transaction_log,
+# )
 
 from hkm.erpnext___custom.extend.accounts_controller import validate_gst_entry
 
@@ -43,7 +43,7 @@ class VCMJournalEntry(JournalEntry):
         if vcm_budget_settings.jv_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
                 update_vcm_budget_from_jv(self) 
-                create_vcm_jv_transaction_log(self, "JV Submitted")
+                #create_vcm_jv_transaction_log(self, "JV Submitted")
         super(VCMJournalEntry, self).on_submit()
    
 
@@ -54,7 +54,7 @@ class VCMJournalEntry(JournalEntry):
             if validate_budget_head_mandatory(self) == True:
                 #logging.debug(f"VCM JV on_cancel budget")
                 reverse_vcm_budget_from_jv(self) 
-                delete_vcm_transaction_log(self,"JV Cancelled")
+                #delete_vcm_transaction_log(self,"JV Cancelled")
         super(VCMJournalEntry, self).on_cancel()
 
     def validate(self):

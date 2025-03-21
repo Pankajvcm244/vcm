@@ -27,10 +27,10 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_budget_head_mandatory,
 )
 
-from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-    create_vcm_transaction_log,
-    delete_vcm_transaction_log,
-)
+# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
+#     create_vcm_transaction_log,
+#     delete_vcm_transaction_log,
+# )
 
 # from hkm.erpnext___custom.po_approval.po_workflow_trigger import check_alm
 
@@ -42,7 +42,7 @@ class VCMPurchaseOrder(PurchaseOrder):
     def before_save(self):
         # super().before_save() #Since there is no before_insert in parent
         validate_gst_entry(self)
-        self.update_extra_description_from_mrn()
+        #self.update_extra_description_from_mrn()
         self.refresh_alm()
 
     def on_update(self):
@@ -52,6 +52,8 @@ class VCMPurchaseOrder(PurchaseOrder):
     def refresh_alm(self):
         if hasattr(self, "department") and self.department == "":
             frappe.throw("Department is not set.")
+        #if hasattr(self, "location") and self.location == "":
+        #    frappe.throw("Location is not set.")
         alm_level = get_alm_level(self)
         if alm_level is not None:
             self.recommended_by = alm_level.recommender
@@ -65,7 +67,7 @@ class VCMPurchaseOrder(PurchaseOrder):
         check_items_are_not_from_template(self)
         validate_work_order_item(self)
         validate_one_time_vendor(self)
-        self.validate_mrn_availble()
+        #self.validate_mrn_availble()
         validate_buying_dates(self)
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.po_budget_enabled == "Yes":
@@ -80,7 +82,7 @@ class VCMPurchaseOrder(PurchaseOrder):
         if vcm_budget_settings.po_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
                 update_vcm_po_budget_usage(self)             
-                create_vcm_transaction_log(self, "PO Submitted")
+                #create_vcm_transaction_log(self, "PO Submitted")
                 #logging.debug(f"VCM PO on_Submit-2 created log")
         super().on_submit() 
 
@@ -89,9 +91,9 @@ class VCMPurchaseOrder(PurchaseOrder):
         logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             if validate_budget_head_mandatory(self) == True:
-                #logging.debug(f"HKM PO Submit-2 calling revert budget")
+                #logging.debug(f"VCM PO Submit-2 calling revert budget")
                 revert_vcm_po_budget_usage(self) 
-                delete_vcm_transaction_log(self,"PO Cancelled")
+                #delete_vcm_transaction_log(self,"PO Cancelled")
         super().on_cancel()
     
     def before_insert(self):
