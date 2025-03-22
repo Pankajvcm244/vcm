@@ -1,14 +1,4 @@
-frappe.ui.form.on("Purchase Invoice", {
-    onload: function(frm) {
-        frm.set_query("custom_purchase_person", function() {
-            return {
-                filters: {
-                    role: "Purchase User"
-                },
-                order_by: "full_name ASC"  // Sort alphabetically
-            };
-        });
-    },
+frappe.ui.form.on("Stock Entry", {
     company:function(frm){
         frm.events.filter_company_items(frm);
     },
@@ -17,8 +7,7 @@ frappe.ui.form.on("Purchase Invoice", {
                 return {
                     //query: "erpnext.controllers.queries.item_query",
                     filters: { 
-                        is_purchase_item: 1,
-                        has_variants: 0,
+                        is_stock_item: 1,
                         company: doc.company
                     },
                 };                

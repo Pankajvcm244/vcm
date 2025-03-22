@@ -28,5 +28,20 @@ frappe.ui.form.on("Purchase Order", {
             frappe.validated = false;
         }
         
+    },
+    company:function(frm){
+        frm.events.filter_company_items(frm);
+    },
+    filter_company_items:function(frm){
+            frm.set_query("item_code", "items", function(doc, cdt, cdn) {
+                return {
+                    //query: "erpnext.controllers.queries.item_query",
+                    filters: { 
+                        is_purchase_item: 1,
+                        has_variants: 0,
+                        company: doc.company
+                    },
+                };                
+            });    
     }
 });

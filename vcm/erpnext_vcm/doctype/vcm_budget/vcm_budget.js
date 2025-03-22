@@ -68,6 +68,17 @@ frappe.ui.form.on('VCM Budget', {
         if (duplicate_found) {
             frappe.throw(__('Each Budget Head must be unique.'));
         }
+    },
+    company: function(frm) {
+        if (frm.doc.company) {
+            frm.set_query('cost_center', function() {
+                return {
+                    filters: {
+                        company: frm.doc.company  // Filtering Cost Centers by selected Company
+                    }
+                };
+            });       
+        }
     }
 });
 
