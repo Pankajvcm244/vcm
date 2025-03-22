@@ -1,0 +1,139 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-22 15:55:53.534402",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "cost_center",
+  "stock_entry_type",
+  "posting_date",
+  "column_break_dfxj",
+  "foc_devotee_email",
+  "foc_devotee_name",
+  "grand_total",
+  "remarks",
+  "stock_entry_reference",
+  "items_section",
+  "items",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "default": "Books - TSF",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_entry_type",
+   "fieldtype": "Select",
+   "label": "Stock Entry Type",
+   "options": "Material Issue",
+   "read_only": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "foc_devotee_email",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "FOC Devotee Email",
+   "options": "Devotee Details",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "foc_devotee_email.devotee_name",
+   "fieldname": "foc_devotee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "FOC Devotee Name"
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Grand Total",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remarks",
+   "reqd": 1
+  },
+  {
+   "fieldname": "stock_entry_reference",
+   "fieldtype": "Data",
+   "label": "Stock Entry Reference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "FOC Items"
+  },
+  {
+   "fieldname": "column_break_dfxj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "KP FOC Issue",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-03-22 16:40:15.173256",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "KP FOC Issue",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
