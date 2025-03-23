@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 from frappe.utils.data import get_url
 from vcm.erpnext_vcm.utilities.approvals.vcmworkflow_action import (
     return_already_approved_page,
@@ -11,13 +14,11 @@ from frappe.workflow.doctype.workflow_action.workflow_action import (
     get_doc_workflow_state,
     return_success_page,
 )
-
-
 def send_whatsapp_approval(doc, user, mobile_no, allowed_options):
+    logging.debug(f"VCM  send_whatsapp_approval 1 {user}, {mobile_no}")
     approval_link = get_approval_link(doc, user, allowed_options)
     rejection_link = get_rejection_link(doc, user)
     send_whatsapp(doc, mobile_no, approval_link, rejection_link)
-
 
 def get_short_link_name(long_link):
     doc = frappe.get_doc(
@@ -33,13 +34,13 @@ def send_whatsapp(
     approval_link_name = get_short_link_name(approval_link)
     rejection_link_name = get_short_link_name(rejection_link)
 
-    settings = frappe.get_cached_doc("WhatsApp Settings")
+    settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
     po_approval_settings = frappe.get_cached_doc("HKM General Settings")
-    url = f"{settings.url}/{settings.version}/{settings.phone_id}/messages"
+    url = f"{settings.url}"
 
     site_name = cstr(frappe.local.site)
 
-    po_image_link = f"https://{site_name}/api/method/hkm.erpnext___custom.overrides.purchase_order.whatsapp.get_purchase_order_image?docname={doc.name}"
+    po_image_link = f"https://{site_name}/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.get_purchase_order_image?docname={doc.name}"
 
     cleaned_mobile = mobile_no
 
@@ -122,7 +123,8 @@ def get_rejection_link(doc, user):
 
 
 def get_confirm_workflow_action_url(doc, action, user):
-    confirm_action_method = "/api/method/vcm.erpnext_vcm.utilities.approvals.vcmpowhatsapp.confirm_action"
+    logging.debug(f"VCM  get_confirm_workflow_action_url 1 {doc}, {action}, {user}")
+    confirm_action_method = "/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.confirm_action"
 
     params = {
         "action": action,

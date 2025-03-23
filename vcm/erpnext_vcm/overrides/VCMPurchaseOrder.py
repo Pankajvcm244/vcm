@@ -1,7 +1,7 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from hkm.erpnext___custom.overrides.purchase_order.alm import (
+from vcm.erpnext_vcm.utilities.approvals.poalm import (
     assign_and_notify_next_authority,
     get_alm_level,
 )
@@ -76,7 +76,7 @@ class VCMPurchaseOrder(PurchaseOrder):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
                     validate_vcm_po_budget_amount_budgethead(self)            
-            logging.debug(f"in PO Validate 3 {self.workflow_state}")
+            #logging.debug(f"in PO Validate 3 {self.workflow_state}")
         return        
 
     def on_submit(self):         

@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-22 16:11:16.433914",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "token",
+  "column_break_ulnr",
+  "url",
+  "whatsapp_templates_section",
+  "po_whatsapp_enabled",
+  "po_template",
+  "column_break_sfwq",
+  "fp_foc_whatsapp_enabled",
+  "kp_foc_template",
+  "section_break_cmqu",
+  "storereq_whatsapp_enabled",
+  "storereq_template_copy",
+  "column_break_pwqb"
+ ],
+ "fields": [
+  {
+   "fieldname": "token",
+   "fieldtype": "Password",
+   "label": "Token",
+   "length": 250
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URL"
+  },
+  {
+   "fieldname": "po_template",
+   "fieldtype": "Data",
+   "label": "PO Template"
+  },
+  {
+   "fieldname": "column_break_ulnr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "whatsapp_templates_section",
+   "fieldtype": "Section Break",
+   "label": "WhatsAPP Templates"
+  },
+  {
+   "default": "0",
+   "fieldname": "po_whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "PO WhatsAPP Enabled"
+  },
+  {
+   "fieldname": "column_break_sfwq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "fp_foc_whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "FP FOC WhatsAPP Enabled"
+  },
+  {
+   "fieldname": "kp_foc_template",
+   "fieldtype": "Data",
+   "label": "KP FOC Template"
+  },
+  {
+   "fieldname": "section_break_cmqu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "storereq_whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "StoreReq WhatsAPP Enabled"
+  },
+  {
+   "fieldname": "storereq_template_copy",
+   "fieldtype": "Data",
+   "label": "StoreReq Template Copy"
+  },
+  {
+   "fieldname": "column_break_pwqb",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-03-22 16:22:04.487019",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM WhatsAPP Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
