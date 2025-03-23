@@ -14,16 +14,16 @@ class VCMBudget(Document):
             company_abbr = company_name.abbr
             self.name = f"{company_abbr}-{self.fiscal_year}-{self.location}-{self.cost_center}"
 
-    def before_save(self):
-        if self.is_new():  # Ensures name change only on creation
-            if self.cost_center and self.company and self.location and self.fiscal_year:
-                company_name = frappe.get_doc("Company", self.company)
-                company_abbr = company_name.abbr
-                new_name = f"{company_abbr}-{self.fiscal_year}-{self.location}-{self.cost_center}"
-                if not frappe.db.exists("VCM Budget", new_name):
-                    self.name = new_name
-                else:
-                    frappe.throw(f"A VCM Budget with name {new_name} already exists.")
+    # def before_save(self):
+    #     if self.is_new():  # Ensures name change only on creation
+    #         if self.cost_center and self.company and self.location and self.fiscal_year:
+    #             company_name = frappe.get_doc("Company", self.company)
+    #             company_abbr = company_name.abbr
+    #             new_name = f"{company_abbr}-{self.fiscal_year}-{self.location}-{self.cost_center}"
+    #             if not frappe.db.exists("VCM Budget", new_name):
+    #                 self.name = new_name
+    #             else:
+    #                 frappe.throw(f"A VCM Budget with name {new_name} already exists.")
     def on_update(self):
             # Skip addiition or deletion validation for new documents
             # Fetch existing document from the database before modifications
@@ -42,10 +42,27 @@ class VCMBudget(Document):
 
 
     def validate(self):
-        # Check if budget_head is a folder (is_group = 1)
+        #logging.debug(f"in budget validate-1   ")
+        # Check if budget already exists for new entry
+        if self.is_new():
+            #logging.debug(f"in budget validate-ID {self.name} , {self.total_amount}  ")
+            if self.total_amount == 0:
+                # This is new Budget creation as after this Orifgional amount will be non-zero              
+                budget_exists = frappe.db.exists("VCM Budget", {
+                    "company": self.company, 
+                    "location": self.location,
+                    "fiscal_year": self.fiscal_year,
+                    "cost_center": self.cost_center
+                    })
+                if budget_exists:
+                    frappe.throw(f"Budget exists for {self.company}-{self.fiscal_year}-{self.location}-{self.cost_center}")
+               
         is_group = frappe.get_value("Cost Center", self.cost_center, "is_group")
         if is_group:
                 frappe.throw(f"Cost Center {self.cost_center} is a folder. Please select a child Cost Center.")
+        
+        # we will check Budget Head in Child table row below
+        
         budget_heads = set()
         for row in self.budget_items:
             # Check for duplicate budget heads
@@ -54,7 +71,7 @@ class VCMBudget(Document):
 
             is_head_group = frappe.get_value("Budget Head", row.budget_head, "is_group")
             if is_head_group:
-                frappe.throw(f"Budget Head'{row.budget_head}' is a folder. Please select a child Budget Head.")
+                frappe.throw(f"Budget Head '{row.budget_head}' is a folder. Please select a child Budget Head.")
             budget_heads.add(row.budget_head)
 
            

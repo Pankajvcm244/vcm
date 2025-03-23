@@ -21,21 +21,16 @@
  ],
  "fields": [
   {
-   "default": "HARE KRISHNA MOVEMENT VRINDAVAN",
    "fieldname": "company",
    "fieldtype": "Link",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Company",
    "options": "Company",
-   "read_only": 1,
    "reqd": 1
   },
   {
-   "default": "KRISHNA PRASADAM COUNTER - HKMV",
    "fieldname": "cost_center",
    "fieldtype": "Link",
-   "hidden": 1,
    "in_list_view": 1,
    "label": "Cost Center",
    "options": "Cost Center",
@@ -124,7 +119,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-23 08:00:12.776450",
+ "modified": "2025-03-23 15:45:06.578261",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "KP FOC Issue",
