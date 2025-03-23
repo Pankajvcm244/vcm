@@ -87,16 +87,17 @@ def assign_and_notify_next_authority(doc, method="Email"):
 
 
 def is_eligible_to_send_on_whatsapp(user, mobile_no):
-    logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
-    user_meta = frappe.get_meta("User")
-    logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 2 {user_meta}")
-    if user_meta.has_field("purchase_order_whatsapp_approval"):
-        if not frappe.get_value("User", user, "purchase_order_whatsapp_approval"):
-            return False
-    po_approval_settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
-    if po_approval_settings.po_whatsapp_enabled and mobile_no:
-        return True
     return False
+    # logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
+    # user_meta = frappe.get_meta("User")
+    # logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 2 {user_meta}")
+    # if user_meta.has_field("purchase_order_whatsapp_approval"):
+    #     if not frappe.get_value("User", user, "purchase_order_whatsapp_approval"):
+    #         return False
+    # po_approval_settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
+    # if po_approval_settings.po_whatsapp_enabled and mobile_no:
+    #     return True
+    # return False
 
 
 def assign_to_next_approving_authority(doc, user):
@@ -131,7 +132,7 @@ def send_email_approval(doc, user):
     email_args = {
         "recipients": [user],
         "message": frappe.render_template(
-            "vcm.erpnext_vcm.utilities.email_templates./templates.poemail_template.html",
+            "vcm/erpnext_vcm/utilities/email_templates/poemail_template.html",
             template_data,
         ),
         "subject": "#PO :{} Approval".format(doc.name),
