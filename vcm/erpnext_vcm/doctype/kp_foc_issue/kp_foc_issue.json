@@ -5,15 +5,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "foc_devotee_email",
+  "foc_devotee_name",
   "company",
   "cost_center",
   "stock_entry_type",
-  "posting_date",
   "column_break_dfxj",
-  "foc_devotee_email",
-  "foc_devotee_name",
   "grand_total",
   "remarks",
+  "posting_date",
   "stock_entry_reference",
   "items_section",
   "items",
@@ -21,26 +21,36 @@
  ],
  "fields": [
   {
+   "default": "HARE KRISHNA MOVEMENT VRINDAVAN",
    "fieldname": "company",
    "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
    "label": "Company",
    "options": "Company",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
-   "default": "Books - TSF",
+   "default": "KRISHNA PRASADAM COUNTER - HKMV",
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
    "label": "Cost Center",
    "options": "Cost Center",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
+   "default": "Material Issue",
    "fieldname": "stock_entry_type",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Stock Entry Type",
    "options": "Material Issue",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "default": "now",
@@ -114,7 +124,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-22 16:40:15.173256",
+ "modified": "2025-03-23 08:00:12.776450",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "KP FOC Issue",
