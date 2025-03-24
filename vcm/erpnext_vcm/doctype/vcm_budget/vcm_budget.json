@@ -23,7 +23,10 @@
   "total_additional_je",
   "section_break_jqpw",
   "budget_items",
-  "amended_from"
+  "amended_from",
+  "users_tab",
+  "allowed_users_section",
+  "allowed_users"
  ],
  "fields": [
   {
@@ -153,12 +156,28 @@
    "label": "Location",
    "options": "Budget Location",
    "reqd": 1
+  },
+  {
+   "fieldname": "users_tab",
+   "fieldtype": "Tab Break",
+   "label": "Users"
+  },
+  {
+   "fieldname": "allowed_users_section",
+   "fieldtype": "Section Break",
+   "label": "Allowed Users"
+  },
+  {
+   "fieldname": "allowed_users",
+   "fieldtype": "Table",
+   "label": "Allowed Users",
+   "options": "VCM Budget Allowed Users"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-23 14:44:16.101255",
+ "modified": "2025-03-24 11:00:00.559350",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",

@@ -64,9 +64,6 @@ function calculate_proposed_amended_amount(frm) {
     frm.refresh_field("total_proposed_amendment");
 }
 
-
-
-
 function fetch_budget_data(frm) {
     //console.log("in fetch_budget_data entry:", frm.doc.name);
     if (!frm.doc.company || !frm.doc.fiscal_year || !frm.doc.cost_center) {
@@ -83,9 +80,9 @@ function fetch_budget_data(frm) {
             location: frm.doc.location
         },
         callback: function(response) {
-
             if (response.message.length === 0) {
-                frappe.msgprint(__('No budget records found for this Company, LOcation, Fiscal Year, Location, and Cost Center.'));
+                //console.log("in fetch_budget_data entry -2 :", response.message);
+                frappe.msgprint(__('No budget records found for {frm.doc.company}, {frm.doc.fiscal_year}, {frm.doc.location}, {frm.doc.cost_center}.'));
                 return;
             }            
             //console.log("in fetch_budget_data entry -2 :", response.message);

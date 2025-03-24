@@ -7,6 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "budget_head",
+  "proposed_amendment",
+  "proposed_by",
   "original_amount",
   "amended_till_now",
   "current_budget",
@@ -15,9 +17,7 @@
   "unpaid_purchase_order",
   "additional_je",
   "used_budget",
-  "balance_budget",
-  "proposed_amendment",
-  "proposed_by"
+  "balance_budget"
  ],
  "fields": [
   {
@@ -73,6 +73,7 @@
   {
    "fieldname": "proposed_by",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Proposed By",
    "options": "User",
    "reqd": 1
@@ -120,7 +121,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-03 12:46:47.560028",
+ "modified": "2025-03-24 14:11:45.292044",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Amendment Child Table",
