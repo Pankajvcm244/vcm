@@ -82,12 +82,14 @@ def revert_vcm_po_budget_usage(po_doc):
     else:
         #If there is no budget for this cost center then just move on
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
+        # in case we issued some advance to PO and then cancelled the PO free only difference amount
+        # later we will receive the advance via payment entry
         return True    
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == po_doc.budget_head:
-            budget_item.used_budget -= po_doc.rounded_total  # Revert Used Budget
-            budget_item.balance_budget += po_doc.rounded_total  # Restore Balance
-            budget_item.unpaid_purchase_order -= po_doc.rounded_total
+            budget_item.used_budget -= (po_doc.rounded_total - po_doc.advance_paid) # Revert Used Budget
+            budget_item.balance_budget += (po_doc.rounded_total - po_doc.advance_paid ) # Restore Balance
+            budget_item.unpaid_purchase_order -= (po_doc.rounded_total - po_doc.advance_paid)
             #logging.debug(f"revert vcm_po_budget -1, {budget_item.budget_head},{po_doc.rounded_total}")            
             break
     budget_doc.save(ignore_permissions=True)
@@ -377,7 +379,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
        
     # Iterate through the references table to check for Purchase Order or Purchase Invoice
     for reference in pe_doc.references:
-        #logging.debug(f" in Payment Entry DOc Ref: {reference.reference_doctype} {reference.reference_name}")
+        #logging.debug(f" in Payment Entry Doc Ref: {reference.reference_doctype} {reference.reference_name}")
         if reference.reference_doctype == "Purchase Order":
            PAYMENT_FLAG_WITH_PO = True
         elif reference.reference_doctype == "Purchase Invoice":
@@ -415,7 +417,14 @@ def update_vcm_budget_on_payment_submit(pe_doc):
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER:
+                #logging.debug(f"in update_vcm_pE_budget_usage direct receive without PI {total_vcm_paid_amount},{budget_item.paid_payment_entry}, {PAYMENT_FLAG_WITH_PI}")
+                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER and (PAYMENT_FLAG_WITH_PI == False):
+                    #this is supplier Debit note and it will be positive  number
+                    #logging.debug(f"in update_vcm_pE_budget_usage direct receive without PI {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
+                    budget_item.paid_payment_entry -= total_vcm_paid_amount
+                    budget_item.used_budget -= total_vcm_paid_amount  # Update Used Budget
+                    budget_item.balance_budget += total_vcm_paid_amount  # Adjust Remaining Budget
+                elif PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER and (PAYMENT_FLAG_WITH_PI == True):
                     #this is supplier Debit note and it will be positive  number
                     #logging.debug(f"in update_vcm_pE_budget_usage debit note {total_vcm_paid_amount},{budget_item.paid_payment_entry}")
                     budget_item.paid_payment_entry -= total_vcm_paid_amount 
@@ -507,7 +516,13 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_updated_flag = False
                 # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER:
+                if PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER and (PAYMENT_FLAG_WITH_PI == False):
+                    #this is supplier Debit note and it will be positive  number
+                    #logging.debug(f"in update_vcm_pE_budget_usage direct receive without PI {total_paid_amount},{budget_item.paid_payment_entry}")
+                    budget_item.paid_payment_entry += total_paid_amount
+                    budget_item.used_budget += total_paid_amount  # Update Used Budget
+                    budget_item.balance_budget -= total_paid_amount  # Adjust Remaining Budget
+                elif PAYMENT_TYPE_RECEIVE and DEBIT_NOTE_SUPPLIER and (PAYMENT_FLAG_WITH_PI == True):
                     #this is supplier Debit note and it will be positive  number
                     #logging.debug(f"in update_vcm_pE_budget_usage debit note cancell {total_paid_amount},{budget_item.paid_payment_entry}")
                     budget_item.paid_payment_entry += total_paid_amount 
@@ -536,8 +551,8 @@ def revert_vcm_budget_on_payment_submit(pe_doc):
                             budget_item.used_budget -= total_paid_amount  # Update Used Budget
                             budget_item.balance_budget += total_paid_amount  # Adjust Remaining Budget
                             budget_item.paid_payment_entry -= total_paid_amount 
-                            #logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
-                #logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")                           
+                            logging.debug(f"revert_PE_without PI usage6, {budget_item.budget_head},{total_paid_amount}") 
+                logging.debug(f"revert_PE_without PI_budget_usage7, {budget_item.budget_head},{total_paid_amount}")                           
                 break 
     # Save and commit changes
     budget_doc.save(ignore_permissions=True)
