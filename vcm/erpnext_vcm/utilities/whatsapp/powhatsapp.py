@@ -17,7 +17,7 @@ from frappe.workflow.doctype.workflow_action.workflow_action import (
 from frappe.utils.password import get_decrypted_password
 
 def send_whatsapp_approval(doc, user, mobile_no, allowed_options):
-    logging.debug(f"VCM  send_whatsapp_approval 1 {user}, {mobile_no}")
+    #logging.debug(f"VCM send_whatsapp_approval 1 {user}, {mobile_no}")
     approval_link = get_approval_link(doc, user, allowed_options)
     rejection_link = get_rejection_link(doc, user)
     send_whatsapp(doc, mobile_no, approval_link, rejection_link)
@@ -35,78 +35,8 @@ def send_whatsapp(
 ):
     approval_link_name = get_short_link_name(approval_link)
     rejection_link_name = get_short_link_name(rejection_link)
-    logging.debug(f"**** send_whatsapp 1 {approval_link_name}, {rejection_link_name}")
-    # settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
-    #po_approval_settings = frappe.get_cached_doc("HKM General Settings")
-    # url = f"{settings.url}"
+    #logging.debug(f"**** send_whatsapp 1 {doc}, {approval_link_name}, {rejection_link_name}")
 
-    # site_name = cstr(frappe.local.site)
-
-    # po_image_link = f"https://{site_name}/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.get_purchase_order_image?docname={doc.name}"
-
-    #cleaned_mobile = mobile_no
-
-    # payload = json.dumps(
-    #     {
-    #         "messaging_product": "whatsapp",
-    #         "recipient_type": "individual",
-    #         "to": f"+91{cleaned_mobile}",
-    #         "type": "template",
-    #         "template": {
-    #             "name": po_approval_settings.po_whatsapp_template,
-    #             "language": {"code": "en"},
-    #             "components": [
-    #                 {
-    #                     "type": "header",
-    #                     "parameters": [
-    #                         {"type": "image", "image": {"link": po_image_link}}
-    #                     ],
-    #                 },
-    #                 {
-    #                     "type": "body",
-    #                     "parameters": [
-    #                         {"type": "text", "text": doc.department},
-    #                         {"type": "text", "text": doc.name},
-    #                         {"type": "text", "text": doc.supplier_name},
-    #                         {"type": "text", "text": doc.workflow_state},
-    #                         {
-    #                             "type": "text",
-    #                             "text": doc.get_formatted(
-    #                                 "grand_total", absolute_value=True
-    #                             ),
-    #                         },
-    #                     ],
-    #                 },
-    #                 {
-    #                     "type": "button",
-    #                     "index": "0",
-    #                     "sub_type": "url",
-    #                     "parameters": [
-    #                         {"type": "text", "text": approval_link_name},
-    #                     ],
-    #                 },
-    #                 {
-    #                     "type": "button",
-    #                     "index": "1",
-    #                     "sub_type": "url",
-    #                     "parameters": [
-    #                         {"type": "text", "text": rejection_link_name},
-    #                     ],
-    #                 },
-    #             ],
-    #         },
-    #     }
-    # )
-    # headers = {
-    #     "Content-Type": "application/json",
-    #     "Authorization": f'Bearer {settings.get_password("token")}',
-    # }
-
-    # response = requests.request("POST", url, headers=headers, data=payload)
-
-    # print(response.text)
-
-  
     whatsupsettings = frappe.get_doc("VCM WhatsAPP Settings")
     # Fetch the booking document
     #booking = frappe.get_doc("booking", booking_id)
@@ -115,15 +45,41 @@ def send_whatsapp(
     fieldname = "token" 
     decrypted_value = get_decrypted_password(doctype, doctype, fieldname)
     #logging.debug(f"whatsup {name},{mobile}, {hall_name}, {booking_status},  {booking_id}, {whatsupsettings.template}, {date}, {from_time}, {to_time} ")
- 
+    # settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
+    #po_approval_settings = frappe.get_cached_doc("HKM General Settings")
+    
 
-    #logging.debug(f"whatsup {jsondate}, {jsonstarttime}, {jsonendtime}")
+    site_name = cstr(frappe.local.site)
+    po_name  = doc.name
+
+    po_image_link = f"https://{site_name}/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.get_purchase_order_image?docname={doc.name}"
 
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Basic {decrypted_value}"
+         "Content-Type": "application/json",
+         "Authorization": f"Basic {decrypted_value}"
     }
-    data = {
+    # data = {
+    #     "countryCode": "+91",
+    #     "fullPhoneNumber": f"+91{mobile_no}",
+    #     "callbackData": "some text here",
+    #     "type": "Template",
+    #     "template": {
+    #         "name": f"{whatsupsettings.po_template}",
+    #         "languageCode": "en",
+    #         "headerValues": [
+    #             "doc"
+    #         ],            
+    #         "bodyValues": [
+    #             'pankaj',
+    #             "POApproval",
+    #             "24-01-2024",
+    #             "12:30",
+    #             "1:30"
+    #         ]
+    #     }        
+    # }
+
+    data =  {
         "countryCode": "+91",
         "fullPhoneNumber": f"+91{mobile_no}",
         "callbackData": "some text here",
@@ -132,24 +88,38 @@ def send_whatsapp(
             "name": f"{whatsupsettings.po_template}",
             "languageCode": "en",
             "headerValues": [
-                "doc"
+                doc.name
             ],            
             "bodyValues": [
-                'pankaj',
-                "POApproval",
-                "24-01-2024",
-                "12:30",
-                "1:30"
+                doc.department,
+                doc.name,
+                doc.supplier_name,
+                doc.workflow_state,
+                doc.grand_total
             ]
         }        
     }
+    
+
+
+    # response = requests.request("POST", url, headers=headers, data=payload)
+
+    # print(response.text)
+
+  
+
+ 
+
+    #logging.debug(f"whatsup {jsondate}, {jsonstarttime}, {jsonendtime}")
+
+   
     try:
         response = requests.post(whatsupsettings.url, headers=headers, json=data)
         response.raise_for_status()  # Raise exception for HTTP errors
         logging.debug(f"******************whatsup message sent {response.json()}")
         return response.json()
     except requests.exceptions.RequestException as e:
-        logging.debug(f"&&&&&&&&&&&&&whatsup message sent error  {response.json()}, {str(e)}")
+        #logging.debug(f"whatsup message sent error  {response.json()}, {str(e)}")
         frappe.throw(f"Error sending WhatsApp message: {str(e)}")
 
 
