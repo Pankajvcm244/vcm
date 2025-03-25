@@ -340,6 +340,7 @@ fixtures = [
                 "Purchase Order",
                 "Purchase Receipt",
                 "Purchase Invoice",
+                "Cost Center",
                 "VCM Gate-In",
                 "Material Request Item",
                 # "Sales Invoice",

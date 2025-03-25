@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.model.naming import getseries
 import datetime
+from frappe.utils import now
 
 class VCMGateIn(Document):
     def autoname(self):
@@ -13,6 +14,11 @@ class VCMGateIn(Document):
         year = now.strftime("%y")
         prefix = f"GateIn-{year}{month}-"         
         self.name = prefix + getseries(prefix, 5)
+
+    def on_submit(self):
+        self.gatein_date_time =  now() 
+        self.db_update()  # Save the change in the database
+        frappe.db.commit()  # Ensure the update is applied
 
 @frappe.whitelist()
 def update_gate_in_status(gate_in_name, new_status):
