@@ -117,6 +117,7 @@ def assign_to_next_approving_authority(doc, user):
 
 
 def send_email_approval(doc, user):
+    logging.debug(f"in send_email_approval sending email {doc},{user}")
     currency = frappe.get_cached_value("Company", doc.company, "default_currency")
     allowed_options = get_allowed_options(user, doc)
     template_data = {

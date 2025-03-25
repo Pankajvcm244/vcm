@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from frappe.utils.data import get_url
-from vcm.erpnext_vcm.utilities.approvals.vcmworkflow_action import (
+from vcm.erpnext_vcm.utilities.approvals.poworkflow_action import (
     return_already_approved_page,
 )
 import frappe, requests, json, imgkit
@@ -172,6 +172,7 @@ def get_rejection_link(doc, user):
 
 def get_confirm_workflow_action_url(doc, action, user):
     logging.debug(f"VCM  get_confirm_workflow_action_url 1 {doc}, {action}, {user}")
+    # this is like that with / and . do not change
     confirm_action_method = "/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.confirm_action"
 
     params = {
