@@ -1,6 +1,8 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
+from frappe.utils.password import get_decrypted_password
+
 from vcm.erpnext_vcm.utilities.approvals.poalm import (
     assign_and_notify_next_authority,
     get_alm_level,

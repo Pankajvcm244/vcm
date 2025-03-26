@@ -589,7 +589,7 @@ def validate_vcm_budget_from_jv(jv_doc):
                 # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
                 budget_name = frappe.db.get_value(
                     "VCM Budget", 
-                    {"company": jv_doc.company,"location":jv_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":jv_doc.cost_center,"docstatus":1},
+                    {"company": jv_doc.company,"location":account.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":account.cost_center,"docstatus":1},
                     "name")
                 # Fetch budget settings based on Cost Center or Project
                 if frappe.db.exists("VCM Budget", budget_name):
@@ -633,7 +633,7 @@ def update_vcm_budget_from_jv(jv_doc):
             # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
             budget_name = frappe.db.get_value(
                 "VCM Budget", 
-                {"company": jv_doc.company,"location":jv_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":jv_doc.cost_center,"docstatus":1},
+                {"company": jv_doc.company,"location":account.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":account.cost_center,"docstatus":1},
                 "name")
             logging.debug(f"In JV budget: {budget_name}")
             # Fetch budget settings based on Cost Center or Project
@@ -684,7 +684,7 @@ def reverse_vcm_budget_from_jv(jv_doc):
             # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
             budget_name = frappe.db.get_value(
                 "VCM Budget", 
-                {"company": jv_doc.company,"location":jv_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":jv_doc.cost_center,"docstatus":1},
+                {"company": jv_doc.company,"location":account.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":account.cost_center,"docstatus":1},
                 "name")
             logging.debug(f" reverse JV name: {budget_name}")
             # Fetch budget settings based on Cost Center or Project

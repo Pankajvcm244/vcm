@@ -58,26 +58,7 @@ def send_whatsapp(
          "Content-Type": "application/json",
          "Authorization": f"Basic {decrypted_value}"
     }
-    # data = {
-    #     "countryCode": "+91",
-    #     "fullPhoneNumber": f"+91{mobile_no}",
-    #     "callbackData": "some text here",
-    #     "type": "Template",
-    #     "template": {
-    #         "name": f"{whatsupsettings.po_template}",
-    #         "languageCode": "en",
-    #         "headerValues": [
-    #             "doc"
-    #         ],            
-    #         "bodyValues": [
-    #             'pankaj',
-    #             "POApproval",
-    #             "24-01-2024",
-    #             "12:30",
-    #             "1:30"
-    #         ]
-    #     }        
-    # }
+
 
     data =  {
         "countryCode": "+91",
@@ -98,21 +79,10 @@ def send_whatsapp(
                 doc.grand_total
             ]
         }        
-    }
-    
-
-
+    } 
     # response = requests.request("POST", url, headers=headers, data=payload)
-
     # print(response.text)
-
-  
-
- 
-
-    #logging.debug(f"whatsup {jsondate}, {jsonstarttime}, {jsonendtime}")
-
-   
+    #logging.debug(f"whatsup {jsondate}, {jsonstarttime}, {jsonendtime}")   
     try:
         response = requests.post(whatsupsettings.url, headers=headers, json=data)
         response.raise_for_status()  # Raise exception for HTTP errors

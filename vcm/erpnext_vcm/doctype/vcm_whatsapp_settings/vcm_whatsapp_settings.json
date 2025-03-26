@@ -11,13 +11,13 @@
   "whatsapp_templates_section",
   "po_whatsapp_enabled",
   "po_template",
+  "storereq_whatsapp_enabled",
+  "storereq_template_copy",
   "column_break_sfwq",
   "fp_foc_whatsapp_enabled",
   "kp_foc_template",
-  "section_break_cmqu",
-  "storereq_whatsapp_enabled",
-  "storereq_template_copy",
-  "column_break_pwqb"
+  "payment_entry_whatsapp_enabled",
+  "payment_entry_template"
  ],
  "fields": [
   {
@@ -67,10 +67,6 @@
    "label": "KP FOC Template"
   },
   {
-   "fieldname": "section_break_cmqu",
-   "fieldtype": "Section Break"
-  },
-  {
    "default": "0",
    "fieldname": "storereq_whatsapp_enabled",
    "fieldtype": "Check",
@@ -82,14 +78,21 @@
    "label": "StoreReq Template Copy"
   },
   {
-   "fieldname": "column_break_pwqb",
-   "fieldtype": "Column Break"
+   "default": "0",
+   "fieldname": "payment_entry_whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "Payment Entry WhatsAPP Enabled"
+  },
+  {
+   "fieldname": "payment_entry_template",
+   "fieldtype": "Data",
+   "label": "Payment Entry Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-03-22 16:22:04.487019",
+ "modified": "2025-03-26 12:15:56.131065",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM WhatsAPP Settings",

@@ -1,0 +1,80 @@
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Poppins:wght@400;600;800&display=swap");
+  
+    html * {
+      font-size: 1 rem;
+      font-family: "Montserrat", sans-serif;
+      color: #000000;
+    }
+  
+    thead {
+      background-color: #e0e0e0;
+    }
+  
+    .highlight {
+      background-color: #18465d;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #f5d8d8;
+    }
+  
+    .subheading {
+      color: indigo;
+      padding-left: 5px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  
+    .details_column {
+      margin: 5px;
+      display: flex;
+      justify-content: start;
+      font-size: 1rem;
+    }
+  
+  
+  </style>
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background-color: #f9f9f9;">
+    <div style="background-color: #0073e6; padding: 15px; text-align: center; color: #ffffff; font-size: 20px;">
+        🎫 Payment Confirmation: {{party_name}} - {{paid_amount}}
+    </div>
+    <div style="padding: 20px; color: #333;">
+        <p style="font-size: 16px;">Dear <b> {{custom_purchase_person}} </b>,</p>
+        <p style="font-size: 14px; line-height: 1.5;">
+            VCM has issued a payment in <b>{{party_name}}</b> name. Please find the details below:
+        </p>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr style="background-color: #0073e6; color: #ffffff;">
+                <th style="padding: 10px; text-align: left;">Field</th>
+                <th style="padding: 10px; text-align: left;">Details</th>
+            </tr>
+            <tr style="background-color: #f2f7fd;">
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Supplier</b></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{party_name}}</td>
+            </tr>
+            <tr style="background-color: #ffffff;">
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Paid Amount</b></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{paid_amount}}</td>
+            </tr>
+            <tr style="background-color: #f2f7fd;">
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Cheque/UTR Reference Number</b></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd; color: #d9534f;"><b>{{reference_no}}</b></td>
+            </tr>
+            <tr style="background-color: #ffffff;">
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Reference Date</b></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{reference_date}}</td>
+            </tr>
+            <tr style="background-color: #f2f7fd;">
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><b>Doc Name</b></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{name}}</td>
+            </tr>
+        </table>
+        <p style="font-size: 14px; margin-top: 15px;">
+            For further assistance, please contact VCM finance team.
+        <p style="font-size: 12px; color: #777; text-align: center; margin-top: 20px;">
+            Thank you! <br> <b>Your Finance Team</b>
+        </p>
+    </div>
+</div>
+  
