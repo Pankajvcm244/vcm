@@ -41,9 +41,9 @@ def execute(filters=None):
     # SQL Query to fetch budget data with docstatus condition
     query = """
         SELECT 
-            cb.budget_head, cb.original_amount, cb.current_budget, cb.amended_till_now,
-            cb.used_budget, cb.balance_budget, vcm.location, vcm.fiscal_year, vcm.used_percent,
-            vcm.cost_center, vcm.company , vcm.total_unpaid_purchase_order , vcm.total_paid_payment_entry ,vcm.total_unpaid_purchase_invoice
+            cb.budget_head, cb.original_amount, cb.current_budget, cb.amended_till_now, cb.unpaid_purchase_order, cb.unpaid_purchase_invoice, cb.paid_payment_entry,
+            cb.used_budget, cb.balance_budget, vcm.location, vcm.fiscal_year, 
+            vcm.cost_center, vcm.company  
         FROM `tabVCM Budget Child Table` cb
         JOIN `tabVCM Budget` vcm ON cb.parent = vcm.name
         WHERE {conditions}
@@ -61,12 +61,15 @@ def execute(filters=None):
         {"label": "Used Budget", "fieldname": "used_budget", "fieldtype": "Currency", "width": 150},
         {"label": "Amended till now", "fieldname": "amended_till_now", "fieldtype": "Currency", "width": 150},
         {"label": "Balance Budget", "fieldname": "balance_budget", "fieldtype": "Currency", "width": 150},
-        {"label": "Used %", "fieldname": "used_percent", "fieldtype": "Currency", "width": 150},
         {"label": "Fiscal Year", "fieldname": "fiscal_year", "fieldtype": "Data", "width": 120},
-        {"label": "Total UnPaid Purchase Order", "fieldname": "total_unpaid_purchase_order", "fieldtype": "Data", "width": 150},
-        {"label": "Total UnPaid Purchase Invoice", "fieldname": "total_unpaid_purchase_invoice", "fieldtype": "Data", "width": 150},
-        {"label": "Total Paid Payment Entry", "fieldname": "total_paid_payment_entry", "fieldtype": "Data", "width": 150},
+        {"label": "UnPaid Purchase Order", "fieldname": "unpaid_purchase_order", "fieldtype": "Currency", "width": 200},
+        {"label": "UnPaid Purchase Invoice", "fieldname": "unpaid_purchase_invoice", "fieldtype": "Currency", "width": 200},
+        {"label": "Paid Payment Entry", "fieldname": "paid_payment_entry", "fieldtype": "Currency", "width": 200},
         {"label": "Company", "fieldname": "company", "fieldtype": "Data", "width": 200},
     ]
 
     return columns, data
+
+
+
+
