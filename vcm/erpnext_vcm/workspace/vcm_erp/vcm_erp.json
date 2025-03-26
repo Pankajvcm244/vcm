@@ -55,65 +55,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Item wise Reports",
-   "link_count": 5,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item Prices",
-   "link_count": 0,
-   "link_to": "Item Prices",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Sales Register",
-   "link_count": 0,
-   "link_to": "Item-wise Sales Register",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item-wise Price List Rate",
-   "link_count": 0,
-   "link_to": "Item-wise Price List Rate",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "ITEM With GST Rate and HSN",
-   "link_count": 0,
-   "link_to": "ITEM With GST Rate and HSN",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Item Balance (Simple)",
-   "link_count": 0,
-   "link_to": "Item Balance (Simple)",
-   "link_type": "Report",
-   "onboard": 1,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "MRN and GRN Releated Reports",
    "link_count": 4,
    "link_type": "DocType",
@@ -509,9 +450,9 @@
   {
    "hidden": 0,
    "is_query_report": 1,
-   "label": "POS Register - Gifts and Books",
+   "label": "VCM POS Register",
    "link_count": 0,
-   "link_to": "POS Register - Gifts and Books",
+   "link_to": "VCM POS Register",
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
@@ -546,9 +487,68 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item wise Reports",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Item Prices",
+   "link_count": 0,
+   "link_to": "Item Prices",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "VCM Item-wise Sales Register",
+   "link_count": 0,
+   "link_to": "VCM Item-wise Sales Register",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Item-wise Price List Rate",
+   "link_count": 0,
+   "link_to": "Item-wise Price List Rate",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "ITEM With GST Rate and HSN",
+   "link_count": 0,
+   "link_to": "ITEM With GST Rate and HSN",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Item Balance (Simple)",
+   "link_count": 0,
+   "link_to": "Item Balance (Simple)",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
   }
  ],
- "modified": "2025-03-18 16:18:45.475964",
+ "modified": "2025-03-26 10:56:47.679472",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",

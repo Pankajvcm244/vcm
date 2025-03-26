@@ -32,7 +32,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letterhead": null,
- "modified": "2025-03-21 18:41:44.633052",
+ "modified": "2025-03-26 10:58:56.037121",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Mode of Payment & Top Performing Items",
@@ -47,6 +47,18 @@
   },
   {
    "role": "Administrator"
+  },
+  {
+   "role": "VCM FO Exec"
+  },
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Sales Manager"
+  },
+  {
+   "role": "Accounts Manager"
   }
  ],
  "timeout": 0
