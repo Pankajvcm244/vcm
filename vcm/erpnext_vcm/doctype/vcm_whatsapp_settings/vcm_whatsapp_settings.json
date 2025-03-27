@@ -11,13 +11,17 @@
   "whatsapp_templates_section",
   "po_whatsapp_enabled",
   "po_template",
-  "storereq_whatsapp_enabled",
-  "storereq_template_copy",
   "column_break_sfwq",
+  "payment_entry_section",
+  "payment_entry_whatsapp_enabled",
+  "supplier_whatsapp_enabled",
+  "payment_entry_template",
+  "krishna_prasadam_foc_section",
   "fp_foc_whatsapp_enabled",
   "kp_foc_template",
-  "payment_entry_whatsapp_enabled",
-  "payment_entry_template"
+  "store_requisition_section",
+  "storereq_whatsapp_enabled",
+  "storereq_template_copy"
  ],
  "fields": [
   {
@@ -81,18 +85,39 @@
    "default": "0",
    "fieldname": "payment_entry_whatsapp_enabled",
    "fieldtype": "Check",
-   "label": "Payment Entry WhatsAPP Enabled"
+   "label": "Purchase Person WhatsAPP Enabled"
   },
   {
    "fieldname": "payment_entry_template",
    "fieldtype": "Data",
    "label": "Payment Entry Template"
+  },
+  {
+   "fieldname": "payment_entry_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Entry"
+  },
+  {
+   "default": "0",
+   "fieldname": "supplier_whatsapp_enabled",
+   "fieldtype": "Check",
+   "label": "Supplier WhatsAPP Enabled"
+  },
+  {
+   "fieldname": "store_requisition_section",
+   "fieldtype": "Section Break",
+   "label": "Store Requisition"
+  },
+  {
+   "fieldname": "krishna_prasadam_foc_section",
+   "fieldtype": "Section Break",
+   "label": "Krishna Prasadam FOC"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-03-26 12:15:56.131065",
+ "modified": "2025-03-27 11:23:40.051190",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM WhatsAPP Settings",
