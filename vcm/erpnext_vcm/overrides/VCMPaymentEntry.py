@@ -98,11 +98,12 @@ def send_email_to_person(self, person_email, person_name):
         #logging.debug(f"**in send_email_to_purchase_person  {self.name} , {person_email} ************* ")
         company_abbr = frappe.get_value("Company", self.company, "abbr") 
         template_data = { 
+            "payer": self.company,
             "party_name": self.party_name,
             "name": self.name,
             "paid_amount": self.paid_amount,
             "reference_no": self.reference_no,
-            "reference_date": self.reference_date,
+            "reference_date": self.reference_date.strftime("%d-%m-%Y") if hasattr(self, "reference_date") and self.reference_date else None,
             "custom_purchase_person": person_name,  # Purchase person name
             "company_abbr": company_abbr
         }
@@ -150,7 +151,7 @@ def send_whatsapp_to_person(self, mobile_no, whatapp_person_name):
                 self.company,
                 self.paid_amount,
                 self.reference_no,
-                str(self.posting_date) if hasattr(self, "posting_date") else None,  # Convert to string
+                self.reference_date.strftime("%d-%m-%Y") if hasattr(self, "reference_date") and self.reference_date else None,
                 self.name,
                 company_abbr
             ]
