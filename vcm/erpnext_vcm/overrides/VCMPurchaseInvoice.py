@@ -43,7 +43,8 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             prefix = "D-" + prefix
         self.name = prefix + getseries(prefix, 5)
 
-    def on_submit(self):        
+    def on_submit(self):
+        super().on_submit()        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
@@ -52,9 +53,10 @@ class VCMPurchaseInvoice(PurchaseInvoice):
                 if validate_budget_head_n_location_mandatory(self) == True:
                     update_vcm_pi_budget_usage(self) 
                     #create_vcm_transaction_log(self, "PI Submitted")                
-        super().on_submit()
+        
 
-    def on_cancel(self):        
+    def on_cancel(self):
+        super().on_cancel()        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"HKM PI Submit-1 {vcm_budget_settings.pi_budget_enabled}")
         if vcm_budget_settings.pi_budget_enabled == "Yes":
@@ -63,7 +65,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
                 if validate_budget_head_n_location_mandatory(self) == True:
                     revert_vcm_pi_budget_usage(self) 
                     #delete_vcm_transaction_log(self,"PI Cancelled")
-        super().on_cancel()
+        
 
     def validate(self):
         super().validate()

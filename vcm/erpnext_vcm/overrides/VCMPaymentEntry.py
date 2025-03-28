@@ -20,7 +20,8 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
 # )
 
 class VCMPaymentEntry(PaymentEntry):        
-    def on_submit(self):        
+    def on_submit(self):   
+        super().on_submit()     
         vcm_budget_settings = frappe.get_cached_doc("VCM Budget Settings")
         #logging.debug(f"VCM PE on_Submit {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
@@ -68,9 +69,10 @@ class VCMPaymentEntry(PaymentEntry):
                 if supplier_emailid:
                     #logging.debug(f"VCM Payment Entry  2 after_submit calling send email {self},{supplier_emailid}")
                     send_email_to_person(self, supplier_emailid, vcm_party_name) 
-        super().on_submit() 
+         
 
     def on_cancel(self):
+        super().on_cancel()
         vcm_budget_settings = frappe.get_cached_doc("VCM Budget Settings")
         #logging.debug(f"HKM PE on cancel Submit-1 {vcm_budget_settings.payment_entry_budget_enabled}")
         if vcm_budget_settings.payment_entry_budget_enabled == "Yes":
@@ -80,7 +82,7 @@ class VCMPaymentEntry(PaymentEntry):
                 if validate_budget_head_n_location_mandatory(self) == True:
                     revert_vcm_budget_on_payment_submit(self) 
                     #delete_vcm_transaction_log(self,"PE Cancelled")
-        super().on_cancel()
+        
 
     def validate(self):
         super().validate()

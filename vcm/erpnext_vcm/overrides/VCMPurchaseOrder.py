@@ -81,7 +81,8 @@ class VCMPurchaseOrder(PurchaseOrder):
             #logging.debug(f"in PO Validate 3 {self.workflow_state}")
         return        
 
-    def on_submit(self):         
+    def on_submit(self):
+        super().on_submit()          
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PO on_Submit-1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
@@ -91,9 +92,10 @@ class VCMPurchaseOrder(PurchaseOrder):
                     update_vcm_po_budget_usage(self)             
                     #create_vcm_transaction_log(self, "PO Submitted")
                     #logging.debug(f"VCM PO on_Submit-2 created log")
-        super().on_submit() 
+        
 
-    def on_cancel(self):         
+    def on_cancel(self): 
+        super().on_cancel()        
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
@@ -103,7 +105,7 @@ class VCMPurchaseOrder(PurchaseOrder):
                     #logging.debug(f"VCM PO Submit-2 calling revert budget")
                     revert_vcm_po_budget_usage(self) 
                     #delete_vcm_transaction_log(self,"PO Cancelled")
-        super().on_cancel()
+        
     
     def before_insert(self):
         # super().before_insert() #Since there is no before_insert in parent

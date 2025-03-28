@@ -37,7 +37,8 @@ class VCMJournalEntry(JournalEntry):
 
     def on_submit(self):         
         self.validate_gst_entry()
-        self.reconcile_bank_transaction_for_entries_from_statement()        
+        self.reconcile_bank_transaction_for_entries_from_statement() 
+        super(VCMJournalEntry, self).on_submit()       
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
@@ -46,10 +47,11 @@ class VCMJournalEntry(JournalEntry):
             if validate_budget_head_n_location_mandatory(self) == True:
                 update_vcm_budget_from_jv(self) 
                 #create_vcm_jv_transaction_log(self, "JV Submitted")
-        super(VCMJournalEntry, self).on_submit()
+        
    
 
-    def on_cancel(self):        
+    def on_cancel(self):
+        super(VCMJournalEntry, self).on_cancel()       
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"HKM JV on cancel Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
@@ -59,7 +61,7 @@ class VCMJournalEntry(JournalEntry):
                 #logging.debug(f"VCM JV on_cancel budget")
                 reverse_vcm_budget_from_jv(self) 
                 #delete_vcm_transaction_log(self,"JV Cancelled")
-        super(VCMJournalEntry, self).on_cancel()
+        
 
     def validate(self):
         super().validate()  
