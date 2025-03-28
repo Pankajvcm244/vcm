@@ -57,29 +57,35 @@
               <thead>
                 <tr>
                   <th class="text-center">{{ _("Company") }}</th>
-                  <th class="text-center">{{ _("Department") }}</th>
+                  <th class="text-center">{{ _("Cost Center") }}</th>
+                  <th class="text-center">{{ _("Location") }}</th>
+                  <th class="text-center">{{ _("Budget Head") }}</th>
+                  <th class="text-center">{{ _("Department") }}</th>                  
+                </tr>
+              </thead>
+              <tbody style="font-weight: 600">
+                <tr>
+                  <td class="text-center">{{ doc.company }}</td>                  
+                  <td class="text-center">{{ doc.cost_center }}</td>
+                  <td class="text-center">{{ doc.location }}</td>
+                  <td class="text-center">{{ doc.budget_head }}</td> 
+                  <td class="text-center">{{ doc.department }}</td>                 
+                </tr>
+              </tbody>
+              <thead>
+                <tr>
+                  <th class="text-center">{{ _("PO Number") }}</th>                  
+                  <th class="text-center">{{ _("Supplier") }}</th>
+                  <th class="text-center">{{ _("Status") }}</th>
                   <th class="text-center">{{ _("Date") }}</th>
                 </tr>
               </thead>
               <tbody style="font-weight: 600">
                 <tr>
-                  <td class="text-center">{{ doc.company }}</td>
-                  <td class="text-center">{{ doc.department }}</td>
-                  <td class="text-center">{{ doc.transaction_date }}</td>
-                </tr>
-              </tbody>
-              <thead>
-                <tr>
-                  <th class="text-center">{{ _("Number") }}</th>
-                  <th class="text-center">{{ _("Supplier") }}</th>
-                  <th class="text-center">{{ _("Status") }}</th>
-                </tr>
-              </thead>
-              <tbody style="font-weight: 600">
-                <tr>
-                  <td class="text-center">{{ doc.name }}</td>
+                  <td class="text-center">{{ doc.name }}</td>                  
                   <td class="text-center">{{ doc.supplier_name }}</td>
                   <td class="text-center">{{ doc.workflow_state }}</td>
+                  <td class="text-center">{{ doc.transaction_date }}</td>
                 </tr>
               </tbody>
             </table>
