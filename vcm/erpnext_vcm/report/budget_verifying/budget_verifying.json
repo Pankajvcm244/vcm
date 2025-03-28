@@ -1,0 +1,66 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2025-03-28 11:21:01.847955",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2025-03-28 12:48:51.272483",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "Budget Verifying",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Purchase Order",
+ "report_name": "Budget Verifying",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Auditor"
+  },
+  {
+   "role": "MRN Raiser"
+  },
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Purchase Order Approver"
+  },
+  {
+   "role": "Purchase User"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "VCM FO Exec"
+  },
+  {
+   "role": "VCM FIN Bank"
+  },
+  {
+   "role": "VCM FIN Payable"
+  },
+  {
+   "role": "VCM FIN Receivable"
+  },
+  {
+   "role": "VCM Report User"
+  }
+ ],
+ "timeout": 0
+}

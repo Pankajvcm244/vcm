@@ -60,17 +60,17 @@
    "reqd": 1
   },
   {
-   "default": "Merchandise WH1 - TSF",
    "fieldname": "source_warehouse",
    "fieldtype": "Link",
    "label": "Source Warehouse",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-22 10:38:38.347581",
+ "modified": "2025-03-28 16:29:39.714812",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "FOC Items",
