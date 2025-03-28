@@ -55,7 +55,7 @@ def assign_and_notify_next_authority(doc, method="Email"):
         "first_approving_authority",
         "final_approving_authority",
     )
-    logging.debug(f"in assign_and_notify_next_authority PO {current_state}")
+    #logging.debug(f"in assign_and_notify_next_authority PO {doc.name}, {current_state}")
     if current_state in states:
         for i, state in enumerate(states):
             if current_state == state:
@@ -72,22 +72,23 @@ def assign_and_notify_next_authority(doc, method="Email"):
         close_assignments(doc)
         assign_to_next_approving_authority(doc, user)
         mobile_no = frappe.get_value("User", user, "mobile_no")
-        logging.debug(f"in assign_and_notify_next_authority PO mobile {mobile_no}")
+        #logging.debug(f"in assign_and_notify_next_authority PO mobile {mobile_no}")
         if is_eligible_to_send_on_whatsapp(user, mobile_no) or method == "WhatsApp":            
             allowed_options = get_allowed_options(user, doc)
-            logging.debug(f"in assign_and_notify_next_authority calling send whatsapp {doc},{user},{mobile_no}, {allowed_options}  ")
+            #logging.debug(f"in assign_and_notify_next_authority calling send whatsapp {doc},{user},{mobile_no}, {allowed_options}  ")
             send_whatsapp_approval(doc, user, mobile_no, allowed_options)
         #else:
         send_email_approval(doc, user)
 
-    if current_state == "Final Level Approved":
+    #if current_state == "Final Level Approved":
+    if current_state in ("Final Level Approved", "Prepared"):
         close_assignments(doc, remove=True)
     frappe.db.commit()
     return
 
 
 def is_eligible_to_send_on_whatsapp(user, mobile_no):
-    logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
+    #logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
     # user_meta = frappe.get_meta("User")
     #logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 2 {user_meta}")
     # if user_meta.has_field("purchase_order_whatsapp_approval"):
@@ -117,7 +118,7 @@ def assign_to_next_approving_authority(doc, user):
 
 
 def send_email_approval(doc, user):
-    logging.debug(f"in send_email_approval sending email {doc},{user}")
+    #logging.debug(f"in send_email_approval sending email {doc},{user}")
     currency = frappe.get_cached_value("Company", doc.company, "default_currency")
     allowed_options = get_allowed_options(user, doc)
     template_data = {
