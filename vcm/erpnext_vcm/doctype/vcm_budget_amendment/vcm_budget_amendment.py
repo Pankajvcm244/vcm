@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.naming import getseries
 from frappe.model.document import Document
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -79,7 +81,7 @@ class VCMBudgetAmendment(Document):
 
         # Loop over each item in the Budget Amendment child table
 		for amend_item in self.get("budget_amendment_items") or []:
-            #logging.debug(f"Budget Amend-2  {amend_item} ")
+			#logging.debug(f"Budget Amend-2  {amend_item} ")
 			updated = False
 			if amend_item.proposed_amendment == 0:
 				continue  # Skip if no amendment is proposed
@@ -87,7 +89,8 @@ class VCMBudgetAmendment(Document):
 			budget_item = budget_items_map.get(amend_item.budget_head)
 			# Attempt to locate the corresponding child record in the Budget doc
 			if budget_item:
-				#logging.debug(f"Budget Amend-3  {budget_item}, {budget_item.budget_head}, {amend_item.budget_head} ")
+				#logging.debug(f"Budget Amend-3  {budget_item} ")
+				#logging.debug(f"Budget Amend-4   {budget_item.budget_head}, {amend_item.budget_head} ")
 				# Update desired fields. For example:
 				budget_item.current_budget += amend_item.proposed_amendment
 				budget_item.amended_till_now += amend_item.proposed_amendment
@@ -95,8 +98,9 @@ class VCMBudgetAmendment(Document):
 			#update budget amendment child table to sync with Budget child table
 			amend_item.current_budget = budget_item.current_budget
 			amend_item.amended_till_now = budget_item.amended_till_now
-			amend_item.balance_budget = budget_item.balance_budget					
-			#logging.debug(f" Budget Amend-1-1 {amend_item.budget_head}, {budget_item.current_budget},{amend_item.proposed_amendment},{budget_item.balance_budget}")			
+			amend_item.balance_budget = budget_item.balance_budget
+			#logging.debug(f" Budget Item-1-1 {budget_item.original_amount}, {budget_item.amended_till_now},{budget_item.current_budget} ,{budget_item.proposed_amendment},{budget_item.balance_budget}, {budget_item.used_budget}")
+			#logging.debug(f" Budget Amend Item-1-1 {amend_item.original_amount}, {amend_item.amended_till_now},{amend_item.current_budget} ,{amend_item.proposed_amendment},{amend_item.balance_budget}, {amend_item.used_budget}")			
 		try:
 			budget_doc.save(ignore_permissions=True)
 			frappe.db.commit()

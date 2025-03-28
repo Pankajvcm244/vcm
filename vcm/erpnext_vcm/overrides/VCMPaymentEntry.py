@@ -96,13 +96,15 @@ class VCMPaymentEntry(PaymentEntry):
 
 def send_email_to_person(self, person_email, person_name):
         #logging.debug(f"**in send_email_to_purchase_person  {self.name} , {person_email} ************* ")
+        company_abbr = frappe.get_value("Company", self.company, "abbr") 
         template_data = { 
             "party_name": self.party_name,
             "name": self.name,
             "paid_amount": self.paid_amount,
             "reference_no": self.reference_no,
             "reference_date": self.reference_date,
-            "custom_purchase_person": person_name  # Purchase person name
+            "custom_purchase_person": person_name,  # Purchase person name
+            "company_abbr": company_abbr
         }
         email_args = {
             "recipients": [person_email],
@@ -125,7 +127,8 @@ def send_whatsapp_to_person(self, mobile_no, whatapp_person_name):
     doctype = "VCM WhatsAPP Settings"  # Example of a singleton DocType
     fieldname = "token" 
     decrypted_value = get_decrypted_password(doctype, doctype, fieldname)
-    #logging.debug(f"whatsup {name},{mobile}, {hall_name}, {booking_status},  {booking_id}, {whatsupsettings.template}, {date}, {from_time}, {to_time} ")  
+    #logging.debug(f"whatsup {name},{mobile}, {hall_name}, {booking_status},  {booking_id}, {whatsupsettings.template}, {date}, {from_time}, {to_time} ") 
+    company_abbr = frappe.get_value("Company", self.company, "abbr") 
     headers = {
          "Content-Type": "application/json",
          "Authorization": f"Basic {decrypted_value}"
@@ -148,7 +151,8 @@ def send_whatsapp_to_person(self, mobile_no, whatapp_person_name):
                 self.paid_amount,
                 self.reference_no,
                 str(self.posting_date) if hasattr(self, "posting_date") else None,  # Convert to string
-                self.name
+                self.name,
+                company_abbr
             ]
         }        
     }

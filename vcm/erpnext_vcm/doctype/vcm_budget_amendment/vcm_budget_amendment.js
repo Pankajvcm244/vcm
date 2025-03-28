@@ -94,10 +94,14 @@ function fetch_budget_data(frm) {
                 //console.log("in fetch_budget_data entry 2-1-1 :", item.budget_head, item.original_amount,  );
                 row.budget_head = item.budget_head;
                 row.original_amount = item.original_amount || 0;  
-                row.current_budget = item.original_amount || 0; //initialize current budget as original amount
+                row.current_budget = item.current_budget || 0; 
                 row.amended_till_now = item.amended_till_now || 0;
                 row.used_budget = item.used_budget || 0;
-                row.balance_budget = item.original_amount || 0; //initialize balance budget as original amount
+                row.paid_payment_entry = item.paid_payment_entry || 0;
+                row.unpaid_purchase_invoice = item.unpaid_purchase_invoice || 0;
+                row.unpaid_purchase_order = item.unpaid_purchase_order || 0;
+                row.additional_je = item.additional_je || 0;
+                row.balance_budget = item.balance_budget || 0; 
                 row.proposed_amendment = 0;
             });
             // Refresh the child table to update UI

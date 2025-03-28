@@ -74,7 +74,7 @@ def get_budget_items(company, fiscal_year, location, cost_center):
 
     # Fetch all budget items for the given company and fiscal year
     budget_items = frappe.db.sql("""
-        SELECT bci.budget_head, bci.original_amount, bci.amended_till_now, bci.current_budget, bci.used_budget, bci.balance_budget
+        SELECT bci.budget_head, bci.original_amount, bci.amended_till_now, bci.paid_payment_entry, bci.unpaid_purchase_invoice, bci.unpaid_purchase_order, bci.additional_je,  bci.current_budget, bci.used_budget, bci.balance_budget
         FROM `tabVCM Budget` b
         JOIN `tabVCM Budget Child Table` bci ON b.name = bci.parent
         WHERE b.company = %s AND b.location = %s AND b.fiscal_year = %s AND b.cost_center = %s AND b.docstatus = 1
