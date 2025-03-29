@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:VICR-{MM}-{YY}-{#####}",
+ "creation": "2025-03-29 14:13:58.563719",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "status",
+  "item_name",
+  "item_group",
+  "stock_item",
+  "asset_item",
+  "is_sales_item",
+  "asset_category",
+  "column_break_biuj",
+  "unit_of_measure",
+  "remarks",
+  "hsn_code",
+  "sales_details_section",
+  "valuation_rate",
+  "tax_category"
+ ],
+ "fields": [
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "no_copy": 1,
+   "options": "Pending\nCreated\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Group",
+   "options": "Item Group",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "stock_item",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Stock Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "asset_item",
+   "fieldtype": "Check",
+   "label": "Is Asset Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sales_item",
+   "fieldtype": "Check",
+   "label": "<b style=\"color: red;\">Is Sales Item</b>"
+  },
+  {
+   "depends_on": "eval:doc.asset_item",
+   "fieldname": "asset_category",
+   "fieldtype": "Link",
+   "label": "Asset Category",
+   "mandatory_depends_on": "eval:doc.asset_item",
+   "options": "Asset Category"
+  },
+  {
+   "fieldname": "column_break_biuj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit_of_measure",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit of Measure",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks/Purpose"
+  },
+  {
+   "fieldname": "hsn_code",
+   "fieldtype": "Int",
+   "label": "HSN CODE",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_details_section",
+   "fieldtype": "Section Break",
+   "label": "Sales Details"
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Float",
+   "label": "Valuation Rate"
+  },
+  {
+   "fieldname": "tax_category",
+   "fieldtype": "Link",
+   "label": "Item Tax Template",
+   "options": "Item Tax Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-29 14:29:30.581983",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Item Creation Request",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Item Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}

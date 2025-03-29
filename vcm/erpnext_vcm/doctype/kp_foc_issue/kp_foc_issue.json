@@ -7,17 +7,19 @@
  "field_order": [
   "foc_devotee_email",
   "foc_devotee_name",
-  "company",
-  "cost_center",
-  "stock_entry_type",
   "column_break_dfxj",
-  "grand_total",
   "remarks",
-  "posting_date",
-  "stock_entry_reference",
+  "grand_total",
   "items_section",
   "items",
-  "amended_from"
+  "amended_from",
+  "section_break_cmdl",
+  "company",
+  "cost_center",
+  "column_break_ffjs",
+  "stock_entry_type",
+  "posting_date",
+  "stock_entry_reference"
  ],
  "fields": [
   {
@@ -112,12 +114,20 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "section_break_cmdl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ffjs",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-28 17:08:01.432622",
+ "modified": "2025-03-29 11:28:38.712703",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "KP FOC Issue",
