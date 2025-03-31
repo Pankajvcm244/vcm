@@ -112,8 +112,7 @@ frappe.ui.form.on("VCM Gate-In", {
                     role: "Purchase User"
                 }
             };
-        });
-       
+        });       
     },
     validate: function(frm) {
         if (!frm.doc.purchase_order && !frm.doc.bill_number) {
@@ -143,7 +142,14 @@ frappe.ui.form.on("VCM Gate-In", {
                 };
             });       
         }
-    },    
+    }
+    // , 
+    // cost_center: function(frm) {
+    //     fetch_budget_data(frm);
+    // },
+    // location: function(frm) {
+    //     fetch_budget_data(frm);
+    // }   
 });
 
 function toggle_purchase_person(frm) {
@@ -151,5 +157,31 @@ function toggle_purchase_person(frm) {
         frm.set_df_property('custom_purchase_person', 'read_only', 0);  // Make editable
     } else {
         frm.set_df_property('custom_purchase_person', 'read_only', 1);  // Make read-only
+    }
+}
+
+
+function fetch_budget_data(frm) {
+    if (frm.doc.cost_center && frm.doc.location && frm.doc.company) {
+        frappe.call({
+            method: "vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget.get_vcm_budget_head",
+            args: {
+                cost_center: frm.doc.cost_center,
+                location: frm.doc.location,
+                company: frm.doc.company
+            },
+            callback: function(response) {
+                if (response.message) {
+                    let budget_heads = response.message.budget_heads;
+
+                    // Set query for Budget Head field
+                    frm.set_query("budget_head", function() {
+                        return {
+                            filters: [["name", "in", budget_heads]]
+                        };
+                    });
+                }
+            }
+        });
     }
 }

@@ -10,6 +10,7 @@
   "location",
   "cost_center",
   "budget_head",
+  "fiscal_year",
   "status",
   "gatein_date_time",
   "column_break_zooz",
@@ -139,12 +140,21 @@
    "fieldtype": "Data",
    "label": "Security Person Name",
    "reqd": 1
+  },
+  {
+   "default": "2025-2026",
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-31 18:28:10.401648",
+ "modified": "2025-03-31 19:26:05.914663",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",

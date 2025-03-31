@@ -35,18 +35,18 @@
    "label": "VCM Budget"
   },
   {
-   "default": "25-26",
+   "default": "2025-2026",
    "fieldname": "fiscal_year",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Fiscal Year",
-   "options": "25-26",
+   "options": "Fiscal Year",
    "reqd": 1
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
-   "label": "Cost Center",
+   "label": "Cost Centre",
    "options": "Cost Center",
    "reqd": 1
   },
@@ -177,7 +177,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-24 11:00:00.559350",
+ "modified": "2025-03-31 19:45:40.858850",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
