@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:BudgettHead-{YY}{MM}-{####}",
  "creation": "2025-02-17 17:57:46.119998",
@@ -8,14 +9,15 @@
  "field_order": [
   "budget_head_name",
   "budget_head_number",
-  "parent_budget_head",
+  "pool_budget_head",
   "column_break_diyr",
   "disabled",
   "amended_from",
   "lft",
   "rgt",
   "is_group",
-  "old_parent"
+  "old_parent",
+  "parent_budget_head"
  ],
  "fields": [
   {
@@ -97,13 +99,19 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Budget Head Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "pool_budget_head",
+   "fieldtype": "Check",
+   "label": "Pool Budget Head"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-03-21 13:06:16.114132",
+ "modified": "2025-03-29 11:02:18.482113",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Head",
@@ -120,6 +128,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
@@ -141,6 +150,7 @@
    "report": 1,
    "role": "Administrator",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
