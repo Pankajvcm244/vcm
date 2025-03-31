@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 import datetime
 import logging
 logging.basicConfig(level=logging.DEBUG)
+import frappe
+from frappe.model.naming import getseries
+
 
 from pymysql import Date
 from hkm.erpnext___custom.overrides.buying_validations import (
@@ -33,15 +36,7 @@ from frappe.model.naming import getseries
 
 
 class VCMPurchaseInvoice(PurchaseInvoice):
-    def autoname(self):
-        dateF = getdate(self.posting_date)
-        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
-        year = dateF.strftime("%y")
-        month = dateF.strftime("%m")
-        prefix = f"{company_abbr}-PI-{year}{month}-"
-        if self.is_return:
-            prefix = "D-" + prefix
-        self.name = prefix + getseries(prefix, 5)
+
 
     def on_submit(self):
         super().on_submit()        
@@ -81,6 +76,46 @@ class VCMPurchaseInvoice(PurchaseInvoice):
                     validate_vcm_pi_budget_amount(self)
                     #logging.debug(f"in PI Validate 3 {self.workflow_state}")
         return
+
+    def before_insert(self):
+        # super().before_insert() #Since there is no before_insert in parent
+        self.set_naming_series()
+
+    def set_naming_series(self):
+        # Get the current date and time
+        now = getdate(self.posting_date)
+        # Get the current month in 2-digit format
+        month = now.strftime("%m")
+        # Get the current year in 2-digit format
+        year = now.strftime("%y")
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
+        #logging.debug(f"set_naming_series-1 {company_abbr}")
+        company_letter = self.trim_company_abbr()
+        #logging.debug(f"set_naming_series-2 {company_letter}")
+        if is_child_of_operations(self.cost_center, company_abbr) == True:
+            prefix = f"{company_letter}PIO{year}{month}"
+        elif is_child_of_project(self.cost_center, company_abbr):
+            prefix = f"{company_letter}PIP{year}{month}"
+        else:
+            prefix = f"{company_abbr}-PI-{year}{month}"
+        if self.is_return:
+            prefix = "R-" + prefix
+            self.name = prefix + getseries(prefix, 3)
+        self.naming_series = f"{prefix}-"
+
+    def trim_company_abbr(self):
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
+        #logging.debug(f"trim_company_abbr-1 {company_abbr}")
+        if company_abbr ==   "HKMV":
+            return "H"
+        elif company_abbr == "VCMT":
+            return "V"
+        elif company_abbr == "TSF":
+            return "T"
+        elif company_abbr == "HKMD":
+            return "D"
+        elif company_abbr == "HKML":
+            return "L"
 
     def validate_expense_account(self):
         for item in self.get("items"):
@@ -179,3 +214,22 @@ def get_documents_map_data(document):
         purchase_receipts=pr_docs,
     )
     return frappe.render_template("templates/purchase_invoice/documents_map.html", data)
+
+
+def is_child_of_operations(cost_center, company_abbr):
+    parent = cost_center
+    comp_abbr = company_abbr
+    while parent:
+        parent = frappe.db.get_value("Cost Center", parent, "parent_cost_center")
+        if parent == f"OPERATIONS - {comp_abbr}":
+            return True
+    return False
+
+def is_child_of_project(cost_center, company_abbr):
+    parent = cost_center
+    comp_abbr = company_abbr
+    while parent:
+        parent = frappe.db.get_value("Cost Center", parent, "parent_cost_center")
+        if parent == f"PROJECT - {comp_abbr}":
+            return True
+    return False

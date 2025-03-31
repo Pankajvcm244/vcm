@@ -269,16 +269,10 @@ class VCMPOSInv(POSInvoice):
         #
 
         #numbering series for Krishna Prasadam
-        if (self.pos_profile == 'Krishna Prasadam'):    
-            # select a document series name based on customer             
-            if self.customer  == 'FOC':
-                prefix = f"HKPFOC-{year}{month}-"
-                self.name = prefix + getseries(prefix, 4)            
-            elif  self.customer  == 'WALK_IN':          
-                prefix = f"HKPPOS-{year}{month}-"         
-                self.name = prefix + getseries(prefix, 4)            
-            else:
-                frappe.throw(f"Unknown customer:{self.customer} Error POSINV003 . Please select FOC or WALK_IN as customer before completing the order.")
+        if (self.pos_profile == 'Krishna Prasadam Counter'):    
+            # select a document series name based on customer           
+            prefix = f"KPR-2526-"         
+            self.name = prefix + getseries(prefix, 7)            
         elif (self.pos_profile == 'Krishnamrita'): 
             # select a document series name based on customer             
             if self.customer  == 'FOC':
@@ -289,9 +283,9 @@ class VCMPOSInv(POSInvoice):
                 self.name = prefix + getseries(prefix, 4)            
             else:
                 frappe.throw(f"Unknown customer:{self.customer} Error POSINV004 . Please select correct customer before completing the order.")
-        elif (self.pos_profile == 'Pushpanjali'):  
-            prefix = f"VPS-{year}{month}-"         
-            self.name = prefix + getseries(prefix, 5)           
+        elif (self.pos_profile == 'Pushpanjali POS'):  
+            prefix = f"PSR-2526-"         
+            self.name = prefix + getseries(prefix, 7)           
         elif (self.pos_profile == 'Surabhi POS'):  
             prefix = f"TSP-{year}{month}-"         
             self.name = prefix + getseries(prefix, 5)

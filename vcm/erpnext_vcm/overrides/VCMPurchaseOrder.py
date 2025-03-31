@@ -143,10 +143,11 @@ class VCMPurchaseOrder(PurchaseOrder):
 
 
     def set_naming_series(self):
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
         if self.meta.get_field("for_a_work_order") and self.for_a_work_order:
-            self.naming_series = "WO-.YY..MM.-"
+            self.naming_series = f"{company_abbr}-WO-.YY..MM.-"
         else:
-            self.naming_series = "PO-.YY..MM.-"
+            self.naming_series = f"{company_abbr}-PO-.YY..MM.-"
 
     def validate_work_request_status(self):
         if not (self.meta.get_field("for_a_work_order") and self.for_a_work_order == 1):

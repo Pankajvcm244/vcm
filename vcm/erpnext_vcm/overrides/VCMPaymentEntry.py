@@ -5,6 +5,9 @@ from frappe.utils.password import get_decrypted_password
 from frappe.utils import cstr
 import frappe, requests
 
+from frappe.utils.data import getdate
+from frappe.model.naming import getseries
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -19,7 +22,21 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
 #     delete_vcm_transaction_log,
 # )
 
-class VCMPaymentEntry(PaymentEntry):        
+class VCMPaymentEntry(PaymentEntry): 
+    def autoname(self):
+        dateF = getdate(self.posting_date)
+        # based upn posting date
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
+        year = dateF.strftime("%y")
+        month = dateF.strftime("%m")
+        if self.payment_type == "Pay":
+            prefix = f"{company_abbr}-Pay-{year}{month}-"
+        elif self.payment_type == "Receive":
+            prefix = f"{company_abbr}-Rcv-{year}{month}-"
+        else:
+            prefix = f"{company_abbr}-PE-{year}{month}-"            
+        self.name = prefix + getseries(prefix, 5)
+
     def on_submit(self):   
         super().on_submit()     
         vcm_budget_settings = frappe.get_cached_doc("VCM Budget Settings")

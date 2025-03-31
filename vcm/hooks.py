@@ -150,6 +150,10 @@ override_doctype_class = {
     "Purchase Invoice": "vcm.erpnext_vcm.overrides.VCMPurchaseInvoice.VCMPurchaseInvoice",
     "Payment Entry": "vcm.erpnext_vcm.overrides.VCMPaymentEntry.VCMPaymentEntry",
     "Journal Entry": "vcm.erpnext_vcm.overrides.VCMJournalEntry.VCMJournalEntry",
+    "Purchase Receipt": "vcm.erpnext_vcm.overrides.VCMPurchaseReceipt.VCMPurchaseReceipt",
+    "Stock Entry": "vcm.erpnext_vcm.overrides.VCMStockEntry.VCMStockEntry",
+    "Material Request": "vcm.erpnext_vcm.overrides.VCMMaterialRequest.VCMMaterialRequest",
+    "Stock Reconciliation": "vcm.erpnext_vcm.overrides.VCMStockRecon.VCMStockRecon",
 }
 
 

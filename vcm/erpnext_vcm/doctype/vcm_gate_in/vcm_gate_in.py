@@ -9,10 +9,11 @@ from frappe.utils import now
 
 class VCMGateIn(Document):
     def autoname(self):
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
         now = datetime.datetime.now()
         month = now.strftime("%m")
         year = now.strftime("%y")
-        prefix = f"GateIn-{year}{month}-"         
+        prefix = f"{company_abbr}GIN-{year}{month}-"         
         self.name = prefix + getseries(prefix, 5)
 
     def on_submit(self):

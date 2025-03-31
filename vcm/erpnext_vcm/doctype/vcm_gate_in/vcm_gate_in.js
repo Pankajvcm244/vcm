@@ -33,7 +33,7 @@ frappe.ui.form.on("VCM Gate-In", {
             method: "frappe.client.get_list",
             args: {
                 doctype: "Purchase Order",
-                filters: { "supplier": frm.doc.supplier, "status": "To Receive and Bill" },
+                filters: { "supplier": frm.doc.supplier, "company": frm.doc.company, "status": "To Receive and Bill" },
                 fields: ["name", "transaction_date", "grand_total"]
             },
             callback: function(r) {                

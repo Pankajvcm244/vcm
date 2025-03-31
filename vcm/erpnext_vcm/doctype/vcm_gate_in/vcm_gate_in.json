@@ -5,8 +5,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "supplier",
   "company",
+  "supplier",
   "location",
   "cost_center",
   "budget_head",
@@ -17,6 +17,7 @@
   "purchase_person",
   "bill_number",
   "bill_date",
+  "security_person_name",
   "vehicle_number",
   "comments",
   "section_break_tojo",
@@ -132,12 +133,18 @@
    "fieldtype": "Datetime",
    "label": "GateIn Date Time",
    "read_only": 1
+  },
+  {
+   "fieldname": "security_person_name",
+   "fieldtype": "Data",
+   "label": "Security Person Name",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-28 18:51:56.803159",
+ "modified": "2025-03-31 18:28:10.401648",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",
