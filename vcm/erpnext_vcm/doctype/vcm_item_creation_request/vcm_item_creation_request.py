@@ -27,7 +27,7 @@ from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 import re
 
-SYS_ADMIN = "aman.soni@vcm.org.in"
+SYS_ADMIN = "pankaj.sharma@vcm.org.in"
 
 
 class VCMItemCreationRequest(Document):
@@ -85,7 +85,7 @@ def quickly_create_item(request):
 
     if not new_item_code:
         item_code_series = frappe.db.get_single_value(
-            "HKM General Settings", "item_code_default_series"
+            "item_code_default_series"
         )
         if not item_code_series:
             frappe.throw(
