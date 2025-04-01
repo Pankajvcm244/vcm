@@ -39,11 +39,11 @@ class VCMSalesInv(SalesInvoice):
                 # select a document series name based on customer 
                 #handle WALK_IN or remaining customer like Akshaya patra here
                 if self.is_return:
-                    prefix = f"KPI{year}{month}RT-"
+                    prefix = f"HKP2526/RT"
                     self.name = prefix + getseries(prefix, 4)
                 else:
-                    prefix = f"KPI{year}{month}-"
-                    self.name = prefix + getseries(prefix, 6)              
+                    prefix = f"HKP2526/SI"
+                    self.name = prefix + getseries(prefix, 4)              
             elif (self.pos_profile == 'Krishnamrita'): 
                 # select a document series name based on customer             
                 if self.customer  == 'FOC':
@@ -197,11 +197,11 @@ class VCMSalesInv(SalesInvoice):
             self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'KRISHNA PRASADAM COUNTER - HKMV'):
             if self.is_return:
-                prefix = f"HKPI{year}{month}RT"
+                prefix = f"HKP2526/RT"
                 self.name = prefix + getseries(prefix, 4)
             else:
-                prefix = f"HKPI{year}{month}-"
-                self.name = prefix + getseries(prefix, 5)
+                prefix = f"HKP2526/SI"
+                self.name = prefix + getseries(prefix, 4)
         elif (self.cost_center == 'Pushpanjali - VCMT'):
             prefix = f"DR-PS{year}{month}-"
             self.name = prefix + getseries(prefix, 4)
