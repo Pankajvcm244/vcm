@@ -84,3 +84,37 @@ def update_receipts():
     data = json.loads(frappe.request.data)
     for key, value in data.items():
         frappe.db.set_value("Donation Receipt", key, "receipt_date", value)
+
+
+def update_donor_receipts():
+    for d in frappe.get_all(
+        "Donation Receipt",
+        filters={
+            "donor": ["LIKE", "%%LDNR%%"],
+            "company": ["!=", "HARE KRISHNA MOVEMENT LUCKNOW"],
+        },
+        fields=["name", "donor"],
+    ):
+        print(d["donor"])
+        frappe.db.set_value(
+            "Donation Receipt", d["name"], "donor", d["donor"], update_modified=False
+        )
+
+
+@frappe.whitelist()
+def update_series():
+    exisiting = {}
+    for s in frappe.db.sql("SELECT * FROM `tabSeries` WHERE 1", as_dict=1):
+        exisiting[s["name"]] = s["current"]
+
+    data = json.loads(frappe.request.data)
+    for k, v in data.items():
+        if k in exisiting:
+            if exisiting[k] == 1:
+                frappe.db.sql(
+                    f"UPDATE `tabSeries` SET current = '{v}' WHERE name = '{k}' "
+                )
+        else:
+            frappe.db.sql(
+                f"INSERT INTO `tabSeries` (name, current) VALUES ('{k}','{v}'); "
+            )
