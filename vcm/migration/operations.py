@@ -77,3 +77,10 @@ def delete_donation_receipts():
             ignore_missing=True,
             ignore_on_trash=True,
         )
+
+
+@frappe.whitelist()
+def update_receipts():
+    data = json.loads(frappe.request.data)
+    for key, value in data.items():
+        frappe.db.set_value("Donation Receipt", key, "receipt_date", value)
