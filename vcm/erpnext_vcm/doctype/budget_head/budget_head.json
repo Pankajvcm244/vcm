@@ -21,6 +21,7 @@
  ],
  "fields": [
   {
+   "allow_on_submit": 1,
    "fieldname": "budget_head_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -45,6 +46,7 @@
    "label": "Disabled"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -116,7 +118,7 @@
  "is_submittable": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-02 15:33:13.571692",
+ "modified": "2025-04-02 16:46:38.990801",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Head",
