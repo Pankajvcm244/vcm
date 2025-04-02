@@ -34,9 +34,8 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2025-03-19 17:59:26.296337",
+ "modified": "2025-04-02 14:14:19.518474",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Location",
@@ -52,7 +51,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   },
   {
@@ -75,7 +73,6 @@
    "report": 1,
    "role": "Administrator",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],
