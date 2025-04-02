@@ -116,7 +116,7 @@
  "is_submittable": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2025-04-02 14:50:19.144557",
+ "modified": "2025-04-02 15:16:42.307599",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Budget Head",
@@ -157,8 +157,10 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "budget_head_name",
  "track_changes": 1
 }
