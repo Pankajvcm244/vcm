@@ -243,7 +243,7 @@ function calculate_pool_amount(frm) {
     let pool_budget_balance = 0;
 
     $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head !== "C03-Fixed Assets" && row.budget_head !== "C01-Salaries & Wages" ) {  
+        if (row.budget_head !== "Fixed Assets" && row.budget_head !== "Salaries & Wages" ) {  
             pool_budget_used += row.used_budget || 0;
             pool_budget_balance += row.balance_budget || 0;  
         }

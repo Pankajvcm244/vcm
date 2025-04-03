@@ -5,7 +5,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 @frappe.whitelist()
 def validate_vcm_po_budget_amount_budgethead(po_doc):
-    return False
+    
     """ Updates the used budget in VCM Budget when a PO is submitted """
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
@@ -22,53 +22,117 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
         frappe.throw(f"Budget not available for Cost Center:{po_doc.cost_center}, Location:{po_doc.location}, Budget Head:{po_doc.budget_head}")
         return True    
-    budget_validation_flag = True  
-    for budget_item in budget_doc.get("budget_items") or []:
-        #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}")
-        if budget_item.budget_head == po_doc.budget_head:
-            budget_validation_flag = False
-            if po_doc.rounded_total > budget_item.balance_budget:
-                frappe.throw(f"Budget Exceeded for {po_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {po_doc.rounded_total}")
-                #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-                return False
+    budget_validation_flag = True 
+    if po_doc.budget_head == "Salaries & Wages" or po_doc.budget_head == "Fixed Assets": 
+        for budget_item in budget_doc.get("budget_items") or []:
+            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}")
+            if budget_item.budget_head == po_doc.budget_head:
+                budget_validation_flag = False
+                if po_doc.rounded_total > budget_item.balance_budget:
+                    frappe.throw(f"Budget Exceeded for {po_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {po_doc.rounded_total}")
+                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                    return False
+    else:
+        for budget_item in budget_doc.get("budget_items") or []:
+            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}")
+            if budget_item.budget_head == po_doc.budget_head:
+                budget_validation_flag = False
+                if po_doc.rounded_total > budget_doc.pool_budget_balance:
+                    frappe.throw(f"Pool Budget Exceeded for {po_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {po_doc.rounded_total}")
+                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                    return False
+
     if budget_validation_flag:
         frappe.throw(f"PO Budget not found for Cost Center: {po_doc.cost_center}, Budget Head: {po_doc.budget_head}")
         return False        
     return True
 
-
 @frappe.whitelist()
 def update_vcm_po_budget_usage(po_doc):
-    return False
-    """ Updates the used budget in VCM Budget when a PO is submitted """
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
-    budget_name = frappe.db.get_value(
-        "VCM Budget", 
-        {"company": po_doc.company,"location":po_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":po_doc.cost_center,"docstatus":1},
-        "name")
-    if frappe.db.exists("VCM Budget", budget_name):
-        budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
-        #If there is no budget for this cost center then just move on
-        #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        return True 
-    #budget_updated_flag = True
-    for budget_item in budget_doc.get("budget_items") or []:
-        #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
-        if budget_item.budget_head == po_doc.budget_head:
-            #budget_updated_flag = False
-            #logging.debug(f"in update_vcm_po_budget_usage 3 {po_doc.rounded_total}")
-            budget_item.used_budget += po_doc.rounded_total  # Update Used Budget
-            budget_item.balance_budget -= po_doc.rounded_total  # Adjust Remaining Budget
-            budget_item.unpaid_purchase_order += po_doc.rounded_total  # Adjust Remaining Budget
-            #logging.debug(f"update_vcm_po_budget_usage6, {budget_item.budget_head},{po_doc.rounded_total}")                           
-            break
-    # Save and commit changes
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
-    #logging.debug(f"update_vcm_po_budget_usage10 return true")
-    return True
+    return
+
+# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.utilities.vcm_budget_update_usage.get_po_used_budget
+@frappe.whitelist()
+#def get_po_used_budget(po_doc):  
+def get_po_used_budget(): 
+
+    filters = {}     
+    conditions = ["docstatus = 1"]  # Only consider approved POs
+
+    # filters = {
+    #     "cost_center": po_doc.get("cost_center"),
+    #     "company": po_doc.get("company"),
+    #     "location": po_doc.get("location"),
+    #     "from_date": "2024-04-01",  # Always check from April 1st
+    # }
+    date_field = "transaction_date"
+    filters = {
+        "company" :   "HARE KRISHNA MOVEMENT VRINDAVAN",
+        "cost_center" : "KRISHNAMRITA KITCHEN - HKMV",
+        "location" : "VRN",
+        "from_date" : "2024-04-01",
+        "to_date" : "2024-04-03",
+    }
+
+    if filters["cost_center"]:
+        conditions.append("cost_center = %(cost_center)s")
+    if filters["company"]:
+        conditions.append("company = %(company)s")
+    if filters["location"]:
+        conditions.append("location = %(location)s")
+    if filters.get("from_date") and filters.get("to_date"):
+        conditions.append(f"{date_field} BETWEEN %(from_date)s AND %(to_date)s")
+
+
+    
+    # Check all POs from April 1st onward
+    conditions.append(f"{date_field} >= %(from_date)s")
+    selected_table = "tab" + "Purchase Order"
+    amount_field = "grand_total"
+
+    condition_string = " AND ".join(conditions)
+
+    query = f"""
+        SELECT
+            SUM({amount_field}) AS total_used_budget
+        FROM `{selected_table}`
+        WHERE {condition_string}
+    """
+
+    result = frappe.db.sql(query, filters, as_dict=True)
+    logging.debug(f"in get po 2 {result} {total_used_budget}")
+    return result[0].get("total_used_budget", 0) if result else 0
+
+
+    # """ Updates the used budget in VCM Budget when a PO is submitted """
+    # vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    # # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
+    # budget_name = frappe.db.get_value(
+    #     "VCM Budget", 
+    #     {"company": po_doc.company,"location":po_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":po_doc.cost_center,"docstatus":1},
+    #     "name")
+    # if frappe.db.exists("VCM Budget", budget_name):
+    #     budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    # else:
+    #     #If there is no budget for this cost center then just move on
+    #     #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
+    #     return True 
+    # #budget_updated_flag = True
+    # for budget_item in budget_doc.get("budget_items") or []:
+    #     #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
+    #     if budget_item.budget_head == po_doc.budget_head:
+    #         #budget_updated_flag = False
+    #         #logging.debug(f"in update_vcm_po_budget_usage 3 {po_doc.rounded_total}")
+    #         budget_item.used_budget += po_doc.rounded_total  # Update Used Budget
+    #         budget_item.balance_budget -= po_doc.rounded_total  # Adjust Remaining Budget
+    #         budget_item.unpaid_purchase_order += po_doc.rounded_total  # Adjust Remaining Budget
+    #         #logging.debug(f"update_vcm_po_budget_usage6, {budget_item.budget_head},{po_doc.rounded_total}")                           
+    #         break
+    # # Save and commit changes
+    # budget_doc.save(ignore_permissions=True)
+    # frappe.db.commit()    
+    # #logging.debug(f"update_vcm_po_budget_usage10 return true")
+    # return True
 
 @frappe.whitelist()
 def revert_vcm_po_budget_usage(po_doc):
