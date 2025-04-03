@@ -7,20 +7,28 @@
  "field_order": [
   "hkm_budget_section",
   "company",
+  "non_fiscal_year_budget",
   "fiscal_year",
   "location",
   "cost_center",
-  "used_percent",
-  "column_break_fgta",
   "total_amount",
+  "pool_budget_total",
   "total_amended_amount",
+  "column_break_fgta",
   "total_used_amount",
   "total_balance_amount",
+  "pool_budget_used",
+  "pool_budget_balance",
+  "salary_used",
+  "salary_balance",
+  "fa_used",
+  "fa_balance",
   "column_break_cdac",
-  "total_paid_payment_entry",
-  "total_unpaid_purchase_invoice",
   "total_unpaid_purchase_order",
+  "total_unpaid_purchase_invoice",
+  "total_paid_payment_entry",
   "total_additional_je",
+  "used_percent",
   "section_break_jqpw",
   "budget_items",
   "amended_from",
@@ -36,17 +44,18 @@
   },
   {
    "default": "2025-2026",
+   "depends_on": "eval: !doc.non_fiscal_year_budget",
    "fieldname": "fiscal_year",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Fiscal Year",
-   "options": "Fiscal Year",
-   "reqd": 1
+   "mandatory_depends_on": "eval: !doc.non_fiscal_year_budget",
+   "options": "Fiscal Year"
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
-   "label": "Cost Centre",
+   "label": "Cost Center",
    "options": "Cost Center",
    "reqd": 1
   },
@@ -118,28 +127,28 @@
    "allow_on_submit": 1,
    "fieldname": "total_paid_payment_entry",
    "fieldtype": "Float",
-   "label": "Total Paid Payment Entry",
+   "label": "Unlinked Payment Entry",
    "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "total_unpaid_purchase_invoice",
    "fieldtype": "Float",
-   "label": "Total UnPaid Purchase Invoice",
+   "label": "Unlinked Purchase Invoice",
    "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "total_unpaid_purchase_order",
    "fieldtype": "Float",
-   "label": "Total UnPaid Purchase Order",
+   "label": " Purchase Order",
    "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "total_additional_je",
    "fieldtype": "Float",
-   "label": "Total Additional JE",
+   "label": "Journal Entry",
    "read_only": 1
   },
   {
@@ -172,12 +181,68 @@
    "fieldtype": "Table",
    "label": "Allowed Users",
    "options": "VCM Budget Allowed Users"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "pool_budget_total",
+   "fieldtype": "Float",
+   "label": "Pool Budget Total",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "pool_budget_used",
+   "fieldtype": "Float",
+   "label": "Pool Budget Used",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "pool_budget_balance",
+   "fieldtype": "Float",
+   "label": "Pool Budget Balance",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "salary_used",
+   "fieldtype": "Float",
+   "label": "Salary Used",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "salary_balance",
+   "fieldtype": "Float",
+   "label": "Salary Balance",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "fa_used",
+   "fieldtype": "Float",
+   "label": "FA Used",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "fa_balance",
+   "fieldtype": "Float",
+   "label": "FA Balance",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "non_fiscal_year_budget",
+   "fieldtype": "Check",
+   "label": "Non Fiscal Year Budget",
+   "mandatory_depends_on": "eval: !doc.non_fiscal_year_budget"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-31 19:45:40.858850",
+ "modified": "2025-04-03 06:42:39.885162",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
