@@ -1,6 +1,6 @@
 # created by Pankaj on 1st Feb 2025 to update cost venter based upon SINV number
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
-# bench --site test.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.vcmbudgetcreation.add_vcmbudget
+# bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.vcmbudgetcreation.add_vcmbudget
 # # exit
 # VCM Budget added: 72, Updated: 459, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
 
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 def add_vcmbudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/vcmbudget-final-233.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/vcmbudget-final-4.xlsx"  # Change as needed
 
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -97,7 +97,7 @@ def add_vcmbudget():
                     "company": company_name,
                     "cost_center": cost_center,
                     "location": location,
-                    "fiscal_year": "25-26",  # Consider fetching dynamically
+                    "fiscal_year": "2025-2026",  # Consider fetching dynamically
                     "budget_items": [{
                         "budget_head": budget_head,
                         "original_amount": total,

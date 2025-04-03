@@ -206,7 +206,7 @@ function calculate_salary_amount(frm) {
     let salary_balance = 0;
     //console.log("calculate_salary_amount:" );
     $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head === "C01-Salaries & Wages") {  // ✅ Check only Salary Budget Head           
+        if (row.budget_head === "Salaries & Wages") {  // ✅ Check only Salary Budget Head           
             salary_used += row.used_budget || 0;
             salary_balance += row.balance_budget || 0;  
             //console.log("calculate_salary_amount 1:", row.used_budget,row.balance_budget, salary_balance );
@@ -225,7 +225,7 @@ function calculate_fa_amount(frm) {
     let fa_balance = 0;
 
     $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head === "C03-Fixed Assets") {  // ✅ Check only Salary Budget Head
+        if (row.budget_head === "Fixed Assets") {  // ✅ Check only Salary Budget Head
             fa_used += row.used_budget || 0;
             fa_balance += row.balance_budget || 0;  
         }
