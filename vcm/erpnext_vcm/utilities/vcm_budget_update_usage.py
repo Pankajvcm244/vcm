@@ -105,8 +105,17 @@ def update_vcm_po_budget_usage(po_doc):
         #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
         if budget_item.budget_head == po_doc.budget_head:        
             budget_item.paid_payment_entry = total_po_amount  # Adjust Remaining Budget
-            budget_item.used_budget = budget_item.paid_payment_entry + budget_item.unpaid_purchase_invoice + budget_item.unpaid_purchase_order + budget_item.additional_je 
-            budget_item.balance_budget = budget_item.current_budget - budget_item.used_budget
+            budget_item.used_budget = (
+                    (budget_item.paid_payment_entry or 0)
+                    + (budget_item.unpaid_purchase_invoice or 0)
+                    + (budget_item.unpaid_purchase_order or 0)
+                    + (budget_item.additional_je or 0)
+                )        
+           
+            budget_item.balance_budget = (
+                    (budget_item.current_budget or 0)
+                  - (budget_item.used_budget or 0)
+            )
             break    
     # Save and commit changes    
     budget_doc.save(ignore_permissions=True)

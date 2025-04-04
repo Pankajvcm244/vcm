@@ -24,7 +24,6 @@ from frappe.workflow.doctype.workflow_action.workflow_action import (
 
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_po_budget_usage,
-    revert_vcm_po_budget_usage,
     validate_vcm_po_budget_amount_budgethead,
     validate_budget_head_n_location_mandatory,
 )

@@ -2,7 +2,7 @@
 # script apps/vcm/vcm/erpnext_vcm/testing/SINVcommand-1.log
 # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.vcmbudgetcreation.add_vcmbudget
 # # exit
-# VCM Budget added: 72, Updated: 459, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
+# VCM Budget added: 72, Updated: 460, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
 
 import frappe
 import pandas as pd
