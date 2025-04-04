@@ -51,6 +51,7 @@
   },
   {
    "allow_in_quick_entry": 1,
+   "allow_on_submit": 1,
    "fieldname": "proposed_by",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -143,7 +144,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-02 17:45:33.078676",
+ "modified": "2025-04-04 15:26:09.507273",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Child Table",

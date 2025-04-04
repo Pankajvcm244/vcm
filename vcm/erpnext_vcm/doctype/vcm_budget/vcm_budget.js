@@ -50,16 +50,16 @@ frappe.ui.form.on('VCM Budget', {
         frm.doc.budget_items.forEach(row => {
             row.original_amount = row.original_amount || 0.00;
             row.budget_head = row.budget_head || "Unknown";  // Default value
-            row.current_budget = row.current_budget || 0.00;
-            row.balance_budget = row.original_amount || 0.00;
-            row.amended_till_now = row.amended_till_now || 0.00;
-            row.used_budget = row.used_budget || 0.00;            
+            row.amended_till_now = row.amended_till_now || 0.00;                       
             row.proposed_amendment = row.proposed_amendment || 0.00;
             row.proposed_by = row.proposed_by || "Unknown";
             row.paid_payment_entry = row.paid_payment_entry || 0;
             row.unpaid_purchase_invoice = row.unpaid_purchase_invoice || 0;
             row.unpaid_purchase_order = row.unpaid_purchase_order || 0;
             row.additional_je = row.additional_je || 0;
+            row.current_budget = row.original_amount +  row.amended_till_now  || 0.00;            
+            row.used_budget = row.paid_payment_entry + row.unpaid_purchase_invoice + row.unpaid_purchase_order + row.additional_je || 0.00; 
+            row.balance_budget = row.current_budget - row.used_budget || 0.00;
         });
     },
     after_save: function(frm) {
@@ -103,6 +103,7 @@ frappe.ui.form.on('VCM Budget Child Table', {
         calculate_used_amount(frm);
         calculate_balance_amount(frm);
     }
+
 });
 
 function calculate_total_amount(frm) {
@@ -116,13 +117,6 @@ function calculate_total_amount(frm) {
     frm.refresh_field("total_amount");
 }
 
-function calculate_used_percentage(frm) {
-    let percent = 0;
-    percent = (frm.doc.total_used_amount / (frm.doc.total_amount + frm.doc.total_amended_amount )) * 100;
-    frm.set_value("used_percent", percent);
-    frm.refresh_field("used_percent");
-}
-
 function calculate_amended_amount(frm) {
     let total = 0;
     $.each(frm.doc.budget_items || [], function(i, row) {
@@ -132,6 +126,13 @@ function calculate_amended_amount(frm) {
     });
     frm.set_value("total_amended_amount", total);
     frm.refresh_field("total_amended_amount");
+}
+
+function calculate_used_percentage(frm) {
+    let percent = 0;
+    percent = (frm.doc.total_used_amount / (frm.doc.total_amount + frm.doc.total_amended_amount )) * 100;
+    frm.set_value("used_percent", percent);
+    frm.refresh_field("used_percent");
 }
 
 function calculate_balance_amount(frm) {
@@ -181,7 +182,7 @@ function calculate_Purchase_Invoice_amount(frm) {
 function calculate_Purchase_Order_amount(frm) {
     let total = 0;
     $.each(frm.doc.budget_items || [], function(i, row) {
-        //console.log("Budget child Table:", frm.doc.budget_items,row.original_amount, total );
+        //console.log("Budget child Table:", frm.doc.budget_items,row.unpaid_purchase_order, total );
         //We are doing this for origional amount as for budget creation based upon this value ALM will follow
         total += row.unpaid_purchase_order || 0;
     });
@@ -241,16 +242,22 @@ function calculate_fa_amount(frm) {
 function calculate_pool_amount(frm) {
     let pool_budget_used = 0;
     let pool_budget_balance = 0;
+    let pool_budget_total = 0;
 
     $.each(frm.doc.budget_items || [], function(i, row) {
         if (row.budget_head !== "Fixed Assets" && row.budget_head !== "Salaries & Wages" ) {  
             pool_budget_used += row.used_budget || 0;
-            pool_budget_balance += row.balance_budget || 0;  
+            pool_budget_balance += row.balance_budget || 0;
+            pool_budget_total += row.current_budget || 0;  
+            //console.log("calculate_pool_1 :", pool_budget_used, pool_budget_balance, pool_budget_total);
         }
     });
 
     frm.set_value("pool_budget_used", pool_budget_used);
     frm.set_value("pool_budget_balance", pool_budget_balance); 
-    frm.refresh_field("fa_used");
-    frm.refresh_field("fa_balance");
+    frm.set_value("pool_budget_total", pool_budget_total);
+    frm.refresh_field("pool_budget_used");
+    frm.refresh_field("pool_budget_balance");
+    frm.refresh_field("pool_budget_total");
+    //console.log("calculate_pool_amount:", pool_budget_used, pool_budget_balance, pool_budget_total);
 }

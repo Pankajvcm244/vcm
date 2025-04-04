@@ -31,11 +31,10 @@
    "reqd": 1
   },
   {
-   "default": "25-26",
    "fieldname": "fiscal_year",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Fiscal Year",
-   "options": "25-26",
+   "options": "Fiscal Year",
    "reqd": 1
   },
   {
@@ -91,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-21 13:07:02.568087",
+ "modified": "2025-04-04 15:34:25.468035",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Amendment",

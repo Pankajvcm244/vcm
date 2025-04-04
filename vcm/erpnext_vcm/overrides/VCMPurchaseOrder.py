@@ -91,7 +91,6 @@ class VCMPurchaseOrder(PurchaseOrder):
                 if validate_budget_head_n_location_mandatory(self) == True:
                     update_vcm_po_budget_usage(self)             
                     #create_vcm_transaction_log(self, "PO Submitted")
-                    #logging.debug(f"VCM PO on_Submit-2 created log")
         
 
     def on_cancel(self): 
@@ -102,9 +101,8 @@ class VCMPurchaseOrder(PurchaseOrder):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    #logging.debug(f"VCM PO Submit-2 calling revert budget")
-                    revert_vcm_po_budget_usage(self) 
-                    #delete_vcm_transaction_log(self,"PO Cancelled")
+                    update_vcm_po_budget_usage(self) 
+                    #logging.debug(f"VCM PO on_cancell-2 created log {po_amount}")
         
     
     def before_insert(self):
