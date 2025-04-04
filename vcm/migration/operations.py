@@ -118,3 +118,23 @@ def update_series():
             frappe.db.sql(
                 f"INSERT INTO `tabSeries` (name, current) VALUES ('{k}','{v}'); "
             )
+
+
+def remove_tx_info():
+    frappe.db.sql(
+        """
+        UPDATE `tabDonation Receipt`
+        SET bank_account = NULL,
+            bank_transaction = NULL,
+            bounce_transaction = NULL,
+            donation_account = NULL,
+            cash_account = NULL,
+            tds_account = NULL,
+            gateway_expense_account = NULL,
+            cost_center = NULL,
+            budget_head = NULL
+        WHERE owner = "migration@vcmerp.in"
+        """
+    )
+
+    frappe.db.comit()
