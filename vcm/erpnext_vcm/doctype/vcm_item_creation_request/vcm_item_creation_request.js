@@ -49,12 +49,23 @@ frappe.ui.form.on("VCM Item Creation Request", {
           },
         };
       });
+      frm.set_query('item_group', function() {
+        return {
+            filters: {
+                is_group: 0, // only show leaf nodes (not groups)
+                // Exclude certain item groups (example)
+                name: ['not in', ['Discontinued', 'Deprecated']]
+            }
+        };
+    });
       // frm.set_query("tax_category", function () {
       //   return {
       //     filters: { company: frm.doc.default_company },
       //   };
       // });
     },
+    
+
   });
   
   frappe.listview_settings["VCM Item Creation Request"] = {

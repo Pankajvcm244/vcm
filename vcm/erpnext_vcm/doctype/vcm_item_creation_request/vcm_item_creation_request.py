@@ -83,15 +83,11 @@ def quickly_create_item(request):
 
     new_item_code = fetch_item_code(icr_doc.item_group)
 
-    if not new_item_code:
-        item_code_series = frappe.db.get_single_value(
-            "item_code_default_series"
+    if not new_item_code:      
+        frappe.throw(
+            "Please set a series in  <b>Item Group</b> {icr_doc.item_group} </b>"
         )
-        if not item_code_series:
-            frappe.throw(
-                "Please set a series in either <b>Item Group</b> OR Common <b>HKM General Settings</b>"
-            )
-        new_item_code = (item_code_series + "-" + getseries(item_code_series, 4),)
+        
 
     item_dict = {
         "doctype": "Item",
