@@ -38,8 +38,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Item Name",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "fieldname": "item_group",
@@ -47,30 +46,26 @@
    "in_list_view": 1,
    "label": "Item Group",
    "options": "Item Group",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "default": "0",
    "fieldname": "stock_item",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Is Stock Item",
-   "set_only_once": 1
+   "label": "Is Stock Item"
   },
   {
    "default": "0",
    "fieldname": "asset_item",
    "fieldtype": "Check",
-   "label": "Is Asset Item",
-   "set_only_once": 1
+   "label": "Is Asset Item"
   },
   {
    "default": "0",
    "fieldname": "is_sales_item",
    "fieldtype": "Check",
-   "label": "<b style=\"color: red;\">Is Sales Item</b>",
-   "set_only_once": 1
+   "label": "<b style=\"color: red;\">Is Sales Item</b>"
   },
   {
    "depends_on": "eval:doc.asset_item",
@@ -90,22 +85,19 @@
    "in_list_view": 1,
    "label": "Unit of Measure",
    "options": "UOM",
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "fieldname": "remarks",
    "fieldtype": "Data",
-   "label": "Remarks/Purpose",
-   "set_only_once": 1
+   "label": "Remarks/Purpose"
   },
   {
    "fieldname": "hsn_code",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "HSN CODE",
    "non_negative": 1,
-   "reqd": 1,
-   "set_only_once": 1
+   "reqd": 1
   },
   {
    "fieldname": "sales_details_section",
@@ -115,8 +107,7 @@
   {
    "fieldname": "valuation_rate",
    "fieldtype": "Float",
-   "label": "Valuation Rate",
-   "set_only_once": 1
+   "label": "Valuation Rate"
   },
   {
    "fieldname": "tax_category",
@@ -127,7 +118,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-04 18:16:56.001894",
+ "modified": "2025-04-05 15:37:17.071701",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Creation Request",
