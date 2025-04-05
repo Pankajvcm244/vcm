@@ -49,14 +49,13 @@ frappe.ui.form.on("Material Request", {
                     };
                 }
             });    
-    }
-    // ,
-    // cost_center: function(frm) {
-    //     fetch_budget_data(frm);
-    // },
-    // location: function(frm) {
-    //     fetch_budget_data(frm);
-    // }      
+    },
+    cost_center: function(frm) {
+        fetch_budget_data(frm);
+    },
+    location: function(frm) {
+        fetch_budget_data(frm);
+    }      
 });
 
 

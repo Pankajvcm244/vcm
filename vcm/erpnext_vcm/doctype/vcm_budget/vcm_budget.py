@@ -3,6 +3,8 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import nowdate
+from frappe.utils import getdate
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -85,12 +87,18 @@ def get_budget_items(company, fiscal_year, location, cost_center):
 
 @frappe.whitelist()
 def get_vcm_budget_head(cost_center, location, company):
-    fiscal_year = frappe.db.get_single_value("Global Defaults", "current_fiscal_year")
+    today = getdate(nowdate())
+    fiscal_year = frappe.db.get_value("Fiscal Year", {
+        "year_start_date": ["<=", today],
+        "year_end_date": [">=", today],
+    }, "name")
+
+    #logging.debug(f"in get_vcm_budget_head-0   {cost_center}, {location}, {company}, {fiscal_year}")
     budget_name = frappe.db.get_value(
 			"VCM Budget", 
 			{"company": company, "location": location, "fiscal_year": fiscal_year, "cost_center": cost_center, "docstatus": 1},
 			"name")    
-    logging.debug(f"in get_vcm_budget_head-1   {budget_name} ,{cost_center}, {location}, {company}, {fiscal_year}")
+    #logging.debug(f"in get_vcm_budget_head-1   {budget_name} ,{cost_center}, {location}, {company}, {fiscal_year}")
     # Fetch the Budget document only if it's in Submit state and not Cancelled
     budget_doc = frappe.get_doc("VCM Budget", budget_name)    
     if not budget_doc:

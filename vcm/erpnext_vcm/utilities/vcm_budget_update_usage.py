@@ -18,7 +18,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     else:
         #If there is no budget for this cost center then throw error as Budget is enabled for this cost cenetr
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        frappe.throw(f"Budget not available for Cost Center:{po_doc.cost_center}, Location:{po_doc.location}, Budget Head:{po_doc.budget_head}")
+        frappe.throw(f"Budget not available for Cost Center:{po_doc.company},  {po_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{po_doc.location}")
         return False    
     budget_validation_flag = True 
     if po_doc.budget_head == "Salaries & Wages" or po_doc.budget_head == "Fixed Assets": 
@@ -31,14 +31,15 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
                     #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
                     return False
     else:
-        for budget_item in budget_doc.get("budget_items") or []:
+        #for budget_item in budget_doc.get("budget_items") or []:
             #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_doc.pool_budget_balance},{po_doc.rounded_total} ")
-            if budget_item.budget_head == po_doc.budget_head:
-                budget_validation_flag = False
-                if po_doc.rounded_total > budget_doc.pool_budget_balance:
-                    frappe.throw(f"Pool Budget Exceeded for {po_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {po_doc.rounded_total}")
-                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-                    return False
+            #if budget_item.budget_head == po_doc.budget_head:
+        # Now user can select any budget head and we will allow it if pool has money
+        budget_validation_flag = False
+        if po_doc.rounded_total > budget_doc.pool_budget_balance:
+            frappe.throw(f"Pool Budget Exceeded for {po_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {po_doc.rounded_total}")
+            #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+            return False
 
     if budget_validation_flag:
         frappe.throw(f"PO Budget not found for Cost Center: {po_doc.cost_center}, Budget Head: {po_doc.budget_head}")
@@ -110,8 +111,7 @@ def update_vcm_po_budget_usage(po_doc):
                     + (budget_item.unpaid_purchase_invoice or 0)
                     + (budget_item.unpaid_purchase_order or 0)
                     + (budget_item.additional_je or 0)
-                )        
-           
+            )           
             budget_item.balance_budget = (
                     (budget_item.current_budget or 0)
                   - (budget_item.used_budget or 0)

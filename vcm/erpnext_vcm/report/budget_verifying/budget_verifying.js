@@ -7,21 +7,21 @@ frappe.query_reports["Budget Verifying"] = {
             "fieldname": "document_type",
             "label": "Document Type",
             "fieldtype": "Select",
-            "options": ["Purchase Order", "Purchase Invoice", "Payment Entry"],
+            "options": ["Purchase Order", "Purchase Invoice", "Payment Entry", "Journal Entry"],
+            "default": "Purchase Order",
             "reqd": 1,
-            "default": "Purchase Order"
         },
         {
             "fieldname": "company",
             "label": "Company",
             "fieldtype": "Link",
-            "options": "Company",
-            "reqd": 1
+            "options": "Company"
         },
         {
             "fieldname": "from_date",
             "label": "From Date",
-            "fieldtype": "Date"
+            "fieldtype": "Date",
+            "reqd": 1,
         },
         {
             "fieldname": "to_date",

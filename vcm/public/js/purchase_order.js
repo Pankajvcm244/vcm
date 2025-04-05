@@ -32,6 +32,12 @@ frappe.ui.form.on("Purchase Order", {
     company:function(frm){
         frm.events.filter_company_items(frm);
     },
+    cost_center: function(frm) {
+        fetch_budget_data(frm);
+    },
+    location: function(frm) {
+        fetch_budget_data(frm);
+    },
     filter_company_items:function(frm){
             frm.set_query("item_code", "items", function(doc, cdt, cdn) {
                 return {
@@ -45,3 +51,29 @@ frappe.ui.form.on("Purchase Order", {
             });    
     }
 });
+
+
+function fetch_budget_data(frm) {
+    if (frm.doc.cost_center && frm.doc.location && frm.doc.company) {
+        frappe.call({
+            method: "vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget.get_vcm_budget_head",
+            args: {
+                cost_center: frm.doc.cost_center,
+                location: frm.doc.location,
+                company: frm.doc.company
+            },
+            callback: function(response) {
+                if (response.message) {
+                    let budget_heads = response.message.budget_heads;
+
+                    // Set query for Budget Head field
+                    frm.set_query("budget_head", function() {
+                        return {
+                            filters: [["name", "in", budget_heads]]
+                        };
+                    });
+                }
+            }
+        });
+    }
+}
