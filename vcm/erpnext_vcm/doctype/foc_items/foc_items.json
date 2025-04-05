@@ -11,6 +11,7 @@
   "item_code",
   "item_name",
   "quantity",
+  "stock_quantity",
   "rate",
   "uom"
  ],
@@ -63,14 +64,20 @@
    "fieldname": "source_warehouse",
    "fieldtype": "Link",
    "label": "Source Warehouse",
-   "options": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "stock_quantity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Stock Quantity",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-28 16:29:39.714812",
+ "modified": "2025-04-05 10:38:10.498766",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "FOC Items",

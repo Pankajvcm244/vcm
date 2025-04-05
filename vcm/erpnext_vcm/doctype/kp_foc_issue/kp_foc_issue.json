@@ -27,7 +27,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Company",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -44,7 +43,6 @@
    "hidden": 1,
    "label": "Stock Entry Type",
    "options": "Material Issue",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -127,7 +125,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-29 11:28:38.712703",
+ "modified": "2025-04-03 10:04:09.918036",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "KP FOC Issue",
