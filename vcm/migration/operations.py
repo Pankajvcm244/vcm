@@ -138,3 +138,12 @@ def remove_tx_info():
     )
 
     frappe.db.comit()
+
+
+def correct_donors():
+    for r in frappe.get_all(
+        "Donation Receipt",
+        filters={"company":"HARE KRISHNA MOVEMENT LUCKNOW"},
+        fields=["name", "donor"],
+    ):
+        frappe.db.set_value("Donation Receipt", r["name"], "donor", f"L{r['donor']}")
