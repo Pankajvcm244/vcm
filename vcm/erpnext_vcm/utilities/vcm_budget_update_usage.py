@@ -18,10 +18,14 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     else:
         #If there is no budget for this cost center then throw error as Budget is enabled for this cost cenetr
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        frappe.throw(f"Budget not available for Cost Center:{po_doc.company},  {po_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{po_doc.location}")
+        frappe.throw(f"Budget not available for Cost Center:{po_doc.company}, but enabled in Cost Center.  {po_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{po_doc.location}")
         return False    
     budget_validation_flag = True 
-    if po_doc.budget_head == "Salaries & Wages" or po_doc.budget_head == "Fixed Assets": 
+    if po_doc.budget_head == "Salaries & Wages":        
+        frappe.throw(f"{po_doc.budget_head} Budget Head can not be used in PO , Request: {po_doc.rounded_total}")
+        #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+        return False
+    elif po_doc.budget_head == "Fixed Assets": 
         for budget_item in budget_doc.get("budget_items") or []:
             #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
             if budget_item.budget_head == po_doc.budget_head:
@@ -105,7 +109,7 @@ def update_vcm_po_budget_usage(po_doc):
     for budget_item in budget_doc.get("budget_items") or []:
         #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
         if budget_item.budget_head == po_doc.budget_head:        
-            budget_item.paid_payment_entry = total_po_amount  # Adjust Remaining Budget
+            budget_item.unpaid_purchase_order = total_po_amount  # Adjust Remaining Budget
             budget_item.used_budget = (
                     (budget_item.paid_payment_entry or 0)
                     + (budget_item.unpaid_purchase_invoice or 0)
@@ -123,8 +127,7 @@ def update_vcm_po_budget_usage(po_doc):
     return True
 
 @frappe.whitelist()
-def validate_vcm_pi_budget_amount(pi_doc):
-    return False
+def validate_vcm_pi_budget_amount(pi_doc):    
     PI_FLAG_WITH_PO = False
     budget_validation_flag = True
     for item in pi_doc.items:
@@ -145,7 +148,7 @@ def validate_vcm_pi_budget_amount(pi_doc):
     else:
         #If there is no busget for this cost center then just move on
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        frappe.throw(f"Budget not available for Cost Center:{pi_doc.cost_center}, Location:{pi_doc.location}, Budget Head:{pi_doc.budget_head}")
+        frappe.throw(f"Budget not available for Cost Center:{pi_doc.cost_center}, but enabled in Cost Center. Location:{pi_doc.location}, Budget Head:{pi_doc.budget_head}")
         return True 
     budget_updated_flag = True
     total_vcm_advance = 0.0  # Initialize advance amount
@@ -158,22 +161,31 @@ def validate_vcm_pi_budget_amount(pi_doc):
     if pi_doc.taxes_and_charges_deducted:
         tax_deducted = pi_doc.taxes_and_charges_deducted
 
-    for budget_item in budget_doc.get("budget_items") or []:
+    if pi_doc.budget_head == "Salaries & Wages":        
+        frappe.throw(f"{pi_doc.budget_head} Budget Head can not be used in Payment Invoice , Request: {pi_doc.rounded_total}")
+        #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+        return False
+    elif pi_doc.budget_head == "Fixed Assets": 
+        for budget_item in budget_doc.get("budget_items") or []:
+            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
             if budget_item.budget_head == pi_doc.budget_head:
-                budget_updated_flag = False
                 budget_validation_flag = False
-                #logging.debug(f"in update_vcm_po_budget_usage 3 {po_doc.rounded_total}")                
-                # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PI_FLAG_WITH_PO: 
+                if pi_doc.rounded_total > budget_item.balance_budget:
+                    frappe.throw(f"Budget Exceeded for {pi_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {pi_doc.rounded_total}")
+                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                    return False
+    else:
+        # Now user can select any budget head and we will allow it if pool has money
+        budget_validation_flag = False
+        if PI_FLAG_WITH_PO: 
+                    # Do nothing, Budget has been consumed in PO
                     a = 0                    
-                    #logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")                
-                else:
-                    # #reduce and check budget for PI without PO
-                    if (pi_doc.rounded_total - total_vcm_advance + tax_deducted ) > budget_item.balance_budget:
-                        frappe.throw(f"Budget exceeded for:{pi_doc.budget_head},Balance:{budget_item.balance_budget},Request:{pi_doc.rounded_total}, Adv: {total_vcm_advance}, Tax: {tax_deducted}")
-                        return False
-                    #logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
-                break
+    #                 #logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")  
+        else:
+            if (pi_doc.rounded_total - total_vcm_advance + tax_deducted ) > budget_doc.pool_budget_balance:
+                frappe.throw(f"Pool Budget Exceeded for PI {pi_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pi_doc.rounded_total}")
+                #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                return False
 
     if budget_validation_flag:
         frappe.throw(f"PI Budget not found for Budget Head: {pi_doc.budget_head}")
@@ -182,152 +194,92 @@ def validate_vcm_pi_budget_amount(pi_doc):
 
 @frappe.whitelist()
 def update_vcm_pi_budget_usage(pi_doc):
-    return False
-    """Update budget used amount when a Purchase Invoice is submitted."""
-    PI_FLAG_WITH_PO = False
-    PI_FLAG_WITH_RETURN = False
-    #logging.debug(f"in update_vcm_pi_budget_usage 1 {pi_doc}")
-    for item in pi_doc.items:
-        #logging.debug(f"in Purchase InvoiceDOc Ref: {item}, {item.purchase_order} ")
-        if item.purchase_order:
-            PI_FLAG_WITH_PO = True
-            break  # Exit loop as soon as we find a linked PO        
-    
-    #logging.debug(f"in PI -1: {pi_doc.is_return} ")
-    # this is Return/Debit nore entry from Purchase Invocie
-    if pi_doc.is_return == 1:
-        #logging.debug(f"in PI_FLAG_WITH_RETURN: {pi_doc.rounded_total} , PI_FLAG_WITH_RETURN")
-        PI_FLAG_WITH_RETURN = True
+    """
+    Updates the used budget in VCM Budget when a Purchase Invoice without a PO is submitted.
+    """
+    filters = {}    
+    conditions = ["docstatus = 1", "is_return = 0"]  # Approved PIs without PO
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-   # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
-    budget_name = frappe.db.get_value(
-        "VCM Budget", 
-        {"company": pi_doc.company,"location":pi_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":pi_doc.cost_center,"docstatus":1},
-        "name")
-    if frappe.db.exists("VCM Budget", budget_name):
-        budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
-        #If there is no busget for this cost center then just move on
-        #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        return True 
-    #budget_updated_flag = True
 
-    total_vcm_advance = 0.0  # Initialize advance amount
-    # Check if advances exist
-    if pi_doc.advances:
-        for advance in pi_doc.advances:
-            total_vcm_advance += flt(advance.allocated_amount)  # Sum allocated advances
-    #logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
-    tax_deducted = 0.0  # Initialize advance amount
-    if pi_doc.taxes_and_charges_deducted:
-        tax_deducted = pi_doc.taxes_and_charges_deducted
-
-    for budget_item in budget_doc.get("budget_items") or []:
-            if budget_item.budget_head == pi_doc.budget_head:
-                #budget_updated_flag = False
-                #logging.debug(f"in update_vcm_po_budget_usage 3 {po_doc.rounded_total}")                
-                # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PI_FLAG_WITH_PO:
-                    if PI_FLAG_WITH_RETURN:
-                        # return amount comes as -ve number
-                        #logging.debug(f"in PI-PO - with return: {pi_doc.rounded_total}")
-                        budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted )  #Increase PI amount
-                    else:
-                        budget_item.unpaid_purchase_order -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
-                        budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted )  #Increase PI amount
-                        #logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
-                else:
-                    if PI_FLAG_WITH_RETURN:
-                        #logging.debug(f"in PI - with return: {pi_doc.rounded_total} ")
-                        budget_item.used_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
-                        budget_item.balance_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted) 
-                    else:
-                        #reduce and check budget for PI without PO                   
-                        budget_item.used_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
-                        budget_item.balance_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        budget_item.unpaid_purchase_invoice += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        #logging.debug(f"Direct PI W/O PO ,{pi_doc.budget_head}, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}") 
-                break
-    # Save and commit changes
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()
-    return True
-
-@frappe.whitelist()
-def revert_vcm_pi_budget_usage(pi_doc):
-    return False
-    PI_FLAG_WITH_PO = False
-    PI_FLAG_WITH_RETURN = False
-    #logging.debug(f"in revert_vcm_pi_budget_usage 1 {pi_doc}")
-    for item in pi_doc.items:
-        #logging.debug(f"in revert Purchase InvoiceDOc Ref: {item}, {item.purchase_order} ")
-        if item.purchase_order:
-            PI_FLAG_WITH_PO = True
-            break  # Exit loop as soon as we find a linked PO
-    
-    logging.debug(f"in PI return -1: {pi_doc.is_return}, {PI_FLAG_WITH_RETURN} ")
-    # this is Return/Debit nore entry from Purchase Invocie
-    if pi_doc.is_return == 1:
-        PI_FLAG_WITH_RETURN = True
-        #logging.debug(f"in revert PI return flag: {pi_doc.is_return} , PI_FLAG_WITH_RETURN ")
-
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
-        {"company": pi_doc.company,"location":pi_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":pi_doc.cost_center,"docstatus":1},
-        "name")
+        {
+            "company": pi_doc.company,
+            "location": pi_doc.location,
+            "fiscal_year": vcm_budget_settings.financial_year,
+            "cost_center": pi_doc.cost_center,
+            "docstatus": 1
+        },
+        "name"
+    )
+
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
-        #If there is no busget for this cost center then just move on
-        #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        return True 
-    #budget_updated_flag = True
-    total_vcm_advance = 0.0  # Initialize advance amount     
-    # Check if advances exist
-    if pi_doc.advances:
-        for advance in pi_doc.advances:
-            total_vcm_advance += flt(advance.allocated_amount)  # Sum allocated advances
-    #logging.debug(f"in Purchase Invoice Advance: {pi_doc.allocate_advances_automatically}, {total_vcm_advance} ")
-    tax_deducted = 0.0  # Initialize advance amount
-    if pi_doc.taxes_and_charges_deducted:
-        tax_deducted = pi_doc.taxes_and_charges_deducted
+        # If there is no budget for this cost center then just move on
+        logging.debug(f"in update_vcm_pi_budget_usage: No budget exists for {budget_name}")
+        return 0 
+
+    filters = {
+        "cost_center": pi_doc.cost_center,
+        "company": pi_doc.company,
+        "location": pi_doc.location,
+        "budget_head": pi_doc.budget_head,
+        "from_date": "2024-04-01",  # Always check from April 1st
+    }
+
+    date_field = "posting_date"
+    if filters["cost_center"]:
+        conditions.append("cost_center = %(cost_center)s")
+    if filters["company"]:
+        conditions.append("company = %(company)s")
+    if filters["location"]:
+        conditions.append("location = %(location)s")
+    if filters["budget_head"]:
+        conditions.append("budget_head = %(budget_head)s")
+
+    # Check all PIs from April 1st onward
+    conditions.append(f"{date_field} >= %(from_date)s")
+
+    selected_table = "tabPurchase Invoice"
+    amount_field = "grand_total"
+
+    condition_string = " AND ".join(conditions)
+    logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
+    query = f"""
+        SELECT
+            SUM({amount_field}) AS total_used_budget
+        FROM `{selected_table}`
+        WHERE {condition_string}
+    """
+
+    result = frappe.db.sql(query, filters, as_dict=True)
+    logging.debug(f"in get pi usage: {result}")
+    total_pi_amount = result[0].get("total_used_budget", 0) if result else 0
+    logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
 
     for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in update_vcm_pi_budget_usage 2 {pi_doc.budget_head}")
-            if budget_item.budget_head == pi_doc.budget_head:
-                #budget_updated_flag = False
-                # Reduce unpaid purchase order amount **only if the PI is linked to a PO**
-                if PI_FLAG_WITH_PO:
-                    if PI_FLAG_WITH_RETURN:
-                        #logging.debug(f"PI With PO return, {pi_doc.rounded_total}, {PI_FLAG_WITH_RETURN}")
-                        budget_item.unpaid_purchase_order += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
-                        budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  
-                        #logging.debug(f"PI With PO revert return, {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
-                    else:
-                        budget_item.unpaid_purchase_order += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
-                        budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  
-                        #logging.debug(f"PI With PO revert , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")
-                else:
-                    if PI_FLAG_WITH_RETURN:
-                        #logging.debug(f"PI return, {pi_doc.rounded_total}")
-                        budget_item.used_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
-                        budget_item.balance_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)
-                    else:
-                        #reduce and check budget for PI without PO
-                        budget_item.used_budget -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Update Used Budget
-                        budget_item.balance_budget += (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        budget_item.unpaid_purchase_invoice -= (pi_doc.rounded_total - total_vcm_advance + tax_deducted)  # Adjust Remaining Budget
-                        #logging.debug(f"Direct PI revert W/O PO , {tax_deducted}, {budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total},{total_vcm_advance}")           
-                break
-    # Save and commit changes
+        if budget_item.budget_head == pi_doc.budget_head:        
+            budget_item.unpaid_purchase_invoice = total_pi_amount  # Adjust Remaining Budget
+            budget_item.used_budget = (
+                (budget_item.paid_payment_entry or 0)
+                + (budget_item.unpaid_purchase_invoice or 0)
+                + (budget_item.unpaid_purchase_order or 0)
+                + (budget_item.additional_je or 0)
+            )
+            budget_item.balance_budget = (
+                (budget_item.current_budget or 0)
+                - (budget_item.used_budget or 0)
+            )
+            break    
+
     budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()
+    frappe.db.commit()    
     return True
+
+
 
 @frappe.whitelist()
 def validate_vcm_budget_on_payment_entry(pe_doc):

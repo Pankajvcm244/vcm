@@ -17,14 +17,9 @@ from hkm.erpnext___custom.overrides.buying_validations import (
 
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_pi_budget_usage,
-    revert_vcm_pi_budget_usage,
     validate_vcm_pi_budget_amount,
     validate_budget_head_n_location_mandatory,
 )
-# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-#     create_vcm_transaction_log,
-#     delete_vcm_transaction_log,
-# )
 
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 import frappe
@@ -46,8 +41,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_pi_budget_usage(self) 
-                    #create_vcm_transaction_log(self, "PI Submitted")                
+                    update_vcm_pi_budget_usage(self)                
         
 
     def on_cancel(self):
@@ -58,8 +52,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    revert_vcm_pi_budget_usage(self) 
-                    #delete_vcm_transaction_log(self,"PI Cancelled")
+                    update_vcm_pi_budget_usage(self)  
         
 
     def validate(self):

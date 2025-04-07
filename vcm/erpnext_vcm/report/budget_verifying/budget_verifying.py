@@ -25,7 +25,6 @@ def get_columns(filters):
         {"label": "Transaction Date", "fieldname": "date", "fieldtype": "Date", "width": 120},  # Fixed alias
         {"label": "Total Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 150},
         {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 100},
-        {"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100},
     ]
     if document_type == "Purchase Invoice":
         columns.append({"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100})

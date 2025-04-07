@@ -28,10 +28,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_budget_head_n_location_mandatory,
 )
 
-# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-#     create_vcm_transaction_log,
-#     delete_vcm_transaction_log,
-# )
+
 
 # from hkm.erpnext___custom.po_approval.po_workflow_trigger import check_alm
 
@@ -89,7 +86,7 @@ class VCMPurchaseOrder(PurchaseOrder):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
                     update_vcm_po_budget_usage(self)             
-                    #create_vcm_transaction_log(self, "PO Submitted")
+                    
         
 
     def on_cancel(self): 

@@ -19,10 +19,7 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_vcm_budget_from_jv,
     validate_budget_head_n_location_mandatory,
 )
-# from vcm.erpnext_vcm.utilities.vcm_budget_logs import (
-#     create_vcm_jv_transaction_log,
-#     delete_vcm_transaction_log,
-# )
+
 
 from hkm.erpnext___custom.extend.accounts_controller import validate_gst_entry
 
