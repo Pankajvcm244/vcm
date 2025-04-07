@@ -8,11 +8,11 @@ frappe.ui.form.on('KP FOC Issue', {
             frm.set_value('cost_center', 'KRISHNA PRASADAM COUNTER - HKMV');
         }
 
-        // Apply item filter
-        apply_item_filter(frm);
-
-        // Fetch Projected Qty
-        fetch_projected_qty(frm);
+        // Apply item group filter
+        apply_item_filter(frm);  
+        
+         // Fetch projected stock qty
+        fetch_projected_qty(frm);  
     },
 
     company: function(frm) {
@@ -66,7 +66,7 @@ frappe.ui.form.on('FOC Items', {
         let row = locals[cdt][cdn];
 
         // Ensure quantity does not exceed available stock quantity
-        let available_stock = row.stock_quantity || 0; // Default to 0 if undefined
+        let available_stock = row.stock_quantity || 0;
 
         if (row.quantity > available_stock) {
             frappe.msgprint({
@@ -94,7 +94,6 @@ function fetch_projected_qty(frm, row = null) {
 
     items.forEach(row => {
         if (row.item_code) {
-            // Fetch Projected Qty
             frappe.call({
                 method: "frappe.client.get_list",
                 args: {
@@ -109,8 +108,6 @@ function fetch_projected_qty(frm, row = null) {
                     let projected_qty = bin_res.message.length > 0 ? parseFloat(bin_res.message[0].projected_qty) : 0;
                     console.log(`Projected Qty for ${row.item_code}:`, projected_qty);
 
-
-
                     // Fetch POS Reserved Qty
                     frappe.call({
                         method: "vcm.api.get_pos_reserved_qty",
@@ -123,7 +120,6 @@ function fetch_projected_qty(frm, row = null) {
                             let final_qty = projected_qty - pos_reserved_qty;
                             console.log(`Final Stock Qty for ${row.item_code}:`, final_qty);
 
-                            // Ensure value is set properly
                             frappe.model.set_value(row.doctype, row.name, "stock_quantity", final_qty);
                             frm.refresh_field("items");
                         }
@@ -143,8 +139,12 @@ function calculate_total(frm) {
     frm.set_value("grand_total", parseFloat(total).toFixed(2));
 }
 
-
-
-
-
-
+function apply_item_filter(frm) {
+    frm.fields_dict.items.grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
+        return {
+            filters: {
+                item_group: "Krishna Prasadam"
+            }
+        };
+    };
+}

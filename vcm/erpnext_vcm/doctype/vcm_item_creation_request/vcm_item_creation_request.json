@@ -94,10 +94,12 @@
   },
   {
    "fieldname": "hsn_code",
-   "fieldtype": "Int",
+   "fieldtype": "Link",
    "label": "HSN CODE",
    "non_negative": 1,
-   "reqd": 1
+   "options": "GST HSN Code",
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "sales_details_section",
@@ -118,7 +120,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-05 15:37:17.071701",
+ "modified": "2025-04-07 17:17:27.945880",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Item Creation Request",
