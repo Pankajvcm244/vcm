@@ -13,7 +13,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_on_payment_submit,
-    revert_vcm_budget_on_payment_submit,
     validate_vcm_budget_on_payment_entry,
     validate_budget_head_n_location_mandatory,
 )
@@ -94,7 +93,7 @@ class VCMPaymentEntry(PaymentEntry):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 #logging.debug(f"VCM PE Submit-2 calling revert budget")
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    revert_vcm_budget_on_payment_submit(self) 
+                    update_vcm_budget_on_payment_submit(self) 
                     
 
 
