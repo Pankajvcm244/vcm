@@ -30,10 +30,13 @@ def get_columns(filters):
         columns.append({"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100})
         columns.append({"label": "PO Number", "fieldname": "po_number", "fieldtype": "Data", "width": 150})
     
+    elif document_type == "Payment Entry":
+        columns.append({"label": "Has Reference", "fieldname": "has_reference", "fieldtype": "Data", "width": 100})
+        columns.append({"label": "Linked References", "fieldname": "linked_references", "fieldtype": "Data", "width": 200})
+
     return columns
 
 def get_data(filters):
-    import frappe
 
     document_type = filters.get("document_type", "Purchase Invoice")
     selected_table = f"tab{document_type}"
@@ -141,6 +144,27 @@ def get_data(filters):
             GROUP BY {alias}.name
         """
 
+    elif document_type == "Payment Entry":
+        query = f"""
+            SELECT
+                {alias}.name,
+                {alias}.{supplier_field} AS supplier,
+                {alias}.{date_field} AS date,
+                {alias}.{amount_field} AS total_amount,
+                {alias}.cost_center,
+                {alias}.location,
+                {alias}.company,
+                {alias}.budget_head,
+                CASE
+                    WHEN COUNT(DISTINCT per.reference_name) > 0 THEN 'Yes'
+                    ELSE 'No'
+                END AS has_reference,
+                GROUP_CONCAT(DISTINCT per.reference_name SEPARATOR ', ') AS linked_references
+            FROM `tabPayment Entry` {alias}
+            LEFT JOIN `tabPayment Entry Reference` per ON per.parent = {alias}.name
+            WHERE {condition_string}
+            GROUP BY {alias}.name
+        """
     else:
         # Generic handler for Purchase Order and Payment Entry
         select_fields = f"""

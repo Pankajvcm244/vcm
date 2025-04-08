@@ -75,7 +75,7 @@ def update_vcm_po_budget_usage(po_doc):
         "company": po_doc.company,
         "location": po_doc.location,
         "budget_head": po_doc.budget_head,
-        "from_date": "2024-04-01",  # Always check from April 1st
+        "from_date": "2025-04-01",  # Always check from April 1st
     }
     #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.cost_center}, {po_doc.company},{po_doc.location} , {po_doc.budget_head}")
     date_field = "transaction_date"
@@ -233,7 +233,7 @@ def update_vcm_pi_budget_usage(pi_doc):
         "company": pi_doc.company,
         "location": pi_doc.location,
         "budget_head": pi_doc.budget_head,
-        "from_date": "2024-04-01",  # Always check from April 1st
+        "from_date": "2025-04-01",  # Always check from April 1st
     }
 
     date_field = "posting_date"
@@ -333,8 +333,8 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
             #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_validation_flag = False
-                if pe_doc.rounded_total > budget_item.balance_budget:
-                    frappe.throw(f"Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {pe_doc.rounded_total}")
+                if total_vcm_paid_amount > budget_item.balance_budget:
+                    frappe.throw(f"Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {total_vcm_paid_amount}")
                     #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
                     return False
     else:
@@ -343,8 +343,8 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
             #if budget_item.budget_head == po_doc.budget_head:
         # Now user can select any budget head and we will allow it if pool has money
         budget_validation_flag = False
-        if pe_doc.rounded_total > budget_doc.pool_budget_balance:
-            frappe.throw(f"Pool Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pe_doc.rounded_total}")
+        if total_vcm_paid_amount > budget_doc.pool_budget_balance:
+            frappe.throw(f"Pool Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pe_doc.paid_amount}")
             #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
             return False
 
@@ -375,7 +375,9 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     filters = {}   
     alias = "pe_doc" 
     conditions = [
-        f"{alias}.docstatus = 1", 
+        f"{alias}.docstatus = 1",
+        f"{alias}.payment_type = 'Pay'",
+        f"{alias}.posting_date >= %(from_date)s" 
         ]  # Approved PEs without PO
     
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -404,7 +406,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
         "company": pe_doc.company,
         "location": pe_doc.location,
         "budget_head": pe_doc.budget_head,
-        "from_date": "2024-04-01",  # Always check from April 1st
+        "from_date": "2025-04-01",  # Always check from April 1st
     }
 
     date_field = "posting_date"
@@ -417,21 +419,30 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     if filters.get("budget_head"):
         conditions.append(f"{alias}.budget_head = %(budget_head)s")
 
-    # Check all PIs from April 1st onward
-    conditions.append(f"{alias}.{date_field} >= %(from_date)s")
+    # Exclude PEs that have references to Purchase Orders or Purchase Invoices
+    conditions.append(f"""
+        NOT EXISTS (
+            SELECT 1 FROM `tabPayment Entry Reference` per
+            WHERE per.parent = {alias}.name
+              AND per.reference_doctype IN ('Purchase Order', 'Purchase Invoice')
+        )
+    """)
+
+    # # Check all PIs from April 1st onward
+    # conditions.append(f"{alias}.{date_field} >= %(from_date)s")
 
     selected_table = "tabPayment Entry"
     amount_field = "paid_amount"
 
     condition_string = " AND ".join(conditions)
     logging.debug(f"in update_vcm_pe_budget 1 {condition_string}")
+    
     query = f"""
         SELECT
             SUM({amount_field}) AS total_used_budget
         FROM `{selected_table}` {alias}
         WHERE {condition_string}
     """
-
     result = frappe.db.sql(query, filters, as_dict=True)
     logging.debug(f"in get pe usage: {result}")
     total_pe_amount = result[0].get("total_used_budget", 0) if result else 0
