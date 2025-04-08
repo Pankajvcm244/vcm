@@ -197,8 +197,14 @@ def update_vcm_pi_budget_usage(pi_doc):
     """
     Updates the used budget in VCM Budget when a Purchase Invoice without a PO is submitted.
     """
-    filters = {}    
-    conditions = ["docstatus = 1", "is_return = 0"]  # Approved PIs without PO
+    filters = {}   
+    alias = "pi_doc" 
+    conditions = [
+        f"{alias}.docstatus = 1", 
+        f"{alias}.is_return = 0", 
+        "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
+        ]  # Approved PIs without PO
+    
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
 
@@ -231,17 +237,17 @@ def update_vcm_pi_budget_usage(pi_doc):
     }
 
     date_field = "posting_date"
-    if filters["cost_center"]:
-        conditions.append("cost_center = %(cost_center)s")
-    if filters["company"]:
-        conditions.append("company = %(company)s")
-    if filters["location"]:
-        conditions.append("location = %(location)s")
-    if filters["budget_head"]:
-        conditions.append("budget_head = %(budget_head)s")
+    if filters.get("cost_center"):
+        conditions.append(f"{alias}.cost_center = %(cost_center)s")
+    if filters.get("company"):
+        conditions.append(f"{alias}.company = %(company)s")
+    if filters.get("location"):
+        conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("budget_head"):
+        conditions.append(f"{alias}.budget_head = %(budget_head)s")
 
     # Check all PIs from April 1st onward
-    conditions.append(f"{date_field} >= %(from_date)s")
+    conditions.append(f"{alias}.{date_field} >= %(from_date)s")
 
     selected_table = "tabPurchase Invoice"
     amount_field = "grand_total"
@@ -251,7 +257,8 @@ def update_vcm_pi_budget_usage(pi_doc):
     query = f"""
         SELECT
             SUM({amount_field}) AS total_used_budget
-        FROM `{selected_table}`
+        FROM `{selected_table}` {alias}
+        LEFT JOIN `tabPurchase Invoice Item` pii ON pii.parent = {alias}.name
         WHERE {condition_string}
     """
 
