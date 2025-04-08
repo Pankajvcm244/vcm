@@ -10,8 +10,8 @@ frappe.ui.form.on('KP FOC Issue', {
 
         // Apply item group filter
         apply_item_filter(frm);  
-        
-         // Fetch projected stock qty
+
+        // Fetch projected stock qty
         fetch_projected_qty(frm);  
     },
 
@@ -64,8 +64,6 @@ frappe.ui.form.on('FOC Items', {
 
     quantity: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-
-        // Ensure quantity does not exceed available stock quantity
         let available_stock = row.stock_quantity || 0;
 
         if (row.quantity > available_stock) {
@@ -76,8 +74,6 @@ frappe.ui.form.on('FOC Items', {
             });
 
             console.warn(`Quantity exceeded for ${row.item_code}. Available: ${available_stock}, Entered: ${row.quantity}`);
-
-            // Reset the quantity to stock quantity
             frappe.model.set_value(cdt, cdn, "quantity", available_stock);
         } else {
             calculate_total(frm);
@@ -108,7 +104,6 @@ function fetch_projected_qty(frm, row = null) {
                     let projected_qty = bin_res.message.length > 0 ? parseFloat(bin_res.message[0].projected_qty) : 0;
                     console.log(`Projected Qty for ${row.item_code}:`, projected_qty);
 
-                    // Fetch POS Reserved Qty
                     frappe.call({
                         method: "vcm.api.get_pos_reserved_qty",
                         args: {
@@ -139,11 +134,32 @@ function calculate_total(frm) {
     frm.set_value("grand_total", parseFloat(total).toFixed(2));
 }
 
+
+// function apply_item_filter(frm) {
+//     frappe.call({
+//         method: "vcm.api.get_krishna_prasadam_items",
+//         callback: function(r) {
+//             if (r.message) {
+//                 let item_codes = r.message.map(item => item.name);
+//                 frm.fields_dict.items.grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
+//                     return {
+//                         filters: {
+//                             name: ["in", item_codes]
+//                         }
+//                     };
+//                 };
+//             }
+//         }
+//     });
+// }
+
+
 function apply_item_filter(frm) {
     frm.fields_dict.items.grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
         return {
+            query: "erpnext.controllers.queries.item_query",
             filters: {
-                item_group: "Krishna Prasadam"
+                name: ["like", "KP%"]
             }
         };
     };
