@@ -156,6 +156,13 @@ override_doctype_class = {
     "Stock Reconciliation": "vcm.erpnext_vcm.overrides.VCMStockRecon.VCMStockRecon",
 }
 
+override_doctype_dashboards = {
+    "Purchase Order": "vcm.erpnext_vcm.overrides.dashboards.PODashboard.get_data",
+    "Purchase Receipt": "vcm.erpnext_vcm.overrides.dashboards.PRDashboard.get_data"
+}
+
+
+
 
 # Importing HKMPOSInvoice and VCMPOSInv from respective modules
 from hkm.erpnext___custom.overrides import HKMPOSInvoice
