@@ -35,6 +35,10 @@ def update_gate_in_status(gate_in_name, new_status):
         gate_in_doc.status = "Pending"
         gate_in_doc.save()
         frappe.msgprint(f"VCM Gate-In {gate_in_name} status changed to Pending.")
+    elif gate_in_doc.status == "Pending" and new_status == "Received":
+        gate_in_doc.status = "Received"
+        gate_in_doc.save()
+        frappe.msgprint(f"VCM Gate-In {gate_in_name} status changed to Received.")
     else:
         frappe.throw("Invalid status change request.")
 

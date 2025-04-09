@@ -61,6 +61,10 @@ frappe.ui.form.on('Purchase Receipt', {
             }
         });
     },
+    supplier: function(frm) {
+        frm.set_value('custom_gate_in_reference', null);  // Clear old selection
+        frm.refresh_field('custom_gate_in_reference');    // Ensure it reloads with the new filter
+    },
 
     refresh(frm) {
         //Show only Gate-In whose status is Pending
@@ -68,7 +72,8 @@ frappe.ui.form.on('Purchase Receipt', {
             return {
                 filters: {
                     status: 'Pending',  // Only show Gate In records where status is 'Pending'
-                    supplier: frm.doc.supplier  // Show only records for the selected supplier
+                    supplier: frm.doc.supplier,  // Show only records for the selected supplier
+                    docstatus: ["!=", 2]  // Exclude Cancelled Gate In records
                 }
             };
         };

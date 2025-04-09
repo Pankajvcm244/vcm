@@ -21,7 +21,23 @@ frappe.ui.form.on("VCM Gate-In", {
                     }
                 });
             }).addClass("btn-danger");
-        }        
+        }
+        if (frm.doc.status === "Pending" && frappe.user.has_role("Administrator")) {
+            frm.add_custom_button(__('Change Status to Received'), function() {
+                frappe.call({
+                    method: "vcm.erpnext_vcm.doctype.vcm_gate_in.vcm_gate_in.update_gate_in_status",
+                    args: {
+                        gate_in_name: frm.doc.name,
+                        new_status: "Received"
+                    },
+                    callback: function(response) {
+                        if (response.message) {
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            }).addClass("btn-danger");
+        }          
     },
     supplier: function(frm) {
         if (!frm.doc.supplier || frm.supplier_dialog_opened) return;
