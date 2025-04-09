@@ -15,7 +15,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     update_vcm_budget_from_jv,
-    reverse_vcm_budget_from_jv,
     validate_vcm_budget_from_jv,
     validate_budget_head_n_location_mandatory,
 )
@@ -56,7 +55,7 @@ class VCMJournalEntry(JournalEntry):
             #if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
             if validate_budget_head_n_location_mandatory(self) == True:
                 #logging.debug(f"VCM JV on_cancel budget")
-                reverse_vcm_budget_from_jv(self) 
+                update_vcm_budget_from_jv(self) 
                 #delete_vcm_transaction_log(self,"JV Cancelled")
         
 

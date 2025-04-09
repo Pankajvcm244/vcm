@@ -75,6 +75,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
@@ -154,7 +155,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-31 19:26:05.914663",
+ "modified": "2025-04-09 12:17:35.354929",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Gate-In",
@@ -167,7 +168,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Temple Security User",
+   "role": "VCM Temple Security User",
    "share": 1,
    "submit": 1,
    "write": 1
