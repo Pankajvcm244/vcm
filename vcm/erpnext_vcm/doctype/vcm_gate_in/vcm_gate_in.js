@@ -21,7 +21,7 @@ frappe.ui.form.on("VCM Gate-In", {
                     }
                 });
             }).addClass("btn-danger");
-        }
+        }        
     },
     supplier: function(frm) {
         if (!frm.doc.supplier || frm.supplier_dialog_opened) return;
@@ -36,7 +36,7 @@ frappe.ui.form.on("VCM Gate-In", {
                 filters: { "supplier": frm.doc.supplier, "company": frm.doc.company, "status": "To Receive and Bill" },
                 fields: ["name", "transaction_date", "grand_total"]
             },
-            callback: function(r) {                
+            callback: function(r) { 
                 if (r.message.length > 0) {
                     let po_options = r.message.map(po => ({ label: `${po.name} - ${po.grand_total}`, value: po.name }));
 
@@ -112,7 +112,7 @@ frappe.ui.form.on("VCM Gate-In", {
                     role: "Purchase User"
                 }
             };
-        });       
+        });               
     },
     validate: function(frm) {
         if (!frm.doc.purchase_order && !frm.doc.bill_number) {
@@ -137,7 +137,8 @@ frappe.ui.form.on("VCM Gate-In", {
             frm.set_query('cost_center', function() {
                 return {
                     filters: {
-                        company: frm.doc.company  // Filtering Cost Centers by selected Company
+                        company: frm.doc.company,  // Filtering Cost Centers by selected Company
+                        is_group: 0  // Only leaf cost centers
                     }
                 };
             });       
