@@ -19,25 +19,26 @@ def get_columns(filters):
         {"label": "ID", "fieldname": "name", "fieldtype": "Link", "options": document_type, "width": 150},
         {"label": "Company", "fieldname": "company", "fieldtype": "Link", "options": "Company", "width": 150},
         {"label": "Cost Center", "fieldname": "cost_center", "fieldtype": "Link", "options": "Cost Center", "width": 150},
-        {"label": "Location", "fieldname": "location", "fieldtype": "Data", "width": 150},
+        {"label": "Location", "fieldname": "location", "fieldtype": "Data", "width": 75},
         {"label": "Budget Head", "fieldname": "budget_head", "fieldtype": "Data", "width": 150},
-        {"label": "Supplier", "fieldname": "supplier", "fieldtype": "Link", "options": "Supplier", "width": 200},
-        {"label": "Transaction Date", "fieldname": "date", "fieldtype": "Date", "width": 120},  # Fixed alias
-        {"label": "Total Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 150},
-        {"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 100},
     ]
     if document_type == "Purchase Invoice":
         columns.append({"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100})
-        columns.append({"label": "PO Number", "fieldname": "po_number", "fieldtype": "Data", "width": 150})
-    
+        columns.append({"label": "PO Number", "fieldname": "po_number", "fieldtype": "Data", "width": 150})    
     elif document_type == "Payment Entry":
         columns.append({"label": "Has Reference", "fieldname": "has_reference", "fieldtype": "Data", "width": 100})
         columns.append({"label": "Linked References", "fieldname": "linked_references", "fieldtype": "Data", "width": 200})
+    elif document_type == "Journal Entry":
+        columns.append({"label": "Root Type", "fieldname": "root_type", "fieldtype": "Data", "width": 100})
+        columns.append({"label": "Root Type", "fieldname": "entry_type", "fieldtype": "Data", "width": 100})     
+    columns.append({"label": "Transaction Date", "fieldname": "date", "fieldtype": "Date", "width": 120} )
+    columns.append({"label": "Total Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 150})
+    columns.append({"label": "Supplier", "fieldname": "supplier", "fieldtype": "Link", "options": "Supplier", "width": 150})
+    columns.append({"label": "Status", "fieldname": "status", "fieldtype": "Data", "width": 100})
 
     return columns
 
 def get_data(filters):
-
     document_type = filters.get("document_type", "Purchase Invoice")
     selected_table = f"tab{document_type}"
     alias = "doc"
@@ -84,6 +85,7 @@ def get_data(filters):
             conditions.append(f"{alias}.company = %(company)s")
         if filters.get("from_date") and filters.get("to_date"):
             conditions.append(f"{alias}.{date_field} BETWEEN %(from_date)s AND %(to_date)s")
+        conditions.append("acc.root_type = 'Expense'")
     else:
         if filters.get("supplier"):
             conditions.append(f"{alias}.{supplier_field} = %(supplier)s")
@@ -134,14 +136,21 @@ def get_data(filters):
                 jea.party AS supplier,
                 {alias}.{date_field} AS date,
                 {alias}.{amount_field} AS total_amount,
+                 CASE 
+                    WHEN jea.debit > 0 THEN 'Debit'
+                    WHEN jea.credit > 0 THEN 'Credit'
+                    ELSE 'Neutral'
+                END AS entry_type,
+                jea.account,
                 jea.cost_center,
                 jea.location,
                 {alias}.company,
-                jea.budget_head
+                jea.budget_head,
+                acc.root_type AS root_type
             FROM `tabJournal Entry` {alias}
             LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+            LEFT JOIN `tabAccount` acc ON acc.name = jea.account
             WHERE {condition_string}
-            GROUP BY {alias}.name
         """
 
     elif document_type == "Payment Entry":
