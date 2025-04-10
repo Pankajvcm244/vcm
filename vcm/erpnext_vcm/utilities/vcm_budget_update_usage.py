@@ -203,11 +203,9 @@ def update_vcm_pi_budget_usage(pi_doc):
         f"{alias}.docstatus = 1", 
         f"{alias}.is_return = 0", 
         "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
-        ]  # Approved PIs without PO
-    
+        ]  # Approved PIs without PO    
 
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
