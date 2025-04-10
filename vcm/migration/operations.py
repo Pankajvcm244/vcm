@@ -138,8 +138,6 @@ def remove_tx_info():
     )
 
     frappe.db.comit()
-
-
 def correct_donors():
     for r in frappe.get_all(
         "Donation Receipt",
@@ -147,3 +145,27 @@ def correct_donors():
         fields=["name", "donor"],
     ):
         frappe.db.set_value("Donation Receipt", r["name"], "donor", f"L{r['donor']}")
+
+def correct_donors_2():
+    for r in frappe.get_all(
+        "Donor",
+        filters={
+            "creation": [">=", "2025-04-09"],
+            "owner": "migration@vcmerp.in",
+        },
+        pluck="name",
+    ):
+        if r.startswith("L"):
+            try:
+                frappe.rename_doc("Donor", r, f"O{r[1:]}")
+            except Exception as e:
+                print(e)
+                # current_name = frappe.db.get_value("Donor", r, "full_name")
+                # existing_name = frappe.db.get_value("Donor", r[1:], "full_name")
+                # print(
+                #     f"Current Name : {current_name} || Exisiting Name : {existing_name}"
+                # )
+                # if current_name == existing_name:
+                #     print("Matched")
+                #     frappe.delete_doc("Donor", r)
+                #     frappe.db.commit()
