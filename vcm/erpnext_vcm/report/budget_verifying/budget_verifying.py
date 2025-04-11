@@ -136,7 +136,7 @@ def get_data(filters):
                 jea.party AS supplier,
                 {alias}.{date_field} AS date,
                 {alias}.{amount_field} AS total_amount,
-                 CASE 
+                CASE 
                     WHEN jea.debit > 0 THEN 'Debit'
                     WHEN jea.credit > 0 THEN 'Credit'
                     ELSE 'Neutral'

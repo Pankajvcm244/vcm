@@ -55,6 +55,7 @@
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Cost Center",
    "options": "Cost Center",
    "reqd": 1
@@ -62,6 +63,7 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Company",
    "options": "Company",
    "reqd": 1
@@ -77,6 +79,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Original Amount",
    "read_only": 1
   },
@@ -92,6 +95,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_amended_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Amended Amount",
    "read_only": 1
   },
@@ -99,6 +103,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_used_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Used Amount",
    "read_only": 1
   },
@@ -106,6 +111,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_balance_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Balance Amount",
    "read_only": 1
   },
@@ -127,6 +133,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_paid_payment_entry",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Unlinked Payment Entry",
    "read_only": 1
   },
@@ -134,6 +141,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_unpaid_purchase_invoice",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Unlinked Purchase Invoice",
    "read_only": 1
   },
@@ -141,6 +149,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_unpaid_purchase_order",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": " Purchase Order",
    "read_only": 1
   },
@@ -148,6 +157,7 @@
    "allow_on_submit": 1,
    "fieldname": "total_additional_je",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Journal Entry",
    "read_only": 1
   },
@@ -155,6 +165,7 @@
    "allow_on_submit": 1,
    "fieldname": "used_percent",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Used %",
    "precision": "2",
    "read_only": 1
@@ -162,6 +173,7 @@
   {
    "fieldname": "location",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Location",
    "options": "Budget Location",
    "reqd": 1
@@ -186,6 +198,7 @@
    "allow_on_submit": 1,
    "fieldname": "pool_budget_total",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Pool Budget Total",
    "read_only": 1
   },
@@ -193,6 +206,7 @@
    "allow_on_submit": 1,
    "fieldname": "pool_budget_used",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Pool Budget Used",
    "read_only": 1
   },
@@ -200,6 +214,7 @@
    "allow_on_submit": 1,
    "fieldname": "pool_budget_balance",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Pool Budget Balance",
    "read_only": 1
   },
@@ -242,7 +257,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-04 11:43:14.030979",
+ "modified": "2025-04-11 13:08:31.092874",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",

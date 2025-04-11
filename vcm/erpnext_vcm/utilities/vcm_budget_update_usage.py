@@ -553,6 +553,11 @@ def update_vcm_budget_from_jv(jv_doc):
             # Sum of net expense for matching journal entries
             total_je_expense = frappe.db.sql("""
                 SELECT SUM(jea.debit - jea.credit) AS total
+                CASE 
+                    WHEN jea.debit > 0 THEN 'Debit'
+                    WHEN jea.credit > 0 THEN 'Credit'
+                    ELSE 'Neutral'
+                END AS entry_type,
                 FROM `tabJournal Entry Account` jea
                 INNER JOIN `tabJournal Entry` je ON je.name = jea.parent
                 WHERE je.docstatus = 1

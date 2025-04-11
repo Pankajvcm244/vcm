@@ -46,6 +46,7 @@ def get_data(filters):
 			mr.name.as_("material_request"),
 			mr.transaction_date.as_("date"),
 			mr.owner.as_("mrrequestor"),
+			mr.set_warehouse.as_("warehouse"),
 			mr.department.as_("mrdepartment"),
 			mr_item.schedule_date.as_("required_date"),
 			mr_item.item_code.as_("item_code"),
@@ -202,6 +203,13 @@ def get_columns(filters):
 					"fieldtype": "Data",
 					"width": 140,
 				},
+				{
+					"label": _("Target Warehouse"),
+					"fieldname": "warehouse",
+					"fieldtype": "Data",
+					"width": 140,
+				},
+
 				{
 					"label": _("MR Requestor"),
 					"options": "User",
