@@ -38,12 +38,8 @@ class VCMJournalEntry(JournalEntry):
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
-            #vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
-            #if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
             if validate_budget_head_n_location_mandatory(self) == True:
-                update_vcm_budget_from_jv(self) 
-                #create_vcm_jv_transaction_log(self, "JV Submitted")
-        
+                update_vcm_budget_from_jv(self)       
    
 
     def on_cancel(self):

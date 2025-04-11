@@ -461,19 +461,18 @@ def validate_vcm_budget_from_jv(jv_doc):
     """    
     #child table of JV, as Cost center is not in JV form, we need to pull from child table
     for account in jv_doc.accounts:  
-        budget_updated_flag = False
-        #logging.debug(f"update_vcm_JV 2 {account.cost_center},{account.debit}")
-           
+        budget_updated_flag = False            
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
         #logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
-        if account_type == "Expense":  
+        if account_type == "Expense":   
+            #logging.debug(f"update_vcm_JV 2 {account.cost_center},{account.debit}")
             if not account.budget_head:  # Consider only debit entries for expenses
                 #frappe.throw stops execution so return False is not required
                 frappe.throw(f"Budget Head is mandatory for JV entry: {jv_doc.name}")
             if not account.location:  # Consider only debit entries for expenses
                 #frappe.throw stops execution so return False is not required
-                frappe.throw(f"Budget Location is mandatory for JV entry: {jv_doc.name}")            
+                frappe.throw(f"Budget Location is mandatory for JV entry: {jv_doc.name}")           
             # Consider only debit entries for expenses , as they consume budget
             # Don't worry about credit entry as they free budget
             if account.cost_center and account.debit > 0: 
@@ -492,8 +491,10 @@ def validate_vcm_budget_from_jv(jv_doc):
                     frappe.throw(f"Budget not available for Company: {jv_doc.company}, Cost Center:{account.cost_center}, Location:{account.location}, Fiscal Year:{vcm_budget_settings.financial_year}")               
                 for budget_item in budget_doc.get("budget_items") or []:
                     #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
+                    #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
                     if account.budget_head == "Salaries & Wages" or account.budget_head == "Fixed Assets": 
                         if budget_item.budget_head == account.budget_head: 
+                            #logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
                             #logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
                             if account.debit > budget_item.balance_budget:
                                 #frappe.throw stops execution so return False is not required
@@ -510,29 +511,29 @@ def validate_vcm_budget_from_jv(jv_doc):
                             else:
                                 budget_updated_flag = True
                                 #logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
+                                #logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
                 if budget_updated_flag is False:
                     #frappe.throw stops execution so return False is not required
                     frappe.throw(f"Budget not available for Cost Center:{account.cost_center}, Location:{account.location}, Budget Head:{account.budget_head}")
     return True
 
 @frappe.whitelist()
-def update_vcm_budget_from_jv(je_doc):
-    return True    
-    """Update budget used when a Journal Entry is submitted (for Expense accounts)."""
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    fiscal_year_start = "2025-04-01"  # Fixed financial year start
-    processed_keys = set()  # Avoid duplicate updates for same budget entry
-    for row in je_doc.accounts:
-        # Check if the account is an expense
-        account_type = frappe.get_value("Account", row.account, "root_type")
-        if account_type == "Expense": 
-            # Create a unique key per combination
-            key = (row.cost_center, row.location, row.budget_head)
-            if key in processed_keys:
-                continue  # Avoid duplicate calculations
-            processed_keys.add(key)
-
-            # Fetch budget doc
+def update_vcm_budget_from_jv(jv_doc): 
+    return True   
+    """
+    Update Budget Used when a Journal Entry (JV) is submitted.
+    """    
+    #child table of JV, as Cost center is not in JV form, we need to pull from child table
+    for account in jv_doc.accounts: 
+        # Fetch account type of root_type
+        account_type = frappe.get_value("Account", account.account, "root_type")
+        logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+        if account_type == "Expense":
+        # now we will ajust budget only for expense entries    
+            #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+            #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
+            vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+            # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
             budget_name = frappe.db.get_value(
                 "VCM Budget",
                 {
