@@ -5,15 +5,22 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 #def update_vcm_po_budget_usage(po_doc):
-def update_PO_Budget():
-# bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PO_Budget    
+@frappe.whitelist()
+def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_head):
+#def update_PO_Budget():   
+# bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PO_Budget_new    
     filters = {} 
-    vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
-    vcm_location = "GGN"
-    vcm_fiscal_year = "2025-2026"
-    vcm_cost_center = "ANNADANA - HKMV"
-    vcm_budget_head = "Food"
-    budget_updated_flag = True
+    # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
+    # vcm_location = "GGN"
+    # vcm_fiscal_year = "2025-2026"
+    # vcm_cost_center = "ANNADANA - HKMV"
+    # vcm_budget_head = "Food"
+    vcm_company = company
+    vcm_location = location
+    vcm_fiscal_year = fiscal_year
+    vcm_cost_center = cost_center
+    vcm_budget_head = budget_head
+    
 
 
     conditions = ["docstatus = 1"]  # Only consider approved POs
@@ -24,7 +31,7 @@ def update_PO_Budget():
         "VCM Budget", 
         {"company": vcm_company,"location": vcm_location,"fiscal_year":vcm_fiscal_year,"cost_center":vcm_cost_center,"docstatus":1},
         "name")
-    logging.debug(f"in update_PO_Budget 1: {vcm_company}, {vcm_location}, {vcm_fiscal_year}, {vcm_cost_center}, {vcm_budget_head}")
+    #logging.debug(f"in update_PO_Budget 1: {vcm_company}, {vcm_location}, {vcm_fiscal_year}, {vcm_cost_center}, {vcm_budget_head}")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
@@ -64,11 +71,12 @@ def update_PO_Budget():
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)
-    logging.debug(f"in get po 2 {result} {total_used_budget}")
+    #logging.debug(f"in get po 2 {result} {total_used_budget}")
     total_po_amount = result[0].get("total_used_budget", 0) if result else 0
-    #budget_updated_flag = True
+    
     for budget_item in budget_doc.get("budget_items") or []:
-        #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
+        budget_updated_flag = True
+        #logging.debug(f"in update_vcm_po_budget_usage 2 {vcm_budget_head}")
         if budget_item.budget_head == vcm_budget_head:  
             budget_updated_flag = False     
             budget_item.unpaid_purchase_order = total_po_amount  # Adjust Remaining Budget
@@ -83,16 +91,17 @@ def update_PO_Budget():
                   - (budget_item.used_budget or 0)
             )
             break 
-    if budget_updated_flag:
+
+    if budget_updated_flag == True:
         # If the budget head does not match, log a message
-        logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")   
+        logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")  
     # Save and commit changes    
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()    
     return True
 
 
-def update_PI_Budget():
+def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
 # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PI_Budget    
     filters = {}   
     alias = "pi_doc" 
@@ -102,12 +111,17 @@ def update_PI_Budget():
         "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
         ]  # Approved PIs without PO
     
-    vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
-    vcm_location = "VRN"
-    vcm_fiscal_year = "2025-2026"
-    vcm_cost_center = "REGIONAL PUBLIC RELATIONS - HKMV"
-    vcm_budget_head = "Miscellaneous"
+    # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
+    # vcm_location = "VRN"
+    # vcm_fiscal_year = "2025-2026"
+    # vcm_cost_center = "REGIONAL PUBLIC RELATIONS - HKMV"
+    # vcm_budget_head = "Miscellaneous"
     budget_updated_flag = True
+    vcm_company = company
+    vcm_location = location
+    vcm_fiscal_year = fiscal_year
+    vcm_cost_center = cost_center
+    vcm_budget_head = budget_head
 
     
     """ Updates the used budget in VCM Budget when a PO is submitted """
@@ -124,7 +138,7 @@ def update_PI_Budget():
         },
         "name"
     )
-    logging.debug(f"in update_PI_Budget 1: {vcm_company}, {vcm_location}, {vcm_fiscal_year}, {vcm_cost_center}, {vcm_budget_head}")
+    #logging.debug(f"in update_PI_Budget 1: {vcm_company}, {vcm_location}, {vcm_fiscal_year}, {vcm_cost_center}, {vcm_budget_head}")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
@@ -156,7 +170,7 @@ def update_PI_Budget():
     amount_field = "grand_total"
 
     condition_string = " AND ".join(conditions)
-    logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
+    #logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
     query = f"""
         SELECT
             SUM({amount_field}) AS total_used_budget
@@ -166,9 +180,9 @@ def update_PI_Budget():
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)
-    logging.debug(f"in get pi usage: {result}")
+    #logging.debug(f"in get pi usage: {result}")
     total_pi_amount = result[0].get("total_used_budget", 0) if result else 0
-    logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
+    #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head: 

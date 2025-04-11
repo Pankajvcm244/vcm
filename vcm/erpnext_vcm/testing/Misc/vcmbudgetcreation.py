@@ -4,6 +4,7 @@
 # # exit
 # VCM Budget added: 72, Updated: 460, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
 #VCM Budget added: 73, Updated: 3869, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
+#VCM Budget added: 74, Updated: 3953, Errors: 0, Missing Cost Centers: 0, Missing Budget Heads: 0
 
 import frappe
 import pandas as pd
@@ -15,7 +16,8 @@ logging.basicConfig(level=logging.DEBUG)
 def add_vcmbudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Budget-Ramnavami.xlsx"  # Change as needed
+    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-1.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Budget-Ramnavami.xlsx"
 
     # Ensure file exists
     if not os.path.exists(file_path):

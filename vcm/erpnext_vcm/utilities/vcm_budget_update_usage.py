@@ -705,20 +705,28 @@ def validate_budget_head_n_location_mandatory(doc):
         #Journal Entry has cost center in child table, rest other doc have in main doc
         if doc.doctype == "Journal Entry":
             for row in doc.accounts:  # Assuming 'accounts' is the child table in Journal Entry
-                if frappe.db.exists("Cost Center", row.cost_center):
-                    cost_center_doc = frappe.get_doc("Cost Center", row.cost_center)
-                    # check if Budget is applicable for this cost center
-            if cost_center_doc.custom_vcm_budget_applicable ==  "Yes":
-                # is yes, then Budget Head is mandatory
-                if not row.budget_head:
-                    frappe.throw(f"Budget Head is mandatory for Cost Center where Budget is applicable: {row.cost_center}")
-                    return False
-                if not row.location:
-                    frappe.throw(f"Location is mandatory for Cost Center where Budget is applicable: {row.cost_center}")
-                    return False
-                return True
-            else:
-                return False
+                account_type = frappe.get_value("Account", row.account, "root_type")
+                #logging.debug(f"validate_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
+                if account_type == "Expense":
+                    if frappe.db.exists("Cost Center", row.cost_center):
+                        cost_center_doc = frappe.get_doc("Cost Center", row.cost_center)
+                        # check if Budget is applicable for this cost center
+                        if cost_center_doc.custom_vcm_budget_applicable ==  "Yes":
+                            # is yes, then Budget Head is mandatory
+                            if not row.budget_head:
+                                frappe.throw(f"Budget Head is mandatory in JV for Cost Center where Budget is applicable: {row.cost_center}")
+                                return False
+                            if not row.location:
+                                frappe.throw(f"Location is mandatory in JV for Cost Center where Budget is applicable: {row.cost_center}")
+                                return False
+                            return True
+                        else:
+                            # return False if budget is not applicable, so that we don't call budget update
+                            return False
+                # Here we are not returing False as next line may be expense
+            # return false for other than Expense account   
+            return False 
+            
         else: 
             #logging.debug(f"validate_budget_head_mandatory 1")       
             if frappe.db.exists("Cost Center", doc.cost_center):
