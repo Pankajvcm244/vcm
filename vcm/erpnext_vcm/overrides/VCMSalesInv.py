@@ -9,7 +9,7 @@ class VCMSalesInv(SalesInvoice):
     def validate(self):
         super().validate()
         self.validate_if_zero_rate_item()
-        # uncoment it later after IDS migration self.validate_back_dated_entry()
+        self.validate_back_dated_entry()
 
     
 
