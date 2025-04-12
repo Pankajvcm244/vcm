@@ -102,6 +102,8 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 
 
 def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
+    #"Updated 4028, 0 PO.\n\n Errors: []."
+    
 # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PI_Budget    
     filters = {}   
     alias = "pi_doc" 

@@ -197,18 +197,11 @@ def update_vcm_pi_budget_usage(pi_doc):
     """
     Updates the used budget in VCM Budget when a Purchase Invoice without a PO is submitted.
     """
-    filters = {}   
-    alias = "pi_doc" 
-    conditions = [
-        f"{alias}.docstatus = 1", 
-        f"{alias}.is_return = 0", 
-        "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
-        ]  # Approved PIs without PO    
-
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
+    alias = "pi_doc"
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
+    # Fetch VCM Budget document name
     budget_name = frappe.db.get_value(
-        "VCM Budget", 
+        "VCM Budget",
         {
             "company": pi_doc.company,
             "location": pi_doc.location,
@@ -219,55 +212,51 @@ def update_vcm_pi_budget_usage(pi_doc):
         "name"
     )
 
-    if frappe.db.exists("VCM Budget", budget_name):
-        budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
-        # If there is no budget for this cost center then just move on
-        logging.debug(f"in update_vcm_pi_budget_usage: No budget exists for {budget_name}")
-        return 0 
+    if not budget_name:
+        logging.debug(f"in update_vcm_pi_budget_usage: No budget exists for {pi_doc.company}, {pi_doc.location}, {pi_doc.cost_center}")
+        return 0
+
+    budget_doc = frappe.get_doc("VCM Budget", budget_name)
 
     filters = {
         "cost_center": pi_doc.cost_center,
         "company": pi_doc.company,
         "location": pi_doc.location,
         "budget_head": pi_doc.budget_head,
-        "from_date": "2025-04-01",  # Always check from April 1st
+        "from_date": "2025-04-01",
     }
 
     date_field = "posting_date"
-    if filters.get("cost_center"):
-        conditions.append(f"{alias}.cost_center = %(cost_center)s")
-    if filters.get("company"):
-        conditions.append(f"{alias}.company = %(company)s")
-    if filters.get("location"):
-        conditions.append(f"{alias}.location = %(location)s")
-    if filters.get("budget_head"):
-        conditions.append(f"{alias}.budget_head = %(budget_head)s")
-
-    # Check all PIs from April 1st onward
-    conditions.append(f"{alias}.{date_field} >= %(from_date)s")
-
     selected_table = "tabPurchase Invoice"
     amount_field = "grand_total"
 
-    condition_string = " AND ".join(conditions)
-    logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
+    # Clean query using EXISTS to avoid join duplicates
     query = f"""
         SELECT
-            SUM({amount_field}) AS total_used_budget
+            SUM({alias}.{amount_field}) AS total_used_budget
         FROM `{selected_table}` {alias}
-        LEFT JOIN `tabPurchase Invoice Item` pii ON pii.parent = {alias}.name
-        WHERE {condition_string}
+        WHERE {alias}.docstatus = 1
+          AND {alias}.is_return = 0
+          AND {alias}.{date_field} >= %(from_date)s
+          AND {alias}.cost_center = %(cost_center)s
+          AND {alias}.company = %(company)s
+          AND {alias}.location = %(location)s
+          AND {alias}.budget_head = %(budget_head)s
+          AND EXISTS (
+              SELECT 1 FROM `tabPurchase Invoice Item` pii
+              WHERE pii.parent = {alias}.name
+                AND (pii.purchase_order IS NULL OR pii.purchase_order = '')
+            LIMIT 1
+          )
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)
-    logging.debug(f"in get pi usage: {result}")
     total_pi_amount = result[0].get("total_used_budget", 0) if result else 0
-    logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
+    #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pi_doc.budget_head:        
-            budget_item.unpaid_purchase_invoice = total_pi_amount  # Adjust Remaining Budget
+            budget_item.unpaid_purchase_invoice = total_pi_amount
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
@@ -278,10 +267,10 @@ def update_vcm_pi_budget_usage(pi_doc):
                 (budget_item.current_budget or 0)
                 - (budget_item.used_budget or 0)
             )
-            break    
+            break
 
     budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
+    frappe.db.commit()
     return True
 
 
@@ -428,6 +417,7 @@ def update_vcm_budget_on_payment_submit(pe_doc):
             SUM({amount_field}) AS total_used_budget
         FROM `{selected_table}` {alias}
         WHERE {condition_string}
+        GROUP BY {alias}.name
     """
     result = frappe.db.sql(query, filters, as_dict=True)
     logging.debug(f"in get pe usage: {result}")
