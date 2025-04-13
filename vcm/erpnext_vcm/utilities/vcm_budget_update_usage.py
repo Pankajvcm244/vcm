@@ -484,11 +484,19 @@ def validate_vcm_budget_from_jv(jv_doc):
             # Consider only debit entries for expenses , as they consume budget
             # Don't worry about credit entry as they free budget
             if account.cost_center and account.debit > 0: 
+                # Skip if linked to a Purchase Invoice or Payment Entry
+                if account.reference_type in ("Purchase Invoice", "Payment Entry"):
+                    continue
                 vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
                 # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
                 budget_name = frappe.db.get_value(
                     "VCM Budget", 
-                    {"company": jv_doc.company,"location":account.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":account.cost_center,"docstatus":1},
+                    {"company": jv_doc.company,
+                     "location":account.location,
+                     "fiscal_year":vcm_budget_settings.financial_year,
+                     "cost_center":account.cost_center,
+                     "docstatus":1
+                    },
                     "name")
                 # Fetch budget settings based on Cost Center or Project
                 if frappe.db.exists("VCM Budget", budget_name):
@@ -526,71 +534,96 @@ def validate_vcm_budget_from_jv(jv_doc):
     return True
 
 @frappe.whitelist()
-def update_vcm_budget_from_jv(jv_doc): 
-    return True   
+def update_vcm_budget_from_jv(jv_doc):    
     """
     Update Budget Used when a Journal Entry (JV) is submitted.
-    """    
+    This only affects Expense entries not linked to a Purchase Order or Purchase Invoice.
+    """  
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")  
+    fiscal_start = "2025-04-01"  # Hardcoded fiscal year start
+    alias = "je"
+    filters = {} 
     #child table of JV, as Cost center is not in JV form, we need to pull from child table
     for account in jv_doc.accounts: 
         # Fetch account type of root_type
         account_type = frappe.get_value("Account", account.account, "root_type")
         logging.debug(f"update_vcm_JV is_exp: {account_type},{account.account}, {account.debit}, {account.credit}")
-        if account_type == "Expense":
-        # now we will ajust budget only for expense entries    
+        if account_type == "Expense": 
+            # now we will ajust budget only for expense entries    
             #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
             #budget_name = f"{vcm_budget_settings.financial_year}-BUDGET-{account.cost_center}"
-            vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+            
             # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
             budget_name = frappe.db.get_value(
                 "VCM Budget",
                 {
-                    "company": je_doc.company,
-                    "location": row.location,
+                    "company": jv_doc.company,
+                    "location": account.location,
                     "fiscal_year": vcm_budget_settings.financial_year,
-                    "cost_center": row.cost_center,
+                    "cost_center": account.cost_center,
                     "docstatus": 1
                 },
                 "name"
             )
-            if not budget_name:
-                logging.debug(f"No budget exists for Cost Center: {row.cost_center}, Location: {row.location}")
-                continue
-            budget_doc = frappe.get_doc("VCM Budget", budget_name)
-
-            # Sum of net expense for matching journal entries
-            total_je_expense = frappe.db.sql("""
-                SELECT SUM(jea.debit - jea.credit) AS total
-                CASE 
-                    WHEN jea.debit > 0 THEN 'Debit'
-                    WHEN jea.credit > 0 THEN 'Credit'
-                    ELSE 'Neutral'
-                END AS entry_type,
-                FROM `tabJournal Entry Account` jea
-                INNER JOIN `tabJournal Entry` je ON je.name = jea.parent
-                WHERE je.docstatus = 1
-                AND je.company = %(company)s
-                AND jea.cost_center = %(cost_center)s
-                AND jea.location = %(location)s
-                AND jea.budget_head = %(budget_head)s
-                AND je.posting_date >= %(from_date)s
-                AND jea.account IN (
-                    SELECT name FROM `tabAccount` WHERE root_type = 'Expense'
+            if frappe.db.exists("VCM Budget", budget_name):
+                budget_doc = frappe.get_doc("VCM Budget", budget_name)
+            else:
+                # If there is no budget for this cost center then just move on
+                logging.debug(f"in update_vcm_JV_budget_usage: No budget exists for {budget_name}")
+                return 0 
+            filters = {
+                "from_date": fiscal_start,
+                "company": jv_doc.company,
+                "cost_center": account.cost_center,
+                "location": account.location,
+                "budget_head": account.budget_head,
+            }
+            # Compose condition string for query
+            conditions = [
+                f"{alias}.docstatus = 1",
+                f"{alias}.posting_date >= %(from_date)s",
+                f"{alias}.company = %(company)s",
+                f"jea.cost_center = %(cost_center)s",
+                f"jea.location = %(location)s",
+                f"jea.budget_head = %(budget_head)s",
+                "acc.root_type = 'Expense'",
+            ]
+            conditions.append("""
+                (
+                    jea.reference_type IS NULL 
+                    OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
                 )
-            """, {
-                "company": je_doc.company,
-                "cost_center": row.cost_center,
-                "location": row.location,
-                "budget_head": row.budget_head,
-                "from_date": fiscal_year_start
-            }, as_dict=True)
-
-            net_expense = total_je_expense[0].total if total_je_expense and total_je_expense[0].total else 0
-
+            """)
+            condition_string = " AND ".join(conditions) 
+            selected_table = "tabJournal Entry"
+            amount_field = "total_debit"  # or use `base_paid_amount` for consistency
+            
+            query = f"""
+                SELECT
+                    {alias}.name,                    
+                    {alias}.{amount_field} AS total_used_budget,
+                    CASE 
+                        WHEN jea.debit > 0 THEN 'Debit'
+                        WHEN jea.credit > 0 THEN 'Credit'
+                        ELSE 'Neutral'
+                    END AS entry_type,            
+                    acc.root_type AS root_type
+                FROM `{selected_table}` {alias}
+                LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+                LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+                WHERE {condition_string}
+                AND (
+                    jea.reference_type IS NULL 
+                    OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
+                )
+            """
+            result = frappe.db.sql(query, filters, as_dict=True)
+            total_jv_amount = result[0].get("total_used_budget", 0) if result else 0
+            #logging.debug(f"Total paid amount for JV: {total_jv_amount}, {account.budget_head}")
             # Update the budget item
             for item in budget_doc.get("budget_items") or []:
-                if item.budget_head == row.budget_head:
-                    item.additional_je = net_expense
+                if item.budget_head == account.budget_head:
+                    item.additional_je = total_jv_amount
                     item.used_budget = (
                         (item.paid_payment_entry or 0)
                         + (item.unpaid_purchase_invoice or 0)

@@ -21,9 +21,6 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
     vcm_fiscal_year = fiscal_year
     vcm_cost_center = cost_center
     vcm_budget_head = budget_head
-    
-
-
     conditions = ["docstatus = 1"]  # Only consider approved POs
     """ Updates the used budget in VCM Budget when a PO is submitted """
     
@@ -59,6 +56,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
     
     # Check all POs from April 1st onward
     conditions.append(f"{date_field} >= %(from_date)s")
+
     selected_table = "tab" + "Purchase Order"
     amount_field = "grand_total"
 
@@ -322,6 +320,121 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
 
     if budget_updated_flag:
         logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")
+
+    budget_doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return True
+
+def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
+#def update_JV_Budget():
+    # *****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File
+    # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_JV_Budget    
+
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")  
+    fiscal_start = "2025-04-01"  # Hardcoded fiscal year start
+    alias = "je" 
+    filters = {}  
+    # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
+    # vcm_location = "VRN"
+    # vcm_fiscal_year = "2025-2026"
+    # vcm_cost_center = "ONLINE COMMUNICATIONS - HKMV"
+    # vcm_budget_head = "Vehicle Maintenance"
+    vcm_company = company
+    vcm_location = location
+    vcm_fiscal_year = fiscal_year
+    vcm_cost_center = cost_center
+    vcm_budget_head = budget_head
+    budget_updated_flag = True    
+    
+    budget_name = frappe.db.get_value(
+        "VCM Budget", 
+        {
+            "company": vcm_company,
+            "location": vcm_location,
+            "fiscal_year": vcm_fiscal_year,
+            "cost_center": vcm_cost_center,
+            "docstatus": 1
+        },
+        "name"
+    )
+    
+    if frappe.db.exists("VCM Budget", budget_name):
+        budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    else:
+        # If there is no budget for this cost center then just move on
+        logging.debug(f"in update_vcm_pe_budget_usage: No budget exists for {budget_name}")
+        return 0  
+    filters = {
+        "cost_center": vcm_cost_center,
+        "company": vcm_company,
+        "location": vcm_location,
+        "budget_head": vcm_budget_head,
+        "from_date": fiscal_start,  # Always check from April 1st
+    }
+    date_field = "posting_date"
+
+    conditions = [
+        f"{alias}.docstatus = 1",
+        f"{alias}.posting_date >= %(from_date)s",
+        f"{alias}.company = %(company)s",
+        f"jea.cost_center = %(cost_center)s",
+        f"jea.location = %(location)s",
+        f"jea.budget_head = %(budget_head)s",
+        "acc.root_type = 'Expense'",
+    ]
+    conditions.append("""
+        (
+            jea.reference_type IS NULL 
+            OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
+        )
+    """)
+    condition_string = " AND ".join(conditions) 
+
+    selected_table = "tabJournal Entry"
+    amount_field = "total_debit"  # or use `base_paid_amount` for consistency
+      
+    query = f"""
+        SELECT
+            {alias}.name,                    
+            {alias}.{amount_field} AS total_used_budget,
+            CASE 
+                WHEN jea.debit > 0 THEN 'Debit'
+                WHEN jea.credit > 0 THEN 'Credit'
+                ELSE 'Neutral'
+            END AS entry_type,            
+            acc.root_type AS root_type
+        FROM `{selected_table}` {alias}
+        LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+        LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+        WHERE {condition_string}
+        AND (
+            jea.reference_type IS NULL 
+            OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
+        )
+    """
+    result = frappe.db.sql(query, filters, as_dict=True)
+    #logging.debug(f"Payment Entry usage result: {result}")    
+    total_jv_amount = result[0].get("total_used_budget", 0) if result else 0
+    logging.debug(f"Total paid amount for JV: {total_jv_amount}, Budget Head: {vcm_budget_head}")
+
+    for budget_item in budget_doc.get("budget_items") or []:
+        if budget_item.budget_head == vcm_budget_head:
+            budget_updated_flag = False
+            budget_item.paid_payment_entry = total_jv_amount
+            budget_item.used_budget = (
+                (budget_item.paid_payment_entry or 0)
+                + (budget_item.unpaid_purchase_invoice or 0)
+                + (budget_item.unpaid_purchase_order or 0)
+                + (budget_item.additional_je or 0)
+            )
+            budget_item.balance_budget = (
+                (budget_item.current_budget or 0)
+                - (budget_item.used_budget or 0)
+            )
+            break
+
+    if budget_updated_flag:
+        logging.debug(f"*******Budget head mismatch JV: NOT FOUND {vcm_budget_head}")
 
     budget_doc.save(ignore_permissions=True)
     frappe.db.commit()
