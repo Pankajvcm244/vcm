@@ -174,11 +174,16 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
     condition_string = " AND ".join(conditions)
     #logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
     query = f"""
-        SELECT
-            SUM({amount_field}) AS total_used_budget
+    SELECT
+        SUM(pi_amount) AS total_used_budget
+    FROM (
+        SELECT DISTINCT
+            {alias}.name,
+            {alias}.{amount_field} AS pi_amount
         FROM `{selected_table}` {alias}
         LEFT JOIN `tabPurchase Invoice Item` pii ON pii.parent = {alias}.name
         WHERE {condition_string}
+    ) AS grouped
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)

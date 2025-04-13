@@ -197,9 +197,18 @@ def update_vcm_pi_budget_usage(pi_doc):
     """
     Updates the used budget in VCM Budget when a Purchase Invoice without a PO is submitted.
     """
-    alias = "pi_doc"
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
-    # Fetch VCM Budget document name
+    filters = {}   
+    alias = "pi_doc" 
+    conditions = [
+         f"{alias}.docstatus = 1", 
+         f"{alias}.is_return = 0", 
+         "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
+        ]  # Approved PIs without PO    
+ 
+    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
+
+    # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget",
         {
@@ -212,11 +221,12 @@ def update_vcm_pi_budget_usage(pi_doc):
         "name"
     )
 
-    if not budget_name:
-        logging.debug(f"in update_vcm_pi_budget_usage: No budget exists for {pi_doc.company}, {pi_doc.location}, {pi_doc.cost_center}")
-        return 0
-
-    budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    if frappe.db.exists("VCM Budget", budget_name):
+         budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    else:
+         # If there is no budget for this cost center then just move on
+         logging.debug(f"in update_vcm_pi_budget_usage: No budget exists for {budget_name}")
+         return 0     
 
     filters = {
         "cost_center": pi_doc.cost_center,
@@ -227,32 +237,41 @@ def update_vcm_pi_budget_usage(pi_doc):
     }
 
     date_field = "posting_date"
+    if filters.get("cost_center"):
+         conditions.append(f"{alias}.cost_center = %(cost_center)s")
+    if filters.get("company"):
+         conditions.append(f"{alias}.company = %(company)s")
+    if filters.get("location"):
+         conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("budget_head"):
+         conditions.append(f"{alias}.budget_head = %(budget_head)s")
+ 
+    # Check all PIs from April 1st onward
+    conditions.append(f"{alias}.{date_field} >= %(from_date)s")
+ 
     selected_table = "tabPurchase Invoice"
     amount_field = "grand_total"
+    condition_string = " AND ".join(conditions)
+    #logging.debug(f"in update_vcm_pi_budget 1 {condition_string}")
 
-    # Clean query using EXISTS to avoid join duplicates
     query = f"""
-        SELECT
-            SUM({alias}.{amount_field}) AS total_used_budget
+    SELECT
+        SUM(pi_amount) AS total_used_budget
+    FROM (
+        SELECT DISTINCT
+            {alias}.name,
+            {alias}.{amount_field} AS pi_amount
         FROM `{selected_table}` {alias}
-        WHERE {alias}.docstatus = 1
-          AND {alias}.is_return = 0
-          AND {alias}.{date_field} >= %(from_date)s
-          AND {alias}.cost_center = %(cost_center)s
-          AND {alias}.company = %(company)s
-          AND {alias}.location = %(location)s
-          AND {alias}.budget_head = %(budget_head)s
-          AND EXISTS (
-              SELECT 1 FROM `tabPurchase Invoice Item` pii
-              WHERE pii.parent = {alias}.name
-                AND (pii.purchase_order IS NULL OR pii.purchase_order = '')
-            LIMIT 1
-          )
+        LEFT JOIN `tabPurchase Invoice Item` pii ON pii.parent = {alias}.name
+        WHERE {condition_string}
+    ) AS grouped
     """
-
+    logging.debug(f"pi_budget 1 {total_pi_amount}, {pi_doc.budget_head}")
     result = frappe.db.sql(query, filters, as_dict=True)
+    #result = frappe.db.sql(query, filters, as_dict=True)
+    #frappe.errprint(result)  # 👈 See each invoice amount
     total_pi_amount = result[0].get("total_used_budget", 0) if result else 0
-    #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}")
+    #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}, {pi_doc.budget_head}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pi_doc.budget_head:        
