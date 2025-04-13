@@ -297,7 +297,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
     """
 
     result = frappe.db.sql(query, filters, as_dict=True)
-    logging.debug(f"Payment Entry usage result: {result}")
+    #logging.debug(f"Payment Entry usage result: {result}")
     
     total_pe_amount = result[0].get("total_used_budget", 0) if result else 0
     #logging.debug(f"Total paid amount for PE: {total_pe_amount}, Budget Head: {vcm_budget_head}")
@@ -415,7 +415,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
     result = frappe.db.sql(query, filters, as_dict=True)
     #logging.debug(f"Payment Entry usage result: {result}")    
     total_jv_amount = result[0].get("total_used_budget", 0) if result else 0
-    logging.debug(f"Total paid amount for JV: {total_jv_amount}, Budget Head: {vcm_budget_head}")
+    #logging.debug(f"Total paid amount for JV: {total_jv_amount}, Budget Head: {vcm_budget_head}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:
