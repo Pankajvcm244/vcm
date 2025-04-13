@@ -7,7 +7,8 @@ logging.basicConfig(level=logging.DEBUG)
 #def update_vcm_po_budget_usage(po_doc):
 @frappe.whitelist()
 def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_head):
-#def update_PO_Budget():   
+#def update_PO_Budget(): 
+# *****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File  
 # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PO_Budget_new    
     filters = {} 
     # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
@@ -25,7 +26,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 
     conditions = ["docstatus = 1"]  # Only consider approved POs
     """ Updates the used budget in VCM Budget when a PO is submitted """
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
@@ -103,8 +104,8 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 
 def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
     #"Updated 4028, 0 PO.\n\n Errors: []."
-    
-# bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PI_Budget    
+    #*****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File
+    # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PI_Budget    
     filters = {}   
     alias = "pi_doc" 
     conditions = [
@@ -127,7 +128,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
 
     
     """ Updates the used budget in VCM Budget when a PO is submitted """
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
@@ -214,24 +215,30 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
     return True
 
 
-def update_PE_Budget():
-    # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PE_Budget    
+def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
+#def update_PE_Budget():
+    # *****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File
+    # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PE_Budget    
 
     filters = {}   
     alias = "pe_doc" 
     conditions = [
         f"{alias}.docstatus = 1",  # Submitted Payment Entries only
-        f"{alias}.payment_type = 'Pay'"  # Only outgoing payments
+        f"{alias}.payment_type = 'Pay'", # Only outgoing payments
+         f"{alias}.posting_date >= %(from_date)s"  
     ]
     
-    vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
-    vcm_location = "VRN"
-    vcm_fiscal_year = "2025-2026"
-    vcm_cost_center = "REGIONAL PUBLIC RELATIONS - HKMV"
-    vcm_budget_head = "Miscellaneous"
-    budget_updated_flag = True
-
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
+    # vcm_location = "VRN"
+    # vcm_fiscal_year = "2025-2026"
+    # vcm_cost_center = "GRIHASTHA ASHRAM - HKMV"
+    # vcm_budget_head = "Land/Building Rentals"
+    vcm_company = company
+    vcm_location = location
+    vcm_fiscal_year = fiscal_year
+    vcm_cost_center = cost_center
+    vcm_budget_head = budget_head
+    budget_updated_flag = True    
     
     budget_name = frappe.db.get_value(
         "VCM Budget", 
@@ -245,11 +252,12 @@ def update_PE_Budget():
         "name"
     )
     
-    if not budget_name or not frappe.db.exists("VCM Budget", budget_name):
-        logging.debug(f"in update_PE_Budget: No budget exists for {budget_name}")
+    if frappe.db.exists("VCM Budget", budget_name):
+        budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    else:
+        # If there is no budget for this cost center then just move on
+        logging.debug(f"in update_vcm_pe_budget_usage: No budget exists for {budget_name}")
         return 0 
-
-    budget_doc = frappe.get_doc("VCM Budget", budget_name)
 
     filters = {
         "cost_center": vcm_cost_center,
@@ -269,17 +277,23 @@ def update_PE_Budget():
     if filters.get("budget_head"):
         conditions.append(f"{alias}.budget_head = %(budget_head)s")
     
-    conditions.append(f"{alias}.{date_field} >= %(from_date)s")
+    # Exclude PEs that have references to Purchase Orders or Purchase Invoices
+    conditions.append(f"""
+        NOT EXISTS (
+            SELECT 1 FROM `tabPayment Entry Reference` per
+            WHERE per.parent = {alias}.name
+              AND per.reference_doctype IN ('Purchase Order', 'Purchase Invoice')
+        )
+    """)
 
     selected_table = "tabPayment Entry"
     amount_field = "paid_amount"  # or use `base_paid_amount` for consistency
-
     condition_string = " AND ".join(conditions)
-    logging.debug(f"in update_PE_Budget query condition: {condition_string}")
+    #logging.debug(f"in update_PE_Budget query condition: {condition_string}")
     
     query = f"""
         SELECT
-            SUM({amount_field}) AS total_paid_amount
+            SUM({amount_field}) AS total_used_budget
         FROM `{selected_table}` {alias}
         WHERE {condition_string}
     """
@@ -287,8 +301,8 @@ def update_PE_Budget():
     result = frappe.db.sql(query, filters, as_dict=True)
     logging.debug(f"Payment Entry usage result: {result}")
     
-    total_pe_amount = result[0].get("total_paid_amount", 0) if result else 0
-    logging.debug(f"Total paid amount for PE: {total_pe_amount}")
+    total_pe_amount = result[0].get("total_used_budget", 0) if result else 0
+    #logging.debug(f"Total paid amount for PE: {total_pe_amount}, Budget Head: {vcm_budget_head}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:

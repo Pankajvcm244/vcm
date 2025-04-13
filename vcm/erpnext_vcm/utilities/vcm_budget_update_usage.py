@@ -430,18 +430,17 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     selected_table = "tabPayment Entry"
     amount_field = "paid_amount"
     condition_string = " AND ".join(conditions)
-    logging.debug(f"in update_vcm_pe_budget 1 {condition_string}")
+    #logging.debug(f"in update_vcm_pe_budget 1 {condition_string}")
     query = f"""
         SELECT
             SUM({amount_field}) AS total_used_budget
         FROM `{selected_table}` {alias}
         WHERE {condition_string}
-        GROUP BY {alias}.name
     """
     result = frappe.db.sql(query, filters, as_dict=True)
-    logging.debug(f"in get pe usage: {result}")
+    #logging.debug(f"in get pe usage: {result}")
     total_pe_amount = result[0].get("total_used_budget", 0) if result else 0
-    logging.debug(f"in update_vcm_pe_budget 2 {total_pe_amount}")
+    #logging.debug(f"in update_vcm_pe_budget 2 {total_pe_amount}")
 
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pe_doc.budget_head:        
