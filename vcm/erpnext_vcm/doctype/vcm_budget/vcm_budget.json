@@ -13,16 +13,12 @@
   "cost_center",
   "total_amount",
   "total_amended_amount",
-  "total_balance_amount",
-  "total_used_amount",
-  "column_break_fgta",
   "pool_budget_total",
+  "column_break_fgta",
+  "total_used_amount",
+  "total_balance_amount",
   "pool_budget_used",
   "pool_budget_balance",
-  "salary_used",
-  "salary_balance",
-  "fa_used",
-  "fa_balance",
   "column_break_cdac",
   "total_unpaid_purchase_order",
   "total_unpaid_purchase_invoice",
@@ -207,7 +203,7 @@
    "fieldname": "pool_budget_used",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Pool Budget Used",
+   "label": "Pool Used Amount",
    "read_only": 1
   },
   {
@@ -215,35 +211,7 @@
    "fieldname": "pool_budget_balance",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Pool Budget Balance",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "salary_used",
-   "fieldtype": "Float",
-   "label": "Salary Used",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "salary_balance",
-   "fieldtype": "Float",
-   "label": "Salary Balance",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "fa_used",
-   "fieldtype": "Float",
-   "label": "FA Used",
-   "read_only": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "fa_balance",
-   "fieldtype": "Float",
-   "label": "FA Balance",
+   "label": "Pool Balance Amount",
    "read_only": 1
   },
   {
@@ -257,7 +225,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-11 13:08:31.092874",
+ "modified": "2025-04-13 15:27:06.212932",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",

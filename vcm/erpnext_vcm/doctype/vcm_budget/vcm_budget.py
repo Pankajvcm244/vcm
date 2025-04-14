@@ -109,5 +109,13 @@ def get_vcm_budget_head(cost_center, location, company):
     #logging.debug(f"in get_vcm_budget_head-3   {budget_items_map.keys()} ") 
     return {"vcm_budget": budget_name, "budget_heads": budget_items_map.keys()}
 
-    
-
+@frappe.whitelist()
+def is_pool_budget_head(budget_head_name):
+    """  Returns:  bool: True if 'Pool Budget Head' is checked (1), False otherwise.
+    """
+    if not budget_head_name:
+        return False
+    if not frappe.db.exists("Budget Head", budget_head_name):
+        return False
+    budget_head = frappe.get_doc("Budget Head", budget_head_name)
+    return budget_head.pool_budget_head == 1

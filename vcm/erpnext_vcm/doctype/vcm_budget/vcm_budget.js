@@ -14,8 +14,8 @@ frappe.ui.form.on('VCM Budget', {
         calculate_Purchase_Order_amount(frm);
         calculate_JE_amount(frm);
         calculate_used_percentage(frm);
-        calculate_salary_amount(frm);
-        calculate_fa_amount(frm);
+        //calculate_salary_amount(frm);
+        //calculate_fa_amount(frm);
         calculate_pool_amount(frm);
 
     },
@@ -28,8 +28,8 @@ frappe.ui.form.on('VCM Budget', {
         calculate_Purchase_Invoice_amount(frm);
         calculate_Purchase_Order_amount(frm);
         calculate_JE_amount(frm);
-        calculate_salary_amount(frm);
-        calculate_fa_amount(frm);
+        //calculate_salary_amount(frm);
+        //calculate_fa_amount(frm);
         calculate_pool_amount(frm);
     },
     budget_items_remove: function(frm, cdt, cdn) {
@@ -41,8 +41,8 @@ frappe.ui.form.on('VCM Budget', {
         calculate_Purchase_Invoice_amount(frm);
         calculate_Purchase_Order_amount(frm);
         calculate_JE_amount(frm);
-        calculate_salary_amount(frm);
-        calculate_fa_amount(frm);
+        //calculate_salary_amount(frm);
+        //calculate_fa_amount(frm);
         calculate_pool_amount(frm);
     },
     before_save: function(frm) {
@@ -202,62 +202,79 @@ function calculate_JE_amount(frm) {
 }
 
 
-function calculate_salary_amount(frm) {
-    let salary_used = 0;
-    let salary_balance = 0;
-    //console.log("calculate_salary_amount:" );
-    $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head === "Salaries & Wages") {  // ✅ Check only Salary Budget Head           
-            salary_used += row.used_budget || 0;
-            salary_balance += row.balance_budget || 0;  
-            //console.log("calculate_salary_amount 1:", row.used_budget,row.balance_budget, salary_balance );
-        }
-    });
+// function calculate_salary_amount(frm) {
+//     let salary_used = 0;
+//     let salary_balance = 0;
+//     //console.log("calculate_salary_amount:" );
+//     $.each(frm.doc.budget_items || [], function(i, row) {
+//         if (row.budget_head === "Salaries & Wages") {  // ✅ Check only Salary Budget Head           
+//             salary_used += row.used_budget || 0;
+//             salary_balance += row.balance_budget || 0;  
+//             //console.log("calculate_salary_amount 1:", row.used_budget,row.balance_budget, salary_balance );
+//         }
+//     });
 
-    // ✅ Set the calculated values to Salary fields
-    frm.set_value("salary_used", salary_used);
-    frm.set_value("salary_balance", salary_balance); 
-    frm.refresh_field("salary_used");
-    frm.refresh_field("salary_balance");
-}
+//     // ✅ Set the calculated values to Salary fields
+//     frm.set_value("salary_used", salary_used);
+//     frm.set_value("salary_balance", salary_balance); 
+//     frm.refresh_field("salary_used");
+//     frm.refresh_field("salary_balance");
+// }
 
-function calculate_fa_amount(frm) {
-    let fa_used = 0;
-    let fa_balance = 0;
+// function calculate_fa_amount(frm) {
+//     let fa_used = 0;
+//     let fa_balance = 0;
 
-    $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head === "Fixed Assets") {  // ✅ Check only Salary Budget Head
-            fa_used += row.used_budget || 0;
-            fa_balance += row.balance_budget || 0;  
-        }
-    });
+//     $.each(frm.doc.budget_items || [], function(i, row) {
+//         if (row.budget_head === "Fixed Assets") {  // ✅ Check only Salary Budget Head
+//             fa_used += row.used_budget || 0;
+//             fa_balance += row.balance_budget || 0;  
+//         }
+//     });
 
-    // ✅ Set the calculated values to Salary fields
-    frm.set_value("fa_used", fa_used);
-    frm.set_value("fa_balance", fa_balance); 
-    frm.refresh_field("fa_used");
-    frm.refresh_field("fa_balance");
-}
-
+//     // ✅ Set the calculated values to Salary fields
+//     frm.set_value("fa_used", fa_used);
+//     frm.set_value("fa_balance", fa_balance); 
+//     frm.refresh_field("fa_used");
+//     frm.refresh_field("fa_balance");
+// }
+// Function to calculate pool budget amounts
+// This function checks each budget item to see if it's a pool budget head
+// and calculates the total used, balance, and current budget amounts accordingly
 function calculate_pool_amount(frm) {
     let pool_budget_used = 0;
     let pool_budget_balance = 0;
     let pool_budget_total = 0;
 
-    $.each(frm.doc.budget_items || [], function(i, row) {
-        if (row.budget_head !== "Fixed Assets" && row.budget_head !== "Salaries & Wages" ) {  
-            pool_budget_used += row.used_budget || 0;
-            pool_budget_balance += row.balance_budget || 0;
-            pool_budget_total += row.current_budget || 0;  
-            //console.log("calculate_pool_1 :", pool_budget_used, pool_budget_balance, pool_budget_total);
-        }
+    let promises = [];
+
+    (frm.doc.budget_items || []).forEach(function(row) {
+        // Call the server to check if the budget head is a pool budget head
+        let promise = frappe.call({
+            method: "vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget.is_pool_budget_head",  // Update this path
+            args: {
+                budget_head_name: row.budget_head
+            },
+            callback: function(r) {
+                if (r.message === true) {
+                    pool_budget_used += row.used_budget || 0;
+                    pool_budget_balance += row.balance_budget || 0;
+                    pool_budget_total += row.current_budget || 0;
+                }
+            }
+        });
+
+        promises.push(promise);
     });
 
-    frm.set_value("pool_budget_used", pool_budget_used);
-    frm.set_value("pool_budget_balance", pool_budget_balance); 
-    frm.set_value("pool_budget_total", pool_budget_total);
-    frm.refresh_field("pool_budget_used");
-    frm.refresh_field("pool_budget_balance");
-    frm.refresh_field("pool_budget_total");
-    //console.log("calculate_pool_amount:", pool_budget_used, pool_budget_balance, pool_budget_total);
+    // After all calls complete, update the fields
+    Promise.all(promises).then(() => {
+        frm.set_value("pool_budget_used", pool_budget_used);
+        frm.set_value("pool_budget_balance", pool_budget_balance); 
+        frm.set_value("pool_budget_total", pool_budget_total);
+
+        frm.refresh_field("pool_budget_used");
+        frm.refresh_field("pool_budget_balance");
+        frm.refresh_field("pool_budget_total");
+    });
 }

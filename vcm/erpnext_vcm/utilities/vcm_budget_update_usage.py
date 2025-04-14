@@ -3,6 +3,10 @@ from frappe.utils import flt
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
+from vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget import (
+    is_pool_budget_head,
+)
+
 @frappe.whitelist()
 def validate_vcm_po_budget_amount_budgethead(po_doc):    
     """ Updates the used budget in VCM Budget when a PO is submitted """
@@ -10,8 +14,15 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
-        {"company": po_doc.company,"location":po_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":po_doc.cost_center,"docstatus":1},
-        "name")
+        {
+            "company": po_doc.company,
+            "location":po_doc.location,
+            "fiscal_year":vcm_budget_settings.financial_year,
+            "cost_center":po_doc.cost_center,
+            "docstatus":1
+        },
+        "name"
+    )
     #logging.debug(f"in validate_vcm_po_ 2 {budget_name}")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
@@ -21,29 +32,26 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
         frappe.throw(f"Budget not available for Cost Center:{po_doc.company}, but enabled in Cost Center.  {po_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{po_doc.location}")
         return False    
     budget_validation_flag = True 
+
     if po_doc.budget_head == "Salaries & Wages":        
         frappe.throw(f"{po_doc.budget_head} Budget Head can not be used in PO , Request: {po_doc.rounded_total}")
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
         return False
-    elif po_doc.budget_head == "Fixed Assets": 
+    # Use is_pool_budget_head to check
+    if is_pool_budget_head(po_doc.budget_head):
+        # Pool budget validation
+        budget_validation_flag = False
+        if po_doc.rounded_total > budget_doc.pool_budget_balance:
+            frappe.throw(f"Pool Budget Exceeded for {po_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {po_doc.rounded_total}")
+            return False
+    else:
+        # Validate against individual budget head balance
         for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
             if budget_item.budget_head == po_doc.budget_head:
                 budget_validation_flag = False
                 if po_doc.rounded_total > budget_item.balance_budget:
                     frappe.throw(f"Budget Exceeded for {po_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {po_doc.rounded_total}")
-                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
                     return False
-    else:
-        #for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_doc.pool_budget_balance},{po_doc.rounded_total} ")
-            #if budget_item.budget_head == po_doc.budget_head:
-        # Now user can select any budget head and we will allow it if pool has money
-        budget_validation_flag = False
-        if po_doc.rounded_total > budget_doc.pool_budget_balance:
-            frappe.throw(f"Pool Budget Exceeded for {po_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {po_doc.rounded_total}")
-            #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-            return False
 
     if budget_validation_flag:
         frappe.throw(f"PO Budget not found for Cost Center: {po_doc.cost_center}, Budget Head: {po_doc.budget_head}")
@@ -134,7 +142,7 @@ def validate_vcm_pi_budget_amount(pi_doc):
         #logging.debug(f"in Purchase InvoiceDOc Ref: {item}, {item.purchase_order} ")
         if item.purchase_order:
             PI_FLAG_WITH_PO = True
-            break  # Exit loop as soon as we find a linked PO  
+            return False  # Exit loop as soon as we find a linked PO  
 
     #logging.debug(f"in update_vcm_pi_budget_usage 1 {pi_doc}")
     vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
@@ -165,27 +173,21 @@ def validate_vcm_pi_budget_amount(pi_doc):
         frappe.throw(f"{pi_doc.budget_head} Budget Head can not be used in Payment Invoice , Request: {pi_doc.rounded_total}")
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
         return False
-    elif pi_doc.budget_head == "Fixed Assets": 
+    
+    if is_pool_budget_head(pi_doc.budget_head):
+        # Pool budget validation
+        budget_validation_flag = False
+        if (pi_doc.rounded_total - total_vcm_advance + tax_deducted ) > budget_doc.pool_budget_balance:
+            frappe.throw(f"Pool Budget Exceeded for PI {pi_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pi_doc.rounded_total}")
+            return False
+    else:
+        # Validate against individual budget head balance
         for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
             if budget_item.budget_head == pi_doc.budget_head:
                 budget_validation_flag = False
                 if pi_doc.rounded_total > budget_item.balance_budget:
-                    frappe.throw(f"Budget Exceeded for {pi_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {pi_doc.rounded_total}")
-                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                    frappe.throw(f"Budget Exceeded for PI {pi_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {pi_doc.rounded_total}")
                     return False
-    else:
-        # Now user can select any budget head and we will allow it if pool has money
-        budget_validation_flag = False
-        if PI_FLAG_WITH_PO: 
-                    # Do nothing, Budget has been consumed in PO
-                    a = 0                    
-    #                 #logging.debug(f"PI With PO , {pi_doc.budget_head},{tax_deducted},{budget_item.unpaid_purchase_invoice},{pi_doc.rounded_total}")  
-        else:
-            if (pi_doc.rounded_total - total_vcm_advance + tax_deducted ) > budget_doc.pool_budget_balance:
-                frappe.throw(f"Pool Budget Exceeded for PI {pi_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pi_doc.rounded_total}")
-                #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-                return False
 
     if budget_validation_flag:
         frappe.throw(f"PI Budget not found for Budget Head: {pi_doc.budget_head}")
@@ -330,29 +332,27 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
     
     # Calculate the paid amount impacting budget
     total_vcm_paid_amount = flt(pe_doc.paid_amount)
+
     if pe_doc.budget_head == "Salaries & Wages":        
         frappe.throw(f"{pe_doc.budget_head} Budget Head can not be used in Payment Entry , Request: {total_vcm_paid_amount}")
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
         return False
-    elif pe_doc.budget_head == "Fixed Assets": 
+
+    if is_pool_budget_head(pe_doc.budget_head):
+        # Pool budget validation
+        budget_validation_flag = False
+        if total_vcm_paid_amount > budget_doc.pool_budget_balance:
+            frappe.throw(f"Pool Budget Exceeded for PI {pe_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {total_vcm_paid_amount}")
+            return False
+    else:
+        # Validate against individual budget head balance
         for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{total_vcm_paid_amount}")
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_validation_flag = False
                 if total_vcm_paid_amount > budget_item.balance_budget:
-                    frappe.throw(f"Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {total_vcm_paid_amount}")
-                    #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
+                    frappe.throw(f"Budget Exceeded for PI {pe_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {total_vcm_paid_amount}")
                     return False
-    else:
-        #for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_doc.pool_budget_balance},{total_vcm_paid_amount} ")
-            #if budget_item.budget_head == po_doc.budget_head:
-        # Now user can select any budget head and we will allow it if pool has money
-        budget_validation_flag = False
-        if total_vcm_paid_amount > budget_doc.pool_budget_balance:
-            frappe.throw(f"Pool Budget Exceeded for {pe_doc.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {pe_doc.paid_amount}")
-            #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-            return False
+ 
     if budget_validation_flag:
         frappe.throw(f"PO Budget not found for Cost Center: {pe_doc.cost_center}, Budget Head: {pe_doc.budget_head}")
         return False        
@@ -508,17 +508,7 @@ def validate_vcm_budget_from_jv(jv_doc):
                 for budget_item in budget_doc.get("budget_items") or []:
                     #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
                     #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
-                    if account.budget_head == "Salaries & Wages" or account.budget_head == "Fixed Assets": 
-                        if budget_item.budget_head == account.budget_head: 
-                            #logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
-                            #logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
-                            if account.debit > budget_item.balance_budget:
-                                #frappe.throw stops execution so return False is not required
-                                frappe.throw(f"Budget Exceeded for JV {account.budget_head}, Balance: {budget_item.balance_budget}, Request: {account.debit}")
-                            else:
-                                budget_updated_flag = True
-                                #logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
-                    else:
+                    if is_pool_budget_head(account.budget_head):
                         if budget_item.budget_head == account.budget_head: 
                             #logging.debug(f"MATCHED , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}")                    
                             if account.debit > budget_doc.pool_budget_balance:
@@ -526,8 +516,14 @@ def validate_vcm_budget_from_jv(jv_doc):
                                 frappe.throw(f"Pool Budget Exceeded for JV {account.budget_head}, Balance: {budget_doc.pool_budget_balance}, Request: {account.debit}")
                             else:
                                 budget_updated_flag = True
-                                #logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
-                                #logging.debug(f"matched validate JV budget_usage6, {budget_item.budget_head},{budget_item.balance_budget}")
+                    else:
+                        # Validate against individual budget head balance                        
+                        if budget_item.budget_head == account.budget_head:
+                            if account.debit > budget_item.balance_budget:
+                                #frappe.throw stops execution so return False is not required
+                                frappe.throw(f"Budget Exceeded for JV {account.budget_head}, Balance: {budget_item.balance_budget}, Request: {account.debit}")
+                            else:
+                                budget_updated_flag = True
                 if budget_updated_flag is False:
                     #frappe.throw stops execution so return False is not required
                     frappe.throw(f"Budget not available for Cost Center:{account.cost_center}, Location:{account.location}, Budget Head:{account.budget_head}")
