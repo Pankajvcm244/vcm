@@ -266,7 +266,7 @@ def update_vcm_pi_budget_usage(pi_doc):
         WHERE {condition_string}
     ) AS grouped
     """
-    logging.debug(f"pi_budget 1 {total_pi_amount}, {pi_doc.budget_head}")
+    
     result = frappe.db.sql(query, filters, as_dict=True)
     #result = frappe.db.sql(query, filters, as_dict=True)
     #frappe.errprint(result)  # 👈 See each invoice amount
@@ -331,12 +331,12 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
     # Calculate the paid amount impacting budget
     total_vcm_paid_amount = flt(pe_doc.paid_amount)
     if pe_doc.budget_head == "Salaries & Wages":        
-        frappe.throw(f"{pe_doc.budget_head} Budget Head can not be used in Payment Entry , Request: {pe_doc.rounded_total}")
+        frappe.throw(f"{pe_doc.budget_head} Budget Head can not be used in Payment Entry , Request: {total_vcm_paid_amount}")
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
         return False
     elif pe_doc.budget_head == "Fixed Assets": 
         for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{po_doc.rounded_total}")
+            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_item.balance_budget},{total_vcm_paid_amount}")
             if budget_item.budget_head == pe_doc.budget_head:
                 budget_validation_flag = False
                 if total_vcm_paid_amount > budget_item.balance_budget:
@@ -345,7 +345,7 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
                     return False
     else:
         #for budget_item in budget_doc.get("budget_items") or []:
-            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_doc.pool_budget_balance},{po_doc.rounded_total} ")
+            #logging.debug(f"in validate_vcm_po_budget_amount_budgethead 2 {po_doc.budget_head}, {budget_doc.pool_budget_balance},{total_vcm_paid_amount} ")
             #if budget_item.budget_head == po_doc.budget_head:
         # Now user can select any budget head and we will allow it if pool has money
         budget_validation_flag = False
