@@ -17,7 +17,7 @@ def add_vcmbudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-1.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Budget-Ramnavami.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/OrganicFarmingBudget.xlsx"
 
     # Ensure file exists
     if not os.path.exists(file_path):
