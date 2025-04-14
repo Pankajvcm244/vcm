@@ -333,11 +333,6 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
     # Calculate the paid amount impacting budget
     total_vcm_paid_amount = flt(pe_doc.paid_amount)
 
-    if pe_doc.budget_head == "Salaries & Wages":        
-        frappe.throw(f"{pe_doc.budget_head} Budget Head can not be used in Payment Entry , Request: {total_vcm_paid_amount}")
-        #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-        return False
-
     if is_pool_budget_head(pe_doc.budget_head):
         # Pool budget validation
         budget_validation_flag = False

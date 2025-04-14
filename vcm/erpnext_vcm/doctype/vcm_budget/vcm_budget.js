@@ -3,7 +3,7 @@
 
 
 frappe.ui.form.on('VCM Budget', {
-    refresh: function(frm) {
+    refresh: function(frm) {       
         //console.log("Refresh", frm.doc.budget_items);
         calculate_total_amount(frm);
         calculate_amended_amount(frm);
@@ -18,7 +18,7 @@ frappe.ui.form.on('VCM Budget', {
         //calculate_fa_amount(frm);
         calculate_pool_amount(frm);
 
-    },
+    },   
     budget_items_add: function(frm, cdt, cdn) {
         calculate_total_amount(frm);
         calculate_amended_amount(frm);
@@ -88,7 +88,8 @@ frappe.ui.form.on('VCM Budget', {
             frm.set_query('cost_center', function() {
                 return {
                     filters: {
-                        company: frm.doc.company  // Filtering Cost Centers by selected Company
+                        company: frm.doc.company,  // Filtering Cost Centers by selected Company
+                        is_group: 0  // Only leaf-level cost centers
                     }
                 };
             });       
@@ -249,6 +250,10 @@ function calculate_pool_amount(frm) {
     let promises = [];
 
     (frm.doc.budget_items || []).forEach(function(row) {
+        //When we create new budget head we need to skip this
+        if (!row.budget_head) {
+            return; // Skip this row
+        }
         // Call the server to check if the budget head is a pool budget head
         let promise = frappe.call({
             method: "vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget.is_pool_budget_head",  // Update this path
