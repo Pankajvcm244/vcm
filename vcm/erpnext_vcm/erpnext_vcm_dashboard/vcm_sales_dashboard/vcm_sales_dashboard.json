@@ -1,66 +1,75 @@
 {
- "cards": [
-  {
-   "card": "Balram Counter"
-  },
-  {
-   "card": "Krishna Counter"
-  },
-  {
-   "card": "Gita Counter"
-  },
-  {
-   "card": "Jagannath Counter"
-  },
-  {
-   "card": "Annakoot Counter"
-  },
-  {
-   "card": "Brajras Counter"
-  }
- ],
- "charts": [
-  {
-   "width": "Half"
-  },
-  {
-   "width": "Half"
-  },
-  {
-   "chart": "Avg Bill Value",
-   "width": "Full"
-  },
-  {
-   "chart": "Avg Bill Size",
-   "width": "Full"
-  },
-  {
-   "chart": "Avg Discount Value",
-   "width": "Full"
-  },
-  {
-   "chart": "Avg Discount Percent",
-   "width": "Full"
-  },
-  {
-   "chart": "VCM Sales Comparison",
-   "width": "Full"
-  },
-  {
-   "chart": "VCM Sales Performance",
-   "width": "Full"
-  }
- ],
- "creation": "2025-02-25 10:59:04.117153",
- "dashboard_name": "VCM Sales Dashboard",
- "docstatus": 0,
- "doctype": "Dashboard",
- "idx": 0,
- "is_default": 0,
- "is_standard": 1,
- "modified": "2025-02-25 11:55:21.408289",
- "modified_by": "Administrator",
- "module": "erpnext_vcm",
- "name": "VCM Sales Dashboard",
- "owner": "Administrator"
-}
+    "cards": [
+     {
+      "card": "Balram Counter"
+     },
+     {
+      "card": "Krishna Counter"
+     },
+     {
+      "card": "Gita Counter"
+     },
+     {
+      "card": "Jagannath Counter"
+     },
+     {
+      "card": "Annakoot Counter"
+     },
+     {
+      "card": "Brajras Counter"
+     },
+     {
+      "card": "Krishna Prasadam Counter"
+     },
+     {
+      "card": "Pushpanjali Counter"
+     },
+     {
+      "card": "Surabhi Counter"
+     }
+    ],
+    "charts": [
+     {
+      "width": "Half"
+     },
+     {
+      "width": "Half"
+     },
+     {
+      "chart": "Avg Bill Value",
+      "width": "Full"
+     },
+     {
+      "chart": "Avg Bill Size",
+      "width": "Full"
+     },
+     {
+      "chart": "Avg Discount Value",
+      "width": "Full"
+     },
+     {
+      "chart": "Avg Discount Percent",
+      "width": "Full"
+     },
+     {
+      "chart": "VCM Sales Comparison",
+      "width": "Full"
+     },
+     {
+      "chart": "VCM Sales Performance",
+      "width": "Full"
+     }
+    ],
+    "creation": "2025-02-25 10:59:04.117153",
+    "dashboard_name": "VCM Sales Dashboard",
+    "docstatus": 0,
+    "doctype": "Dashboard",
+    "idx": 0,
+    "is_default": 0,
+    "is_standard": 1,
+    "modified": "2025-04-15 10:24:25.650363",
+    "modified_by": "Administrator",
+    "module": "erpnext_vcm",
+    "name": "VCM Sales Dashboard",
+    "owner": "Administrator"
+   }
