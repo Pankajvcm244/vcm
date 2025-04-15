@@ -216,7 +216,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
 def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
 #def update_PE_Budget():
     # *****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File
-    # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PE_Budget    
+    # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PE_Budget    
 
     filters = {}   
     alias = "pe_doc" 
