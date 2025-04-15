@@ -5,15 +5,24 @@ logging.basicConfig(level=logging.DEBUG)
 
 def get_system_fields():
     custom_fields = {
-        "Item": [
+        "Material Request": [
             dict(
-                fieldname="vcm_item_creation_request",
-                label="VCM Item Creation Request",
+                fieldname="material_recipient",
+                label="Material Recipient",
                 fieldtype="Link",
-                options="VCM Item Creation Request",
-                insert_after="item_name",
+                options="User",
+                insert_after="schedule_date",
             )
         ]
+        # "Item": [
+        #     dict(
+        #         fieldname="vcm_item_creation_request",
+        #         label="VCM Item Creation Request",
+        #         fieldtype="Link",
+        #         options="VCM Item Creation Request",
+        #         insert_after="item_name",
+        #     )
+        # ]
     }
     return custom_fields
 #bench --site erp.vcmerp.in execute vcm.erpnext_vcm.utilities.create_system_fields.create_system_fields

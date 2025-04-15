@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"RMsPeY-t3P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">VCM ERP Reports</span>\",\"col\":12}},{\"id\":\"Kvo4-Cw-Km\",\"type\":\"card\",\"data\":{\"card_name\":\"POS Reports\",\"col\":4}},{\"id\":\"TmLSRwO6r1\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer and Supplier Reports\",\"col\":4}},{\"id\":\"UbrbU-sWwA\",\"type\":\"card\",\"data\":{\"card_name\":\"Item wise Reports\",\"col\":4}},{\"id\":\"K98bX1Y5o6\",\"type\":\"card\",\"data\":{\"card_name\":\"MRN and GRN Releated Reports\",\"col\":4}},{\"id\":\"6qYFUPGjv9\",\"type\":\"card\",\"data\":{\"card_name\":\"Purchase Reports\",\"col\":4}},{\"id\":\"OfGCKG-Lv1\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Report\",\"col\":4}},{\"id\":\"jqkc1jLuaH\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Reports\",\"col\":4}},{\"id\":\"1p7HfGtlSS\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Reports\",\"col\":4}},{\"id\":\"DjVNLNCCcC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"VCM POS Sales Dashboard\",\"col\":3}}]",
+ "content": "[{\"id\":\"RMsPeY-t3P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">VCM ERP Reports</span>\",\"col\":12}},{\"id\":\"Kvo4-Cw-Km\",\"type\":\"card\",\"data\":{\"card_name\":\"POS Reports\",\"col\":4}},{\"id\":\"TmLSRwO6r1\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer and Supplier Reports\",\"col\":4}},{\"id\":\"UbrbU-sWwA\",\"type\":\"card\",\"data\":{\"card_name\":\"Item wise Reports\",\"col\":4}},{\"id\":\"K98bX1Y5o6\",\"type\":\"card\",\"data\":{\"card_name\":\"MRN and GRN Releated Reports\",\"col\":4}},{\"id\":\"6qYFUPGjv9\",\"type\":\"card\",\"data\":{\"card_name\":\"Purchase Reports\",\"col\":4}},{\"id\":\"OfGCKG-Lv1\",\"type\":\"card\",\"data\":{\"card_name\":\"Stock Report\",\"col\":4}},{\"id\":\"jqkc1jLuaH\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Reports\",\"col\":4}},{\"id\":\"1p7HfGtlSS\",\"type\":\"card\",\"data\":{\"card_name\":\"Finance Reports\",\"col\":4}},{\"id\":\"DjVNLNCCcC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"VCM POS Sales Dashboard\",\"col\":3}},{\"id\":\"jH1WUHnasG\",\"type\":\"card\",\"data\":{\"card_name\":\"VCM Budget\",\"col\":4}}]",
  "creation": "2025-01-17 10:59:18.706177",
  "custom_blocks": [],
  "docstatus": 0,
@@ -546,9 +546,69 @@
    "link_type": "Report",
    "onboard": 1,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "VCM Budget",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cost Center",
+   "link_count": 0,
+   "link_to": "Cost Center",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "VCM Budget",
+   "link_count": 0,
+   "link_to": "VCM Budget",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Head",
+   "link_count": 0,
+   "link_to": "Budget Head",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "VCM Budget Amendment ",
+   "link_count": 0,
+   "link_to": "VCM Budget Amendment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Budget Verifying",
+   "link_count": 0,
+   "link_to": "Budget Verifying",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Purchase Order",
+   "type": "Link"
   }
  ],
- "modified": "2025-03-26 10:56:47.679472",
+ "modified": "2025-04-15 16:08:28.398440",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM ERP",

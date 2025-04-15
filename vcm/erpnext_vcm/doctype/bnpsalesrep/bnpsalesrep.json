@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "disabled",
   "name1",
   "emp_id",
   "mobile_number",
@@ -53,11 +54,17 @@
    "fieldtype": "Link",
    "label": "Allocated ToPOS",
    "options": "POS Profile"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-25 17:47:09.944767",
+ "modified": "2025-04-12 14:12:14.525777",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "BnPSalesRep",
