@@ -10,14 +10,14 @@ from vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget import (
 @frappe.whitelist()
 def validate_vcm_po_budget_amount_budgethead(po_doc):    
     """ Updates the used budget in VCM Budget when a PO is submitted """
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
         {
             "company": po_doc.company,
             "location":po_doc.location,
-            "fiscal_year":vcm_budget_settings.financial_year,
+            "fiscal_year":po_doc.fiscal_year,
             "cost_center":po_doc.cost_center,
             "docstatus":1
         },
@@ -26,11 +26,13 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     #logging.debug(f"in validate_vcm_po_ 2 {budget_name}")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
+    elif po_doc.fiscal_year != "2024-2025":
         #If there is no budget for this cost center then throw error as Budget is enabled for this cost cenetr
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        frappe.throw(f"Budget not available for Cost Center:{po_doc.company}, but enabled in Cost Center.  {po_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{po_doc.location}")
-        return False    
+        frappe.throw(f"Budget not available for Cost Center:{po_doc.company}, but enabled in Cost Center.  {po_doc.cost_center}, {po_doc.fiscal_year},  Location:{po_doc.location}")
+        return False 
+    else:
+        return False   
     budget_validation_flag = True 
 
     if po_doc.budget_head == "Salaries & Wages":        
@@ -65,11 +67,11 @@ def update_vcm_po_budget_usage(po_doc):
     filters = {}    
     conditions = ["docstatus = 1"]  # Only consider approved POs
     """ Updates the used budget in VCM Budget when a PO is submitted """
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
-        {"company": po_doc.company,"location":po_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":po_doc.cost_center,"docstatus":1},
+        {"company": po_doc.company,"location":po_doc.location,"fiscal_year":po_doc.fiscal_year,"cost_center":po_doc.cost_center,"docstatus":1},
         "name")
    
     if frappe.db.exists("VCM Budget", budget_name):
@@ -145,19 +147,22 @@ def validate_vcm_pi_budget_amount(pi_doc):
             return False  # Exit loop as soon as we find a linked PO  
 
     #logging.debug(f"in update_vcm_pi_budget_usage 1 {pi_doc}")
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
-        {"company": pi_doc.company,"location":pi_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":pi_doc.cost_center,"docstatus":1},
+        {"company": pi_doc.company,"location":pi_doc.location,"fiscal_year":pi_doc.fiscal_year,"cost_center":pi_doc.cost_center,"docstatus":1},
         "name")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
+    elif pi_doc.fiscal_year != "2024-2025":
         #If there is no busget for this cost center then just move on
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
         frappe.throw(f"Budget not available for Cost Center:{pi_doc.cost_center}, but enabled in Cost Center. Location:{pi_doc.location}, Budget Head:{pi_doc.budget_head}")
-        return True 
+        return False
+    else:
+        # If there is no budget for this cost center then just return
+        return False
     budget_updated_flag = True
     total_vcm_advance = 0.0  # Initialize advance amount
     # Check if advances exist
@@ -207,7 +212,7 @@ def update_vcm_pi_budget_usage(pi_doc):
          "(pii.purchase_order IS NULL OR pii.purchase_order = '')"
         ]  # Approved PIs without PO    
  
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
 
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
@@ -216,7 +221,7 @@ def update_vcm_pi_budget_usage(pi_doc):
         {
             "company": pi_doc.company,
             "location": pi_doc.location,
-            "fiscal_year": vcm_budget_settings.financial_year,
+            "fiscal_year": pi_doc.fiscal_year,
             "cost_center": pi_doc.cost_center,
             "docstatus": 1
         },
@@ -315,20 +320,22 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
         elif reference.reference_doctype == "Purchase Invoice":
             PAYMENT_FLAG_WITH_PI = True
             return False
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")    
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
-        {"company": pe_doc.company,"location":pe_doc.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":pe_doc.cost_center,"docstatus":1},
+        {"company": pe_doc.company,"location":pe_doc.location,"fiscal_year":pe_doc.fiscal_year,"cost_center":pe_doc.cost_center,"docstatus":1},
         "name")
     #logging.debug(f"in validate_vcm_po_ 2 {budget_name}")
     if frappe.db.exists("VCM Budget", budget_name):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
-    else:
+    elif pe_doc.fiscal_year != "2024-2025":
         #If there is no budget for this cost center then throw error as Budget is enabled for this cost cenetr
         #logging.debug(f"in validate_vcm_po_ 3 {budget_name}")
-        frappe.throw(f"Budget not available for Cost Center:{pe_doc.company}, but enabled in Cost Center.  {pe_doc.cost_center}, {vcm_budget_settings.financial_year},  Location:{pe_doc.location}")
-        return False         
+        frappe.throw(f"Budget not available for Cost Center:{pe_doc.company}, but enabled in Cost Center.  {pe_doc.cost_center}, {pe_doc.fiscal_year},  Location:{pe_doc.location}")
+        return False
+    else:
+        return False
     
     # Calculate the paid amount impacting budget
     total_vcm_paid_amount = flt(pe_doc.paid_amount)
@@ -378,14 +385,14 @@ def update_vcm_budget_on_payment_submit(pe_doc):
         f"{alias}.payment_type = 'Pay'",
         f"{alias}.posting_date >= %(from_date)s" 
         ]  # Approved PEs without PO    
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
     budget_name = frappe.db.get_value(
         "VCM Budget", 
         {
             "company": pe_doc.company,
             "location": pe_doc.location,
-            "fiscal_year": vcm_budget_settings.financial_year,
+            "fiscal_year": pe_doc.fiscal_year,
             "cost_center": pe_doc.cost_center,
             "docstatus": 1
         },
@@ -475,20 +482,23 @@ def validate_vcm_budget_from_jv(jv_doc):
                 frappe.throw(f"Budget Head is mandatory for JV entry: {jv_doc.name}")
             if not account.location:  # Consider only debit entries for expenses
                 #frappe.throw stops execution so return False is not required
-                frappe.throw(f"Budget Location is mandatory for JV entry: {jv_doc.name}")           
+                frappe.throw(f"Budget Location is mandatory for JV entry: {jv_doc.name}")  
+            if not account.fiscal_year:  # Consider only debit entries for expenses
+                #frappe.throw stops execution so return False is not required
+                frappe.throw(f"Budget Financial Year is mandatory for JV entry: {jv_doc.name}")          
             # Consider only debit entries for expenses , as they consume budget
             # Don't worry about credit entry as they free budget
             if account.cost_center and account.debit > 0: 
                 # Skip if linked to a Purchase Invoice or Payment Entry
                 if account.reference_type in ("Purchase Invoice", "Payment Entry"):
                     continue
-                vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+                #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
                 # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
                 budget_name = frappe.db.get_value(
                     "VCM Budget", 
                     {"company": jv_doc.company,
                      "location":account.location,
-                     "fiscal_year":vcm_budget_settings.financial_year,
+                     "fiscal_year":account.fiscal_year,
                      "cost_center":account.cost_center,
                      "docstatus":1
                     },
@@ -496,10 +506,13 @@ def validate_vcm_budget_from_jv(jv_doc):
                 # Fetch budget settings based on Cost Center or Project
                 if frappe.db.exists("VCM Budget", budget_name):
                     budget_doc = frappe.get_doc("VCM Budget", budget_name)
-                else:
+                elif account.fiscal_year != "2024-2025":
                     #If there is no budget for this cost center then just move on
                     #frappe.throw stops execution so return False is not required
-                    frappe.throw(f"Budget not available for Company: {jv_doc.company}, Cost Center:{account.cost_center}, Location:{account.location}, Fiscal Year:{vcm_budget_settings.financial_year}")               
+                    frappe.throw(f"Budget not available for Company: {jv_doc.company}, Cost Center:{account.cost_center}, Location:{account.location}, Fiscal Year:{account.fiscal_year}")               
+                else:
+                    return False
+
                 for budget_item in budget_doc.get("budget_items") or []:
                     #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
                     #logging.debug(f"update_vcm_JV 3 , {account.budget_head},{budget_item.budget_head}, {budget_updated_flag}") 
@@ -530,7 +543,7 @@ def update_vcm_budget_from_jv(jv_doc):
     Update Budget Used when a Journal Entry (JV) is submitted.
     This only affects Expense entries not linked to a Purchase Order or Purchase Invoice.
     """  
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")  
+    #vcm_budget_settings = frappe.get_doc("VCM Budget Settings")  
     fiscal_start = "2025-04-01"  # Hardcoded fiscal year start
     alias = "je"
     filters = {} 
@@ -550,7 +563,7 @@ def update_vcm_budget_from_jv(jv_doc):
                 {
                     "company": jv_doc.company,
                     "location": account.location,
-                    "fiscal_year": vcm_budget_settings.financial_year,
+                    "fiscal_year": account.fiscal_year,
                     "cost_center": account.cost_center,
                     "docstatus": 1
                 },
@@ -751,6 +764,9 @@ def validate_budget_head_n_location_mandatory(doc):
                             if not row.location:
                                 frappe.throw(f"Location is mandatory in JV for Cost Center where Budget is applicable: {row.cost_center}")
                                 return False
+                            if not row.fiscal_year:
+                                frappe.throw(f"Financial Year is mandatory in JV for Cost Center where Budget is applicable: {row.cost_center}")
+                                return False
                             return True
                         else:
                             # return False if budget is not applicable, so that we don't call budget update
@@ -772,6 +788,9 @@ def validate_budget_head_n_location_mandatory(doc):
                         return False
                     if not doc.location:
                         frappe.throw(f"Location is mandatory for Cost Center where Budget is applicable: {doc.location}")
+                        return False
+                    if not doc.fiscal_year:
+                        frappe.throw(f"Financial Year is mandatory for Cost Center where Budget is applicable: {doc.fiscal_year}")
                         return False
                     #logging.debug(f"validate_budget_head_mandatory 2 True {doc.cost_center}")  
                     return True
