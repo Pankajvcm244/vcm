@@ -48,8 +48,10 @@ def get_data(filters):
 			mr.owner.as_("mrrequestor"),
 			mr.set_warehouse.as_("warehouse"),
 			mr.department.as_("mrdepartment"),
+			mr.purpose.as_("purpose"),
 			mr_item.schedule_date.as_("required_date"),
 			mr_item.item_code.as_("item_code"),
+			mr_item.custom_vcm_remark.as_("custom_vcm_remarks"),
 			Sum(Coalesce(mr_item.qty, 0)).as_("qty"),
 			Sum(Coalesce(mr_item.stock_qty, 0)).as_("stock_qty"),
 			Coalesce(mr_item.uom, "").as_("uom"),
@@ -209,7 +211,18 @@ def get_columns(filters):
 					"fieldtype": "Data",
 					"width": 140,
 				},
-
+				{
+					"label": _("MR Purpose"),
+					"fieldname": "purpose",
+					"fieldtype": "Data",
+					"width": 140,
+				},				
+				{
+					"label": _("Custom Remark"),
+					"fieldname": "custom_vcm_remarks",
+					"fieldtype": "Data",
+					"width": 140,
+				},
 				{
 					"label": _("MR Requestor"),
 					"options": "User",

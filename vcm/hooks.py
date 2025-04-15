@@ -358,7 +358,7 @@ fixtures = [
                 # "Stock Entry",
                 "Payment Entry",
                 "Journal Entry",
-                # "Customer",
+                "Customer",
                 # "Asset",
                 #"Supplier"
             ],],

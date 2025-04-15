@@ -45,6 +45,7 @@ frappe.ui.form.on("Purchase Order", {
                     filters: { 
                         is_purchase_item: 1,
                         has_variants: 0,
+                        is_stock_item: 0,
                         company: doc.company
                     },
                 };                
