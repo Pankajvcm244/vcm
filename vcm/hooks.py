@@ -366,6 +366,6 @@ fixtures = [
     }
 ]
 # This is used to  create custom field as standard field in item doc type  fieldname="vcm_item_creation_request",
-after_migrate = [
-   "vcm.erpnext_vcm.utilities.create_system_fields.create_system_fields"
-]
+# after_migrate = [
+#    "vcm.erpnext_vcm.utilities.create_system_fields.create_system_fields"
+# ]
