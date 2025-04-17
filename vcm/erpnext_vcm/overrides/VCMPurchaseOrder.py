@@ -3,7 +3,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 from frappe.utils.password import get_decrypted_password
 
-from vcm.erpnext_vcm.utilities.approvals.poalm import (
+from vcm.erpnext_vcm.overrides.po_alm.poalm import (
     assign_and_notify_next_authority,
     get_alm_level,
 )
@@ -40,7 +40,7 @@ class VCMPurchaseOrder(PurchaseOrder):
     def before_save(self):
         # super().before_save() #Since there is no before_insert in parent
         validate_gst_entry(self)
-        #self.update_extra_description_from_mrn()
+        self.update_extra_description_from_mrn()
         self.refresh_alm()
 
     def on_update(self):
@@ -85,6 +85,7 @@ class VCMPurchaseOrder(PurchaseOrder):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
+                    #logging.debug(f"VCM PO on_Submit-2 calling update_vcm_po_budget_usage")
                     update_vcm_po_budget_usage(self)             
                     
         
@@ -171,6 +172,6 @@ def resend_approver_request(docname, method):
 @frappe.whitelist()
 def validate_cost_center(self):
     if not self.cost_center:
-         frappe.throw( f"Cost Center is mandatory in Purchase Odrer " )
+         frappe.throw( f"Cost Center is mandatory in Purchase Order " )
     if not self.set_warehouse:
-         frappe.throw( f"Target Warehouse is mandatory in Purchase Odrer " )
+         frappe.throw( f"Target Warehouse is mandatory in Purchase Order " )

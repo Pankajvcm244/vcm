@@ -102,6 +102,7 @@ class VCMBudgetAmendment(Document):
 			#logging.debug(f" Budget Item-1-1 {budget_item.original_amount}, {budget_item.amended_till_now},{budget_item.current_budget} ,{budget_item.proposed_amendment},{budget_item.balance_budget}, {budget_item.used_budget}")
 			#logging.debug(f" Budget Amend Item-1-1 {amend_item.original_amount}, {amend_item.amended_till_now},{amend_item.current_budget} ,{amend_item.proposed_amendment},{amend_item.balance_budget}, {amend_item.used_budget}")			
 		try:
+			budget_doc.add_comment("Comment", text=f"Budget amended for {amend_item.budget_head} by Rs {amend_item.proposed_amendment }")
 			budget_doc.save(ignore_permissions=True)
 			frappe.db.commit()
 		except Exception as e:

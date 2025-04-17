@@ -44,12 +44,12 @@ class VCMStoreRequisition(Document):
 			frappe.throw("Department is not set.")
 		alm_level = get_vcm_storereq_approval_level(self)
 		if alm_level is not None:
-			self.l1_approver = alm_level.l1_approver
-			self.l2_approver = alm_level.l2_approver
-			self.final_approver = alm_level.final_approver
+			self.custom_l1_approver = alm_level.custom_l1_approver
+			self.custom_l2_approver = alm_level.custom_l2_approver
+			self.custom_final_approver = alm_level.custom_final_approver
 			#logging.debug(f"in VCMStoreRequisition refresh_alm  {self.l1_approver}, {self.l2_approver}, {self.final_approver}  ")
 		else:
-			frappe.throw("VCM DEPT approval flow levels are not set for this document type ")
+			frappe.message("VCM DEPT approval flow levels are not set for this document type ")
 
 	def validate(self):
 		#logging.debug(f"in VCMStoreRequisition validate  {self}  ")

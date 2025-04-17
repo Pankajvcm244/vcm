@@ -104,7 +104,7 @@ def get_approval_link(doc, user, allowed_options):
         return get_vcm_dept_workflow_action_url(action="Final Approve", doc=doc, user=user)
     else:
         frappe.throw(
-            "Next ALM User is not allowed to approve the Document. Please ask for permission."
+            "Next ALM User is not allowed to approve the StoreReq Document. Please ask for permission."
         )
 
 

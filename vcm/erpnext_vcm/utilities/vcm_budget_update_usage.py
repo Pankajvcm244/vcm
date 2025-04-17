@@ -38,7 +38,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     if po_doc.budget_head == "Salaries & Wages":        
         frappe.throw(f"{po_doc.budget_head} Budget Head can not be used in PO , Request: {po_doc.rounded_total}")
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
-        return False
+        return False    
     # Use is_pool_budget_head to check
     if is_pool_budget_head(po_doc.budget_head):
         # Pool budget validation
@@ -51,10 +51,12 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
         for budget_item in budget_doc.get("budget_items") or []:
             if budget_item.budget_head == po_doc.budget_head:
                 budget_validation_flag = False
+                #logging.debug(f"in validate_vcm_po_ 11: {budget_item.balance_budget}")
                 if po_doc.rounded_total > budget_item.balance_budget:
                     frappe.throw(f"Budget Exceeded for {po_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {po_doc.rounded_total}")
                     return False
 
+    #logging.debug(f"in validate_vcm_po_ 5 {po_doc.rounded_total}, {budget_doc.pool_budget_balance}")
     if budget_validation_flag:
         frappe.throw(f"PO Budget not found for Cost Center: {po_doc.cost_center}, Budget Head: {po_doc.budget_head}")
         return False        
@@ -120,21 +122,59 @@ def update_vcm_po_budget_usage(po_doc):
         #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
         if budget_item.budget_head == po_doc.budget_head:        
             budget_item.unpaid_purchase_order = total_po_amount  # Adjust Remaining Budget
+            # frappe.db.set_value("VCM Budget Child Table", budget_item.name, "unpaid_purchase_order", total_po_amount)
+            # frappe.db.commit()
             budget_item.used_budget = (
                     (budget_item.paid_payment_entry or 0)
                     + (budget_item.unpaid_purchase_invoice or 0)
                     + (budget_item.unpaid_purchase_order or 0)
                     + (budget_item.additional_je or 0)
-            )           
+            )        
             budget_item.balance_budget = (
                     (budget_item.current_budget or 0)
                   - (budget_item.used_budget or 0)
             )
-            break    
-    # Save and commit changes    
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
-    return True
+            #logging.debug(f"in get po 23 {budget_item.used_budget} {budget_item.balance_budget}")
+            # Save those directly too
+            # Now bulk update all modified child rows in DB
+            # Single DB update
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET unpaid_purchase_order = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_po_amount, budget_item.used_budget, budget_item.balance_budget,budget_item.name))        
+            frappe.db.commit()            
+            break
+    # # Now update parent totals
+    #initialize these with base value
+    budget_pool_used = budget_doc.pool_budget_used
+    budget_pool_balance = budget_doc.pool_budget_balance    
+    if is_pool_budget_head(po_doc.budget_head):
+        budget_pool_used = budget_doc.pool_budget_used +  po_doc.rounded_total
+        budget_pool_balance = budget_doc.pool_budget_balance -  po_doc.rounded_total
+    
+    budget_total_used = budget_doc.total_used_amount +  po_doc.rounded_total 
+    budget_total_balance = budget_doc.total_balance_amount -  po_doc.rounded_total 
+
+    budget_po = budget_doc.total_unpaid_purchase_order +  po_doc.rounded_total or 0
+    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100;
+    used_percentage = percent or 0
+    #logging.debug(f"in updating parent  {budget_total_used}. {budget_total_balance}, {budget_pool_used}, {budget_pool_balance}, {budget_po}")
+    frappe.db.sql("""
+                UPDATE `tabVCM Budget`
+                SET total_used_amount = %s,
+                    total_balance_amount = %s,
+                    pool_budget_used = %s,
+                    pool_budget_balance = %s,
+                    total_unpaid_purchase_order = %s,
+                    used_percent = %s
+                WHERE name = %s
+            """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_po, used_percentage, budget_doc.name))      
+    frappe.db.commit()
+
+  
 
 @frappe.whitelist()
 def validate_vcm_pi_budget_amount(pi_doc):    

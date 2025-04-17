@@ -21,7 +21,7 @@ def update_PO_AutoBudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
-    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-3.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-3.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/FUNDRAISING.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -133,7 +133,7 @@ def update_PE_AutoBudget():
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
     file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-3.xlsx"
-    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/PIGA1.xlsx"
+    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/FUNDRAISING.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
         frappe.throw("Excel file not found. Please upload the correct file.")
@@ -235,3 +235,82 @@ def update_JV_AutoBudget():
     # Return script execution summary
     #return f"Updated {updated_count} invoices.\n\n Errors: {errors}, {len(errors)}."
     return f"Updated JV {updated_count}, Skipped {skipped_count}.\n\n Errors: {errors}."
+
+def update_parent_AutoBudget():
+    # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
+    # Path to Excel file (Store this in your private files folder)
+    
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMParent-1.xlsx"
+ 
+    # Ensure file exists
+    if not os.path.exists(file_path):
+        frappe.throw("Excel file not found. Please upload the correct file.")
+        return
+
+    # Read Excel File
+    df = pd.read_excel(file_path)
+
+    # Drop completely empty rows
+    df = df.dropna(how="all")
+
+    # Validate columns
+    required_columns = {
+        "Total Amended Amount", "Pool Budget Total", "Total Used Amount", "Total Balance Amount",
+        "Pool Used Amount", "Pool Balance Amount", "Purchase Order", "Unlinked Purchase Invoice",
+        "Unlinked Payment Entry", "Journal Entry", "Used %"
+        }
+
+    missing_columns = required_columns - set(df.columns)
+
+    if missing_columns:
+        frappe.throw(f"Missing required columns in the Excel file: {', '.join(missing_columns)}")
+
+    #logging.debug(f"required columns are: {required_columns} ")
+    updated_count = 0
+    skipped_count = 0
+    errors = []
+
+    for index, row in df.iterrows():
+        # Skip rows where essential values are missing
+        if pd.isna(row["Cost Center"]) or pd.isna(row["Purchase Order"]):
+            skipped_count += 1
+            continue
+
+        pool_total = row["Pool Budget Total"]
+        total_used = row["Total Used Amount"]
+        total_balance = row["Total Balance Amount"]
+        pool_used = row["Pool Used Amount"]
+        pool_balance = row["Pool Balance Amount"]
+        po_amount = row["Purchase Order"]
+        pi_amount = row["Unlinked Purchase Invoice"]
+        pe_amount = row["Unlinked Payment Entry"]
+        jv_amount = row["Journal Entry"]
+        used_per = row["Used %"]
+        budget_name = row["ID"]
+
+
+        #logging.debug(f"update-1 are: {company}, {location}, {cost_center}, {budget_head}, {fiscal_year} ")
+        try:
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget`
+                SET total_used_amount = %s,
+                    total_balance_amount = %s,
+                    pool_budget_used = %s,
+                    pool_budget_balance = %s,
+                    total_unpaid_purchase_order = %s,
+                    total_unpaid_purchase_invoice = %s,
+                    total_paid_payment_entry = %s,
+                    total_additional_je = %s,
+                    used_percent = %s
+                WHERE name = %s
+            """, (total_used, total_balance, pool_used,pool_balance, po_amount, pi_amount,pe_amount,jv_amount,used_per ,  budget_name))      
+            frappe.db.commit()
+            updated_count += 1
+            #logging.error(f"****** update count :  {updated_count} ")
+
+        except Exception as e:
+            errors.append(f"Failed to update  {str(e)}")
+
+    # Return script execution summary
+    #return f"Updated {updated_count} invoices.\n\n Errors: {errors}, {len(errors)}."
+    return f"Updated {updated_count}, {skipped_count} PO.\n\n Errors: {errors}."

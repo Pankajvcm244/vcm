@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 from frappe.utils.data import get_url
-from vcm.erpnext_vcm.utilities.approvals.poworkflow_action import (
+from vcm.erpnext_vcm.overrides.po_alm.poworkflow_action import (
     return_already_approved_page,
 )
 import frappe, requests, json, imgkit

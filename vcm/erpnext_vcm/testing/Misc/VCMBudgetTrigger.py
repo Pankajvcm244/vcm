@@ -78,7 +78,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
         #logging.debug(f"in update_vcm_po_budget_usage 2 {vcm_budget_head}")
         if budget_item.budget_head == vcm_budget_head:  
             budget_updated_flag = False     
-            budget_item.unpaid_purchase_order = total_po_amount  # Adjust Remaining Budget
+            budget_item.unpaid_purchase_order = total_po_amount or 0 # Adjust Remaining Budget
             budget_item.used_budget = (
                     (budget_item.paid_payment_entry or 0)
                     + (budget_item.unpaid_purchase_invoice or 0)
@@ -89,14 +89,23 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
                     (budget_item.current_budget or 0)
                   - (budget_item.used_budget or 0)
             )
+            
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET unpaid_purchase_order = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (budget_item.unpaid_purchase_order, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            frappe.db.commit()  
             break 
 
     if budget_updated_flag == True:
         # If the budget head does not match, log a message
         logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")  
     # Save and commit changes    
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
+    # budget_doc.save(ignore_permissions=True)
+    # frappe.db.commit()    
     return True
 
 
@@ -204,12 +213,20 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
                 (budget_item.current_budget or 0)
                 - (budget_item.used_budget or 0)
             )
-            break    
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET unpaid_purchase_invoice = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_pi_amount, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            frappe.db.commit()  
+            break   
     if budget_updated_flag:
         # If the budget head does not match, log a message
         logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
+    # budget_doc.save(ignore_permissions=True)
+    # frappe.db.commit()    
     return True
 
 
@@ -316,13 +333,20 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
                 (budget_item.current_budget or 0)
                 - (budget_item.used_budget or 0)
             )
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET paid_payment_entry = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_pe_amount, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            frappe.db.commit() 
             break
 
     if budget_updated_flag:
         logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")
-
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()
+    # budget_doc.save(ignore_permissions=True)
+    # frappe.db.commit()
     return True
 
 def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
@@ -420,7 +444,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:
             budget_updated_flag = False
-            budget_item.paid_payment_entry = total_jv_amount
+            budget_item.additional_je = total_jv_amount
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
@@ -431,11 +455,17 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
                 (budget_item.current_budget or 0)
                 - (budget_item.used_budget or 0)
             )
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET additional_je = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_jv_amount, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            frappe.db.commit()
             break
-
     if budget_updated_flag:
         logging.debug(f"*******Budget head mismatch JV: NOT FOUND {vcm_budget_head}")
-
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()
+    # budget_doc.save(ignore_permissions=True)
+    # frappe.db.commit()
     return True

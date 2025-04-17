@@ -11,7 +11,7 @@ from frappe.model.workflow import get_workflow_name
 from frappe.workflow.doctype.workflow_action.workflow_action import (
     get_doc_workflow_state,
 )
-from vcm.erpnext_vcm.utilities.approvals.poworkflow_action import (
+from vcm.erpnext_vcm.overrides.po_alm.poworkflow_action import (
     get_approval_link,
     get_rejection_link,
 )
