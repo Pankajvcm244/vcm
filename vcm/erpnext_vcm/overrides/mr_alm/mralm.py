@@ -1,11 +1,9 @@
-# Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
-# For license information, please see license.txt
+from datetime import date
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-from datetime import date
-from hkm.erpnext___custom.overrides.purchase_order.whatsapp import (
+from vcm.erpnext_vcm.utilities.whatsapp.mrwhatsapp import (
     send_whatsapp_approval,
 )
 from frappe.model.document import Document
@@ -13,7 +11,7 @@ from frappe.model.workflow import get_workflow_name
 from frappe.workflow.doctype.workflow_action.workflow_action import (
     get_doc_workflow_state,
 )
-from vcm.erpnext_vcm.utilities.vcm_dept_workflow_action import (
+from vcm.erpnext_vcm.overrides.mr_alm.mrworkflow_action import (
     get_approval_link,
     get_rejection_link,
 )
@@ -21,48 +19,46 @@ import frappe
 from frappe.utils.background_jobs import enqueue
 
 
-def get_vcm_storereq_approval_level(doc):
+def get_mrn_alm_level(doc, amount_field="total"):
     """
-    Get ALM level for purchase order.
+    Get ALM level for MR
     """
     # frappe.errprint(doc.as_dict())
-    #deciding_dept = getattr(doc, doc.department)
-    #logging.debug(f"in get_vcm_storereq_approval_level before_save  {doc}, {doc.department}  ")
+    #deciding_amount = getattr(doc, amount_field)
 
     for l in frappe.db.sql(
-        f"""
-                SELECT level.*
-                FROM `tabVCM DEPT Approval` alm
-                JOIN `tabVCM DEPT Approval Table` level
-                    ON level.parent = alm.name
-                WHERE alm.document = "{doc.doctype}"
-                    AND alm.company = "{doc.company}"
-                    AND level.department = "{doc.department}"    
-                ORDER BY level.idx
-                    """,
-        as_dict=1,
+            f"""
+                    SELECT level.*
+                    FROM `tabVCM DEPT Approval` alm
+                    JOIN `tabVCM DEPT Approval Table` level
+                        ON level.parent = alm.name
+                    WHERE alm.document = "{doc.doctype}"
+                        AND alm.company = "{doc.company}"
+                        AND level.department = "{doc.department}"    
+                    ORDER BY level.idx
+                        """,
+            as_dict=1,
     ):     
-    
-        if doc.department == l.department:
-            #frappe.errprint(f"{deciding_amount} {l.amount_condition}")
-            #logging.debug(f"in get_vcm_storereq_approval_level before_save3  {l}, {l.department} ")
-            return l
+        
+            if doc.department == l.department:
+                #frappe.errprint(f"{deciding_amount} {l.amount_condition}")
+                #logging.debug(f"in MR get_alm_level {l}, {l.department} ")
+                return l
     return None
 
 
-def assign_and_notify_next_authority(doc, method="Email"):
+def assign_and_notify_mrn_next_authority(doc, method="Email"):
     user = None
     current_state = doc.workflow_state
-    #logging.debug(f"in assign_and_notify_next_authority 1 {doc}, {current_state} ")
     states = ("Pending", "L1 Approved", "L2 Approved")
     approvers = (
-        "l1_approver",
-        "l2_approver",
-        "final_approver",
+        "custom_l1_approver",
+        "custom_l2_approver",
+        "custom_final_approver",
     )
+    logging.debug(f"in MR assign_and_notify_next_authority {doc.name}, {current_state}")
     if current_state in states:
         for i, state in enumerate(states):
-            #logging.debug(f"in assign_and_notify_next_authority {i}, {state}, {current_state} ")
             if current_state == state:
                 for approver in approvers[i : len(approvers)]:
                     if (
@@ -70,36 +66,38 @@ def assign_and_notify_next_authority(doc, method="Email"):
                         and getattr(doc, approver) != ""
                     ):
                         user = getattr(doc, approver)
-                        #logging.debug(f"in assign_and_notify_next_authority 1 {user}, {current_state} ")
                         break
                 break
         if user is None:
-            frappe.throw("Next authority is not Found. Please check Approval Flow.")
+            frappe.throw("Next authority is not Found. Please check ALM.")
         close_assignments(doc)
         assign_to_next_approving_authority(doc, user)
         mobile_no = frappe.get_value("User", user, "mobile_no")
-        if is_eligible_to_send_on_whatsapp(user, mobile_no) or method == "WhatsApp":
+        #logging.debug(f"in assign_and_notify_next_authority PO mobile {mobile_no}")
+        if is_eligible_to_send_on_whatsapp(user, mobile_no) or method == "WhatsApp":            
             allowed_options = get_allowed_options(user, doc)
-            #send_whatsapp_approval(doc, user, mobile_no, allowed_options)
-        else:
-            send_email_approval(doc, user)
+            #logging.debug(f"in assign_and_notify_next_authority calling send whatsapp {doc},{user},{mobile_no}, {allowed_options}  ")
+            send_whatsapp_approval(doc, user, mobile_no, allowed_options)
+        #else:
+        send_email_approval(doc, user)
 
-    if current_state in ("Final Level Approved", "Draft","Rejected"):
-        #logging.debug(f"**in assign_and_notify_next_authority 8 {doc}, {current_state} ")
+    #if current_state == "Final Level Approved":
+    if current_state in ("Final Level Approved", "Prepared"):
         close_assignments(doc, remove=True)
     frappe.db.commit()
     return
 
 
 def is_eligible_to_send_on_whatsapp(user, mobile_no):
-    #user_meta = frappe.get_meta("User")
-
-    #if user_meta.has_field("purchase_order_whatsapp_approval"):
-    #    if not frappe.get_value("User", user, "purchase_order_whatsapp_approval"):
-    #        return False
-    #po_approval_settings = frappe.get_cached_doc("HKM General Settings")
-    #if po_approval_settings.po_approval_on_whatsapp and mobile_no:
-    #    return True
+    logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
+    # user_meta = frappe.get_meta("User")
+    #logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 2 {user_meta}")
+    # if user_meta.has_field("purchase_order_whatsapp_approval"):
+    #     if not frappe.get_value("User", user, "purchase_order_whatsapp_approval"):
+    #         return False
+    po_approval_settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
+    if po_approval_settings.po_whatsapp_enabled and mobile_no:
+        return True
     return False
 
 
@@ -113,18 +111,15 @@ def assign_to_next_approving_authority(doc, user):
             "reference_type": doc.doctype,
             "reference_name": doc.name,
             "date": date.today(),
-            "description": "VCM StoreReq" + doc.name,
+            "description": "Material Request approval for " + doc.name,
         }
     )
-    #logging.debug(f"**in assign_to_next_approving_authority 1 {user},  {frappe.session.user} ")
     todo_doc.insert()
     return
 
 def check_approver_assigned(doc):    
     user = frappe.session.user
-    proposed_state = doc.workflow_state  
-
-    
+    proposed_state = doc.workflow_state      
     # when we reach here workflow state is already set to next proposed state
     # we are not check reject request as it can happen at any stage and we need to check doc is at what state to decide rejecter
     if (proposed_state == "L1 Approved"):
@@ -156,11 +151,10 @@ def check_approver_assigned(doc):
                     frappe.throw("You are not allowed to approve this Store Req request.")
     return
 
-
 def send_email_approval(doc, user):
+    #logging.debug(f"in send_email_approval sending email {doc},{user}")
     currency = frappe.get_cached_value("Company", doc.company, "default_currency")
     allowed_options = get_allowed_options(user, doc)
-    #logging.debug(f"**in send_email_approval vcm item rew 1 {currency}, {allowed_options}")
     template_data = {
         "doc": doc,
         "user": user,
@@ -169,44 +163,35 @@ def send_email_approval(doc, user):
         "rejection_link": get_rejection_link(doc, user),
         "document_link": frappe.utils.get_url_to_form(doc.doctype, doc.name),
     }
-   
+
     email_args = {
         "recipients": [user],
         "message": frappe.render_template(
-            "vcm/erpnext_vcm/utilities/email_templates/store_requisition_template.html",
+            "vcm/erpnext_vcm/utilities/email_templates/mr_template.html",
             template_data,
         ),
-        "subject": "#Item Request :{} Approval".format(doc.name),
+        "subject": "#PO :{} Approval".format(doc.name),
         "reference_doctype": doc.doctype,
         "reference_name": doc.name,
         "reply_to": doc.owner,
         "delayed": False,
         "sender": doc.owner,
     }
-    #logging.debug(f"**in send_email_approval vcm item req2 {doc.name}, {doc.doctype}, {doc.owner}, {user} ")
     enqueue(
         method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args
     )
-    frappe.sendmail(
-        recipients=[user],
-        subject="#Item Request :{} Approval".format(doc.name),
-        message=frappe.render_template(
-            "vcm/erpnext_vcm/utilities/email_templates/store_requisition_template.html", template_data )
-    )
-    #logging.debug(f"**in send_email_approval vcm item req3  ************* ")
-
     return
 
 
 def close_assignments(doc, remove=True):
     if remove:
         frappe.db.delete(
-            "ToDo", {"reference_type": "VCM StoreRequisition", "reference_name": doc.name}
+            "ToDo", {"reference_type": "Material Request", "reference_name": doc.name}
         )
     else:
         frappe.db.set_value(
             "ToDo",
-            {"reference_type": "VCM StoreRequisition", "reference_name": doc.name},
+            {"reference_type": "Material Request", "reference_name": doc.name},
             "status",
             "Closed",
         )
@@ -278,4 +263,5 @@ def get_allowed_options(user: str, doc: Document):
                         applicable_actions.append(transition["action"])                        
     #logging.debug(f"**in get_allowed_options 5  *************{applicable_actions} ")
     return set(applicable_actions)  ## Unique Actions
+
 
