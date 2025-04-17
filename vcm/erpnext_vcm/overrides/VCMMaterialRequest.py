@@ -17,40 +17,40 @@ class VCMMaterialRequest(MaterialRequest):
         prefix = f"{company_abbr}-MAT-MR-2526-"
         self.name = prefix + getseries(prefix, 5)
 
-    def before_save(self):
-        super().before_save()
+    # def before_save(self):
+    #     super().before_save()
         # super().before_save() #Since there is no before_insert in parent
         #logging.debug(f"in MR Before save")
-        if (self.material_request_type == "Purchase"):
-            alm_level = get_mrn_alm_level(self)
-            if alm_level is not None:
-                self.refresh_alm()
+        # if (self.material_request_type == "Purchase"):
+        #     alm_level = get_mrn_alm_level(self)
+        #     if alm_level is not None:
+        #         self.refresh_alm()
     
-    def validate(self):
-        super().validate()
+    # def validate(self):
+    #     super().validate()
 		#logging.debug(f"in VCMStoreRequisition validate  {self}  ")
-        if (self.material_request_type == "Purchase"):
-            alm_level = get_mrn_alm_level(self)
-            if alm_level is not None:
-                check_approver_assigned(self)
-        return
+        # if (self.material_request_type == "Purchase"):
+        #     alm_level = get_mrn_alm_level(self)
+        #     if alm_level is not None:
+        #         check_approver_assigned(self)
+        
 
-    def on_update(self): 
-        if (self.material_request_type == "Purchase"):
-            alm_level = get_mrn_alm_level(self)
-            if alm_level is not None:
-                assign_and_notify_mrn_next_authority(self)
+    # def on_update(self): 
+    #     if (self.material_request_type == "Purchase"):
+    #         alm_level = get_mrn_alm_level(self)
+    #         if alm_level is not None:
+    #             assign_and_notify_mrn_next_authority(self)
 
     def on_submit(self):
         super().on_submit()
         if self.material_request_type == "Material Issue":
             self.send_material_issue_email()
-        if (self.material_request_type == "Purchase"):
-            alm_level = get_mrn_alm_level(self)
-            #  in case of no approval flow set, on submit set workflow state as Final Approved
-            if alm_level is None:
-                logging.debug(f"in MR on_submit  {self}  ")
-                self.workflow_state = "Final Level Approved"
+        # if (self.material_request_type == "Purchase"):
+        #     alm_level = get_mrn_alm_level(self)
+        #     #  in case of no approval flow set, on submit set workflow state as Final Approved
+        #     if alm_level is None:
+        #         logging.debug(f"in MR on_submit  {self}  ")
+        #         self.workflow_state = "Final Level Approved"
         #
 
     def refresh_alm(self):
