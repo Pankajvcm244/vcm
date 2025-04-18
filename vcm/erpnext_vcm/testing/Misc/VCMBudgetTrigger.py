@@ -111,6 +111,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 
 def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
     #"Updated 4028, 0 PO.\n\n Errors: []."
+    #"Updated 4086, 0 PO.\n\n Errors: []." 17/4/2024
     #*****DONT RUN FOR HERE FOR ALL , USE Budget AUTO Update File
     # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PI_Budget    
     filters = {}   
@@ -202,7 +203,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head: 
             budget_updated_flag = False       
-            budget_item.unpaid_purchase_invoice = total_pi_amount  # Adjust Remaining Budget
+            budget_item.unpaid_purchase_invoice = total_pi_amount or 0  # Adjust Remaining Budget
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
@@ -219,7 +220,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
                     used_budget = %s,
                     balance_budget = %s
                 WHERE name = %s
-            """, (total_pi_amount, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            """, (budget_item.unpaid_purchase_invoice, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
             frappe.db.commit()  
             break   
     if budget_updated_flag:
@@ -322,7 +323,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:
             budget_updated_flag = False
-            budget_item.paid_payment_entry = total_pe_amount
+            budget_item.paid_payment_entry = total_pe_amount or 0 
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
@@ -339,7 +340,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
                     used_budget = %s,
                     balance_budget = %s
                 WHERE name = %s
-            """, (total_pe_amount, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
+            """, (budget_item.paid_payment_entry, budget_item.used_budget, budget_item.balance_budget, budget_item.name))        
             frappe.db.commit() 
             break
 
@@ -444,7 +445,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:
             budget_updated_flag = False
-            budget_item.additional_je = total_jv_amount
+            budget_item.additional_je = total_jv_amount or 0 
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
