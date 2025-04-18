@@ -242,10 +242,11 @@ def update_JV_AutoBudget():
     return f"Updated JV {updated_count}, Skipped {skipped_count}.\n\n Errors: {errors}."
 
 def update_parent_AutoBudget():
-    # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
+    # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
     # Path to Excel file (Store this in your private files folder)
+    #bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
     
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMParent-1.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMParent-4.xlsx"
  
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -277,7 +278,7 @@ def update_parent_AutoBudget():
 
     for index, row in df.iterrows():
         # Skip rows where essential values are missing
-        if pd.isna(row["Cost Center"]) or pd.isna(row["Purchase Order"]):
+        if pd.isna(row["Pool Used Amount"]) or pd.isna(row["Purchase Order"]):
             skipped_count += 1
             continue
 
