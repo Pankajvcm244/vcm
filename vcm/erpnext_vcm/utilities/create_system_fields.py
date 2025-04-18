@@ -5,13 +5,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 def get_system_fields():
     custom_fields = {
-        "Material Request": [
+        "Stock Entry": [
             dict(
                 fieldname="material_recipient",
                 label="Material Recipient",
                 fieldtype="Link",
                 options="User",
-                insert_after="schedule_date",
+                insert_after="stock_entry_type",
             )
         ]
         # "Item": [

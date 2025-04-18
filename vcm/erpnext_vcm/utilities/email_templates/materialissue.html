@@ -57,7 +57,7 @@
 </style>
 
 <div class="header">
-    📦 Material Issue Request: {{ name }}
+     Material Issue Request: {{ name }}
 </div>
 
 <div class="content">
@@ -68,11 +68,9 @@
     <table>
         <tr><td><strong>Request ID:</strong></td><td>{{ name }}</td></tr>
         <tr><td><strong>Company:</strong></td><td>{{ company }}</td></tr>
-        <tr><td><strong>Department:</strong></td><td>{{ department }}</td></tr>
-        <tr><td><strong>Material Request Type:</strong></td><td>{{ material_request_type }}</td></tr>
-        <tr><td><strong>Purpose:</strong></td><td>{{ purpose }}</td></tr>
-        <tr><td><strong>Transaction Date:</strong></td><td>{{ transaction_date }}</td></tr>
-        <tr><td><strong>Required By:</strong></td><td>{{ required_by }}</td></tr>
+        <tr><td><strong>Cost Center:</strong></td><td>{{ cost_center }}</td></tr>
+        <tr><td><strong>Stock Entry Type:</strong></td><td>{{ stock_entry_type }}</td></tr>
+        <tr><td><strong>Transaction Date:</strong></td><td>{{ posting_date }}</td></tr>
     </table>
 
     <h4 style="margin-top: 20px; color: #007bff;">Items</h4>
@@ -81,10 +79,8 @@
             <tr>
                 <th>Item Code</th>
                 <th>Item Name</th>
-                <th>Required Date</th>
                 <th>Quantity</th>
                 <th>UOM</th>
-                <th>From Warehouse</th>
             </tr>
         </thead>
         <tbody>
@@ -92,10 +88,10 @@
             <tr>
                 <td>{{ item.item_code }}</td>
                 <td>{{ item.item_name }}</td>
-                <td>{{ item.schedule_date }}</td>
                 <td>{{ item.qty }}</td>
                 <td>{{ item.uom }}</td>
-                <td>{{ item.warehouse }}</td>
+
+                
             </tr>
             {% endfor %}
         </tbody>

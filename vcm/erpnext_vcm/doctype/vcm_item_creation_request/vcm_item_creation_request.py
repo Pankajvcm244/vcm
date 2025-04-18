@@ -95,7 +95,7 @@ def quickly_create_item(request):
         "stock_uom": icr_doc.unit_of_measure,
         "item_name": icr_doc.item_name,
         "item_code": new_item_code,
-        "custom_vcm_item_creation_request": icr_doc.name,
+        "vcm_item_creation_request": icr_doc.name,
         "gst_hsn_code":icr_doc.hsn_code,
         "is_stock_item": 0,
     }
@@ -103,7 +103,7 @@ def quickly_create_item(request):
     if icr_doc.asset_item:
         item_dict["is_fixed_asset"] = 1
         item_dict["asset_category"] = icr_doc.asset_category
-        item_dict["auto_create_assets"] = 1
+        # item_dict["auto_create_assets"] = 1
         item_dict["asset_naming_series"] = "ACC-ASS-.YYYY.-"
     elif icr_doc.stock_item:
         item_dict["is_stock_item"] = 1
