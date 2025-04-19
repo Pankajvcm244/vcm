@@ -7,6 +7,9 @@ frappe.ui.form.on('KP FOC Issue', {
         if (!frm.doc.cost_center) {
             frm.set_value('cost_center', 'KRISHNA PRASADAM COUNTER - HKMV');
         }
+        if (!frm.doc.material_recipient) {
+            frm.set_value('material_recipient', 'kp_pos@gmail.com');
+        }
 
         // Apply item group filter
         apply_item_filter(frm);  

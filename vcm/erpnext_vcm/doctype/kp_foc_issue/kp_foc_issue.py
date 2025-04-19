@@ -38,6 +38,7 @@ def create_stock_entry(doc, method=None):
             "stock_entry_type": "Material Issue",
             "company": doc.company or frappe.defaults.get_global_default("company"),
             "posting_date": frappe.utils.nowdate(),
+            "material_recipient": doc.material_recipient,
             "cost_center": getattr(doc, "cost_center", None),
             "items": []
         })
