@@ -12,9 +12,9 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger.update_PO_Budget_new    
     filters = {} 
     # vcm_company = "HARE KRISHNA MOVEMENT VRINDAVAN"
-    # vcm_location = "GGN"
+    # vcm_location = "NOI"
     # vcm_fiscal_year = "2025-2026"
-    # vcm_cost_center = "ANNADANA - HKMV"
+    # vcm_cost_center = "YOGA FOR HAPPINESS - HKMV"
     # vcm_budget_head = "Food"
     vcm_company = company
     vcm_location = location
