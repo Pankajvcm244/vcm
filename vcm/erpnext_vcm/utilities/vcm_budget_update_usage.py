@@ -87,6 +87,7 @@ def update_vcm_po_budget_usage(po_doc, po_flag):
         "cost_center": po_doc.cost_center,
         "company": po_doc.company,
         "location": po_doc.location,
+        "fiscal_year":po_doc.fiscal_year,
         "budget_head": po_doc.budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
@@ -98,6 +99,8 @@ def update_vcm_po_budget_usage(po_doc, po_flag):
         conditions.append("company = %(company)s")
     if filters["location"]:
         conditions.append("location = %(location)s")
+    if filters["fiscal_year"]:
+        conditions.append("fiscal_year = %(fiscal_year)s")
     if filters["budget_head"]:
         conditions.append("budget_head = %(budget_head)s")
     
@@ -289,6 +292,7 @@ def update_vcm_pi_budget_usage(pi_doc, pi_flag):
         "cost_center": pi_doc.cost_center,
         "company": pi_doc.company,
         "location": pi_doc.location,
+        "fiscal_year": pi_doc.fiscal_year,
         "budget_head": pi_doc.budget_head,
         "from_date": "2025-04-01",
     }
@@ -300,8 +304,10 @@ def update_vcm_pi_budget_usage(pi_doc, pi_flag):
          conditions.append(f"{alias}.company = %(company)s")
     if filters.get("location"):
          conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("fiscal_year"):
+        conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
     if filters.get("budget_head"):
-         conditions.append(f"{alias}.budget_head = %(budget_head)s")
+        conditions.append(f"{alias}.budget_head = %(budget_head)s")
  
     # Check all PIs from April 1st onward
     conditions.append(f"{alias}.{date_field} >= %(from_date)s")
@@ -329,7 +335,7 @@ def update_vcm_pi_budget_usage(pi_doc, pi_flag):
     #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}, {pi_doc.budget_head}")
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pi_doc.budget_head:        
-            budget_item.unpaid_purchase_invoice = total_pi_amount
+            budget_item.unpaid_purchase_invoice = total_pi_amount or 0
             budget_item.used_budget = (
                 (budget_item.paid_payment_entry or 0)
                 + (budget_item.unpaid_purchase_invoice or 0)
@@ -499,6 +505,7 @@ def update_vcm_budget_on_payment_submit(pe_doc, pe_flag):
         "cost_center": pe_doc.cost_center,
         "company": pe_doc.company,
         "location": pe_doc.location,
+        "fiscal_year": pe_doc.fiscal_year,
         "budget_head": pe_doc.budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
@@ -509,6 +516,8 @@ def update_vcm_budget_on_payment_submit(pe_doc, pe_flag):
         conditions.append(f"{alias}.company = %(company)s")
     if filters.get("location"):
         conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("fiscal_year"):
+        conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
     if filters.get("budget_head"):
         conditions.append(f"{alias}.budget_head = %(budget_head)s")
 
@@ -705,6 +714,7 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
                 "from_date": fiscal_start,
                 "company": jv_doc.company,
                 "cost_center": account.cost_center,
+                "fiscal_year":account.fiscal_year,
                 "location": account.location,
                 "budget_head": account.budget_head,
             }
@@ -715,6 +725,7 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
                 f"{alias}.company = %(company)s",
                 f"jea.cost_center = %(cost_center)s",
                 f"jea.location = %(location)s",
+                f"jea.fiscal_year = %(fiscal_year)s",
                 f"jea.budget_head = %(budget_head)s",
                 "acc.root_type = 'Expense'",
             ]
@@ -725,30 +736,25 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
                 )
             """)
             condition_string = " AND ".join(conditions) 
-            selected_table = "tabJournal Entry"
-            amount_field = "total_debit"  # or use `base_paid_amount` for consistency
+            selected_table = "tabJournal Entry"            
             
             query = f"""
                 SELECT
                     {alias}.name,                    
-                    {alias}.{amount_field} AS total_used_budget,
+                    SUM(jea.debit - jea.credit) AS net_budget_change,
                     CASE 
-                        WHEN jea.debit > 0 THEN 'Debit'
-                        WHEN jea.credit > 0 THEN 'Credit'
+                        WHEN SUM(jea.debit) > SUM(jea.credit) THEN 'Debit'
+                        WHEN SUM(jea.credit) > SUM(jea.debit) THEN 'Credit'
                         ELSE 'Neutral'
                     END AS entry_type,            
                     acc.root_type AS root_type
                 FROM `{selected_table}` {alias}
                 LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
                 LEFT JOIN `tabAccount` acc ON acc.name = jea.account
-                WHERE {condition_string}
-                AND (
-                    jea.reference_type IS NULL 
-                    OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
-                )
+                WHERE {condition_string}                
             """
             result = frappe.db.sql(query, filters, as_dict=True)
-            total_jv_amount = result[0].get("total_used_budget", 0) or 0 if result else 0
+            total_jv_amount = result[0].get("net_budget_change", 0) or 0 if result else 0
             #logging.debug(f"Total paid amount for JV: {total_jv_amount}, {account.budget_head}")
             # Update the budget item
             for item in budget_doc.get("budget_items") or []:
@@ -775,32 +781,26 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
                     break
             # # Now update parent totals
             #initialize these with base value
-            logging.debug(f"in JV updating parent-2  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}")
-            budget_pool_used = budget_doc.pool_budget_used
-            budget_pool_balance = budget_doc.pool_budget_balance    
+            delta_amount = account.debit - account.credit if jv_flag else -(account.debit - account.credit)
+            #logging.debug(f"in JV updating parent-2 {delta_amount},  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}, {account.debit}")
+            budget_pool_used = budget_doc.pool_budget_used or 0
+            budget_pool_balance = budget_doc.pool_budget_balance or 0  
             if is_pool_budget_head(account.budget_head):
-                if jv_flag == True:
-                    budget_pool_used = ((budget_doc.pool_budget_used or 0) + (account.debit or 0))
-                    budget_pool_balance = ((budget_doc.pool_budget_balance or 0)- (account.debit or 0))
-                else:
-                    budget_pool_used = ((budget_doc.pool_budget_used or 0) - (account.debit or 0))
-                    budget_pool_balance = ((budget_doc.pool_budget_balance or 0) + (account.debit or 0))
+                budget_pool_used += delta_amount
+                budget_pool_balance -= delta_amount
                 #logging.debug(f"in JV updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
             else:
                 # we need to do this so that in case of non-pool we initialize these values
                 budget_pool_used = budget_doc.pool_budget_used or 0
                 budget_pool_balance = budget_doc.pool_budget_balance or 0
-            if jv_flag == True: # this is JV submit
-                budget_total_used = ((budget_doc.total_used_amount or 0) + ( account.debit))
-                budget_total_balance = ((budget_doc.total_balance_amount or 0) - (account.debit or 0)) 
-                budget_jv = ((budget_doc.total_additional_je or 0) + (account.debit or 0))
-            else:
-                # This is JV cancel
-                budget_total_used = ((budget_doc.total_used_amount or 0) - ( account.debit))
-                budget_total_balance = ((budget_doc.total_balance_amount or 0) + (account.debit or 0))
-                budget_jv = ((budget_doc.total_additional_je or 0) - (account.debit or 0))
+
+            budget_total_used = (budget_doc.total_used_amount or 0) + delta_amount
+            budget_total_balance = (budget_doc.total_balance_amount or 0) - delta_amount
+            budget_jv = (budget_doc.total_additional_je or 0) + delta_amount
+
             percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
             used_percentage = percent or 0
+            #logging.debug(f"in JV updating parent-3  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}, {account.debit}")
             #logging.debug(f"in JV updating parent-2  {budget_pool_used}, {budget_pool_balance}, {budget_total_balance},{budget_total_used},{budget_jv}")
             frappe.db.sql("""
                         UPDATE `tabVCM Budget`
@@ -813,7 +813,6 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
                         WHERE name = %s
                     """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_jv, used_percentage, budget_doc.name))      
             frappe.db.commit()
-
 
 
 @frappe.whitelist()          

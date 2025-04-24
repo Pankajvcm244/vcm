@@ -175,6 +175,7 @@ def get_journal_entry_from_statement(statement):
 
 @frappe.whitelist()
 def unallocate_bank_transaction(je):
+    #logging.debug(f"unallocate_bank_transaction {je}")
     je_doc = frappe.get_doc("Journal Entry", je)
     if not je_doc.bank_statement_name:
         return
@@ -183,13 +184,16 @@ def unallocate_bank_transaction(je):
         "Bank Transaction",
         filters={"payment_document": "Journal Entry", "payment_entry": je},
     )
+    #logging.debug(f"unallocate_bank_transaction 2 {tx}")
     if len(tx) != 1:
         frappe.throw(
             "There is not a SINGLE Bank Transaction Entry. Either 0 or more than 1. Contact Administrator."
         )
     tx = tx[0]
     tx_doc = frappe.get_doc("Bank Transaction", tx)
+    #logging.debug(f"unallocate_bank_transaction 2 {tx_doc}")
     row = next(r for r in tx_doc.payment_entries if r.payment_entry == je)
+    #logging.debug(f"unallocate_bank_transaction 2 {row}")
     tx_doc.remove(row)
     tx_doc.save()
 

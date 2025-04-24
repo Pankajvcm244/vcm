@@ -40,6 +40,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
         "cost_center": vcm_cost_center,
         "company": vcm_company,
         "location": vcm_location,
+        "fiscal_year": fiscal_year,
         "budget_head": vcm_budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
@@ -51,6 +52,8 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
         conditions.append("company = %(company)s")
     if filters["location"]:
         conditions.append("location = %(location)s")
+    if filters["fiscal_year"]:
+        conditions.append("fiscal_year = %(fiscal_year)s")
     if filters["budget_head"]:
         conditions.append("budget_head = %(budget_head)s")
     
@@ -160,6 +163,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
         "cost_center": vcm_cost_center,
         "company": vcm_company,
         "location": vcm_location,
+        "fiscal_year": vcm_fiscal_year,
         "budget_head": vcm_budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
@@ -171,6 +175,8 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
         conditions.append(f"{alias}.company = %(company)s")
     if filters.get("location"):
         conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("fiscal_year"):
+        conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
     if filters.get("budget_head"):
         conditions.append(f"{alias}.budget_head = %(budget_head)s")
     
@@ -279,6 +285,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
         "cost_center": vcm_cost_center,
         "company": vcm_company,
         "location": vcm_location,
+        "fiscal_year": vcm_fiscal_year,
         "budget_head": vcm_budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
@@ -290,6 +297,8 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
         conditions.append(f"{alias}.company = %(company)s")
     if filters.get("location"):
         conditions.append(f"{alias}.location = %(location)s")
+    if filters.get("fiscal_year"):
+        conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
     if filters.get("budget_head"):
         conditions.append(f"{alias}.budget_head = %(budget_head)s")
     
@@ -393,6 +402,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
         "cost_center": vcm_cost_center,
         "company": vcm_company,
         "location": vcm_location,
+        "fiscal_year": vcm_fiscal_year,
         "budget_head": vcm_budget_head,
         "from_date": fiscal_start,  # Always check from April 1st
     }
@@ -404,6 +414,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
         f"{alias}.company = %(company)s",
         f"jea.cost_center = %(cost_center)s",
         f"jea.location = %(location)s",
+        f"jea.fiscal_year = %(fiscal_year)s",
         f"jea.budget_head = %(budget_head)s",
         "acc.root_type = 'Expense'",
     ]
@@ -416,30 +427,26 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
     condition_string = " AND ".join(conditions) 
 
     selected_table = "tabJournal Entry"
-    amount_field = "total_debit"  # or use `base_paid_amount` for consistency
+    #amount_field = "total_debit"  # or use `base_paid_amount` for consistency
       
     query = f"""
-        SELECT
-            {alias}.name,                    
-            {alias}.{amount_field} AS total_used_budget,
-            CASE 
-                WHEN jea.debit > 0 THEN 'Debit'
-                WHEN jea.credit > 0 THEN 'Credit'
-                ELSE 'Neutral'
-            END AS entry_type,            
-            acc.root_type AS root_type
-        FROM `{selected_table}` {alias}
-        LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
-        LEFT JOIN `tabAccount` acc ON acc.name = jea.account
-        WHERE {condition_string}
-        AND (
-            jea.reference_type IS NULL 
-            OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
-        )
-    """
+                SELECT
+                    {alias}.name,                    
+                    SUM(jea.debit - jea.credit) AS net_budget_change,
+                    CASE 
+                        WHEN SUM(jea.debit) > SUM(jea.credit) THEN 'Debit'
+                        WHEN SUM(jea.credit) > SUM(jea.debit) THEN 'Credit'
+                        ELSE 'Neutral'
+                    END AS entry_type,            
+                    acc.root_type AS root_type
+                FROM `{selected_table}` {alias}
+                LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+                LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+                WHERE {condition_string}                
+            """
     result = frappe.db.sql(query, filters, as_dict=True)
     #logging.debug(f"Payment Entry usage result: {result}")    
-    total_jv_amount = result[0].get("total_used_budget", 0) if result else 0
+    total_jv_amount = result[0].get("net_budget_change", 0) if result else 0
     #logging.debug(f"Total paid amount for JV: {total_jv_amount}, Budget Head: {vcm_budget_head}")
 
     for budget_item in budget_doc.get("budget_items") or []:
