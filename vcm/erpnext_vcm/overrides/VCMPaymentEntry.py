@@ -42,8 +42,7 @@ class VCMPaymentEntry(PaymentEntry):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
                     #logging.debug(f"VCM PE on_Submit -2 ")
-                    update_vcm_budget_on_payment_submit(self)
-                    
+                    update_vcm_budget_on_payment_submit(self, True)            
 
         vcm_whatsapp_settings = frappe.get_doc("VCM WhatsAPP Settings") 
         #logging.debug(f"VCM Payment Entry after_submit {vcm_whatsapp_settings.payment_entry_whatsapp_enabled} ")
@@ -93,7 +92,7 @@ class VCMPaymentEntry(PaymentEntry):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 #logging.debug(f"VCM PE Submit-2 calling revert budget")
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_budget_on_payment_submit(self) 
+                    update_vcm_budget_on_payment_submit(self, False) 
                     
 
 

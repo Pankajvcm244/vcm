@@ -41,7 +41,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_pi_budget_usage(self)                
+                    update_vcm_pi_budget_usage(self, True)                
         
 
     def on_cancel(self):
@@ -52,7 +52,7 @@ class VCMPurchaseInvoice(PurchaseInvoice):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_pi_budget_usage(self)  
+                    update_vcm_pi_budget_usage(self, False)  
         
 
     def validate(self):

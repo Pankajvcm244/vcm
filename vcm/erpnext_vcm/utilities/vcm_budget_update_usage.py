@@ -40,6 +40,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
         #logging.debug(f"validate_vcm_po_budget_amount_budgethead budget exceeded return false")
         return False    
     # Use is_pool_budget_head to check
+    #logging.debug(f"validate_vcm_po_budget_amount 3, Pool Budget Balance: {budget_doc.pool_budget_balance} ")
     if is_pool_budget_head(po_doc.budget_head):
         # Pool budget validation
         budget_validation_flag = False
@@ -51,7 +52,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
         for budget_item in budget_doc.get("budget_items") or []:
             if budget_item.budget_head == po_doc.budget_head:
                 budget_validation_flag = False
-                #logging.debug(f"in validate_vcm_po_ 11: {budget_item.balance_budget}")
+                #logging.debug(f"in validate_vcm_po_ 11 Budget Item balance: {budget_item.balance_budget}")
                 if po_doc.rounded_total > budget_item.balance_budget:
                     frappe.throw(f"Budget Exceeded for {po_doc.budget_head}, Balance: {budget_item.balance_budget}, Request: {po_doc.rounded_total}")
                     return False
@@ -63,7 +64,7 @@ def validate_vcm_po_budget_amount_budgethead(po_doc):
     return True
 
 @frappe.whitelist()
-def update_vcm_po_budget_usage(po_doc):
+def update_vcm_po_budget_usage(po_doc, po_flag):
 #def test_func():
 # bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.utilities.vcm_budget_update_usage.update_vcm_po_budget_usage    
     filters = {}    
@@ -89,7 +90,7 @@ def update_vcm_po_budget_usage(po_doc):
         "budget_head": po_doc.budget_head,
         "from_date": "2025-04-01",  # Always check from April 1st
     }
-    #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.cost_center}, {po_doc.company},{po_doc.location} , {po_doc.budget_head}")
+    logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.cost_center}, {po_doc.company},{po_doc.location} , {po_doc.budget_head}")
     date_field = "transaction_date"
     if filters["cost_center"]:
         conditions.append("cost_center = %(cost_center)s")
@@ -113,17 +114,14 @@ def update_vcm_po_budget_usage(po_doc):
         FROM `{selected_table}`
         WHERE {condition_string}
     """
-
     result = frappe.db.sql(query, filters, as_dict=True)
     logging.debug(f"in get po 2 {result} {total_used_budget}")
-    total_po_amount = result[0].get("total_used_budget", 0) if result else 0
+    total_po_amount = result[0].get("total_used_budget", 0) or 0 if result else 0
     #budget_updated_flag = True
     for budget_item in budget_doc.get("budget_items") or []:
         #logging.debug(f"in update_vcm_po_budget_usage 2 {po_doc.budget_head}")
         if budget_item.budget_head == po_doc.budget_head:        
             budget_item.unpaid_purchase_order = total_po_amount  # Adjust Remaining Budget
-            # frappe.db.set_value("VCM Budget Child Table", budget_item.name, "unpaid_purchase_order", total_po_amount)
-            # frappe.db.commit()
             budget_item.used_budget = (
                     (budget_item.paid_payment_entry or 0)
                     + (budget_item.unpaid_purchase_invoice or 0)
@@ -134,10 +132,7 @@ def update_vcm_po_budget_usage(po_doc):
                     (budget_item.current_budget or 0)
                   - (budget_item.used_budget or 0)
             )
-            #logging.debug(f"in get po 23 {budget_item.used_budget} {budget_item.balance_budget}")
-            # Save those directly too
             # Now bulk update all modified child rows in DB
-            # Single DB update
             frappe.db.sql("""
                 UPDATE `tabVCM Budget Child Table`
                 SET unpaid_purchase_order = %s,
@@ -149,19 +144,34 @@ def update_vcm_po_budget_usage(po_doc):
             break
     # # Now update parent totals
     #initialize these with base value
-    budget_pool_used = budget_doc.pool_budget_used
+    #logging.debug(f"in PO updating parent-2  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}")
+    #logging.debug(f"in PO updating parent-3  PO value {po_doc.rounded_total}")
     budget_pool_balance = budget_doc.pool_budget_balance    
-    if is_pool_budget_head(po_doc.budget_head):
-        budget_pool_used = budget_doc.pool_budget_used +  po_doc.rounded_total
-        budget_pool_balance = budget_doc.pool_budget_balance -  po_doc.rounded_total
-    
-    budget_total_used = budget_doc.total_used_amount +  po_doc.rounded_total 
-    budget_total_balance = budget_doc.total_balance_amount -  po_doc.rounded_total 
-
-    budget_po = budget_doc.total_unpaid_purchase_order +  po_doc.rounded_total or 0
-    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100;
+    if is_pool_budget_head(po_doc.budget_head):        
+        if po_flag == True:
+            # this is PO submit
+            budget_pool_used = ((budget_doc.pool_budget_used or 0) + (po_doc.rounded_total or 0) )
+            budget_pool_balance = ((budget_doc.pool_budget_balance or 0) - (po_doc.rounded_total or 0)) 
+        else:
+            # This is PO cancel
+            budget_pool_used = ((budget_doc.pool_budget_used or 0) - (po_doc.rounded_total or 0) )
+            budget_pool_balance = ((budget_doc.pool_budget_balance or 0) + (po_doc.rounded_total or 0))
+        #logging.debug(f"in updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
+    else:
+        # we need to do this so that in case of non-pool we initialize these values 
+        budget_pool_used = budget_doc.pool_budget_used or 0
+        budget_pool_balance = budget_doc.pool_budget_balance or 0
+    if po_flag == True: # this is PO submit
+        budget_total_used = ((budget_doc.total_used_amount or 0) + ( po_doc.rounded_total))
+        budget_total_balance = ((budget_doc.total_balance_amount or 0)- (po_doc.rounded_total or 0))
+        budget_po = ((budget_doc.total_unpaid_purchase_order or 0) + (po_doc.rounded_total or 0))
+    else: # This is PO cancel
+        budget_total_used = ((budget_doc.total_used_amount or 0) - ( po_doc.rounded_total))
+        budget_total_balance = ((budget_doc.total_balance_amount or 0)+ (po_doc.rounded_total or 0))
+        budget_po = ((budget_doc.total_unpaid_purchase_order or 0) - (po_doc.rounded_total or 0))
+    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
     used_percentage = percent or 0
-    #logging.debug(f"in updating parent  {budget_total_used}. {budget_total_balance}, {budget_pool_used}, {budget_pool_balance}, {budget_po}")
+    #logging.debug(f"in updating parent-2  {budget_total_balance},{budget_total_used},{budget_po}")
     frappe.db.sql("""
                 UPDATE `tabVCM Budget`
                 SET total_used_amount = %s,
@@ -240,7 +250,7 @@ def validate_vcm_pi_budget_amount(pi_doc):
     return True
 
 @frappe.whitelist()
-def update_vcm_pi_budget_usage(pi_doc):
+def update_vcm_pi_budget_usage(pi_doc, pi_flag):
     """
     Updates the used budget in VCM Budget when a Purchase Invoice without a PO is submitted.
     """
@@ -314,12 +324,9 @@ def update_vcm_pi_budget_usage(pi_doc):
     ) AS grouped
     """
     
-    result = frappe.db.sql(query, filters, as_dict=True)
-    #result = frappe.db.sql(query, filters, as_dict=True)
-    #frappe.errprint(result)  # 👈 See each invoice amount
-    total_pi_amount = result[0].get("total_used_budget", 0) if result else 0
+    result = frappe.db.sql(query, filters, as_dict=True)    
+    total_pi_amount = result[0].get("total_used_budget", 0) or 0 if result else 0
     #logging.debug(f"in update_vcm_pi_budget 2 {total_pi_amount}, {pi_doc.budget_head}")
-
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pi_doc.budget_head:        
             budget_item.unpaid_purchase_invoice = total_pi_amount
@@ -333,13 +340,57 @@ def update_vcm_pi_budget_usage(pi_doc):
                 (budget_item.current_budget or 0)
                 - (budget_item.used_budget or 0)
             )
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET unpaid_purchase_invoice = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_pi_amount, budget_item.used_budget, budget_item.balance_budget,budget_item.name))        
+            frappe.db.commit()            
             break
 
-    budget_doc.save(ignore_permissions=True)
+    #logging.debug(f"in PI updating parent-2  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}")
+    #logging.debug(f"in PI updating parent-3  PI value {pi_doc.rounded_total}")
+    budget_pool_used = budget_doc.pool_budget_used
+    budget_pool_balance = budget_doc.pool_budget_balance    
+    if is_pool_budget_head(pi_doc.budget_head):
+        if pi_flag == True:
+            # this is PO submit
+            budget_pool_used = ((budget_doc.pool_budget_used or 0) + (pi_doc.rounded_total or 0) )
+            budget_pool_balance = ((budget_doc.pool_budget_balance or 0) - (pi_doc.rounded_total or 0))
+        else:
+            # This is PI cancel
+            budget_pool_used = ((budget_doc.pool_budget_used or 0) - (pi_doc.rounded_total or 0) )
+            budget_pool_balance = ((budget_doc.pool_budget_balance or 0) + (pi_doc.rounded_total or 0))
+        #logging.debug(f"in updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
+    else:
+        # we need to do this so that in case of non-pool we initialize these values 
+        budget_pool_used = budget_doc.pool_budget_used or 0
+        budget_pool_balance = budget_doc.pool_budget_balance or 0
+    if pi_flag == True:
+        budget_total_used = ((budget_doc.total_used_amount or 0) + ( pi_doc.rounded_total ))
+        budget_total_balance = ( (budget_doc.total_balance_amount or 0) -  (pi_doc.rounded_total or 0)) 
+        budget_pi = (( budget_doc.total_unpaid_purchase_invoice or 0) +  (pi_doc.rounded_total or 0))
+    else:
+        # This is PI cancel
+        budget_total_used = ((budget_doc.total_used_amount or 0) - ( pi_doc.rounded_total ))
+        budget_total_balance = ( (budget_doc.total_balance_amount or 0) +  (pi_doc.rounded_total or 0)) 
+        budget_pi = (( budget_doc.total_unpaid_purchase_invoice or 0) -  (pi_doc.rounded_total or 0))
+    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
+    used_percentage = percent or 0
+    #logging.debug(f"in updating parent-2  {budget_total_balance},{budget_total_used},{budget_pi}")
+    frappe.db.sql("""
+                UPDATE `tabVCM Budget`
+                SET total_used_amount = %s,
+                    total_balance_amount = %s,
+                    pool_budget_used = %s,
+                    pool_budget_balance = %s,
+                    total_unpaid_purchase_invoice = %s,
+                    used_percent = %s
+                WHERE name = %s
+            """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_pi, used_percentage, budget_doc.name))      
     frappe.db.commit()
-    return True
-
-
 
 @frappe.whitelist()
 def validate_vcm_budget_on_payment_entry(pe_doc):
@@ -402,7 +453,7 @@ def validate_vcm_budget_on_payment_entry(pe_doc):
 
 
 @frappe.whitelist()    
-def update_vcm_budget_on_payment_submit(pe_doc):    
+def update_vcm_budget_on_payment_submit(pe_doc, pe_flag):    
     """Update budget used when a Payment Entry is submitted."""
     # Ensure this is a Payment Entry affecting budget (Outgoing Payment)
     if pe_doc.payment_type not in ["Pay", "Receive"]:
@@ -481,26 +532,61 @@ def update_vcm_budget_on_payment_submit(pe_doc):
     """
     result = frappe.db.sql(query, filters, as_dict=True)
     #logging.debug(f"in get pe usage: {result}")
-    total_pe_amount = result[0].get("total_used_budget", 0) if result else 0
+    total_pe_amount = result[0].get("total_used_budget", 0) or 0 if result else 0
     #logging.debug(f"in update_vcm_pe_budget 2 {total_pe_amount}")
-
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == pe_doc.budget_head:        
             budget_item.paid_payment_entry = total_pe_amount  # Adjust Remaining Budget
-            budget_item.used_budget = (
-                (budget_item.paid_payment_entry or 0)
-                + (budget_item.unpaid_purchase_invoice or 0)
-                + (budget_item.unpaid_purchase_order or 0)
-                + (budget_item.additional_je or 0)
-            )
-            budget_item.balance_budget = (
-                (budget_item.current_budget or 0)
-                - (budget_item.used_budget or 0)
-            )
+            budget_item.used_budget = ((budget_item.paid_payment_entry or 0) + (budget_item.unpaid_purchase_invoice or 0)
+                + (budget_item.unpaid_purchase_order or 0) + (budget_item.additional_je or 0) )
+            budget_item.balance_budget = ( (budget_item.current_budget or 0) - (budget_item.used_budget or 0) )
+            frappe.db.sql("""
+                UPDATE `tabVCM Budget Child Table`
+                SET paid_payment_entry = %s,
+                    used_budget = %s,
+                    balance_budget = %s
+                WHERE name = %s
+            """, (total_pe_amount, budget_item.used_budget, budget_item.balance_budget,budget_item.name))        
+            frappe.db.commit()            
             break    
-    budget_doc.save(ignore_permissions=True)
-    frappe.db.commit()    
-    return True
+    budget_pool_used = budget_doc.pool_budget_used
+    budget_pool_balance = budget_doc.pool_budget_balance    
+    if is_pool_budget_head(pe_doc.budget_head):
+        if pe_flag == True:
+            budget_pool_used = ( (budget_doc.pool_budget_used or 0) + (pe_doc.paid_amount or 0) )
+            budget_pool_balance = (  (budget_doc.pool_budget_balance or 0)  - (pe_doc.paid_amount or 0) )
+        else: 
+            budget_pool_used = ( (budget_doc.pool_budget_used or 0) - (pe_doc.paid_amount or 0) )
+            budget_pool_balance = (  (budget_doc.pool_budget_balance or 0) + (pe_doc.paid_amount or 0) )
+        #logging.debug(f"in pe updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
+    else:
+        # we need to do this so that in case of non-pool we initialize these values
+        budget_pool_used = budget_doc.pool_budget_used or 0
+        budget_pool_balance = budget_doc.pool_budget_balance or 0
+    if pe_flag == True:
+        # this is PE submit
+        budget_total_used = ((budget_doc.total_used_amount or 0) + (pe_doc.paid_amount) )
+        budget_total_balance = ((budget_doc.total_balance_amount or 0) - (pe_doc.paid_amount or 0)) 
+        budget_pe = ((budget_doc.total_paid_payment_entry or 0) + (pe_doc.paid_amount or 0) )
+    else:
+        # This is PE cancel
+        budget_total_used = ((budget_doc.total_used_amount or 0) - (pe_doc.paid_amount) )
+        budget_total_balance = ((budget_doc.total_balance_amount or 0) + (pe_doc.paid_amount or 0))
+        budget_pe = ((budget_doc.total_paid_payment_entry or 0) - (pe_doc.paid_amount or 0) )
+    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
+    used_percentage = percent or 0
+    #logging.debug(f"in PE updating parent-2   {budget_total_balance}, {budget_total_used}, {budget_pe}")
+    frappe.db.sql("""
+                UPDATE `tabVCM Budget`
+                SET total_used_amount = %s,
+                    total_balance_amount = %s,
+                    pool_budget_used = %s,
+                    pool_budget_balance = %s,
+                    total_paid_payment_entry = %s,
+                    used_percent = %s
+                WHERE name = %s
+            """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_pe, used_percentage, budget_doc.name))      
+    frappe.db.commit()
 
 
 
@@ -578,7 +664,7 @@ def validate_vcm_budget_from_jv(jv_doc):
     return True
 
 @frappe.whitelist()
-def update_vcm_budget_from_jv(jv_doc):    
+def update_vcm_budget_from_jv(jv_doc, jv_flag):    
     """
     Update Budget Used when a Journal Entry (JV) is submitted.
     This only affects Expense entries not linked to a Purchase Order or Purchase Invoice.
@@ -662,7 +748,7 @@ def update_vcm_budget_from_jv(jv_doc):
                 )
             """
             result = frappe.db.sql(query, filters, as_dict=True)
-            total_jv_amount = result[0].get("total_used_budget", 0) if result else 0
+            total_jv_amount = result[0].get("total_used_budget", 0) or 0 if result else 0
             #logging.debug(f"Total paid amount for JV: {total_jv_amount}, {account.budget_head}")
             # Update the budget item
             for item in budget_doc.get("budget_items") or []:
@@ -678,10 +764,55 @@ def update_vcm_budget_from_jv(jv_doc):
                         (item.current_budget or 0)
                         - (item.used_budget or 0)
                     )
+                    frappe.db.sql("""
+                    UPDATE `tabVCM Budget Child Table`
+                    SET additional_je = %s,
+                        used_budget = %s,
+                        balance_budget = %s
+                    WHERE name = %s
+                    """, (total_jv_amount, item.used_budget, item.balance_budget,item.name))        
+                    frappe.db.commit()            
                     break
-            budget_doc.save(ignore_permissions=True)
+            # # Now update parent totals
+            #initialize these with base value
+            logging.debug(f"in JV updating parent-2  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}")
+            budget_pool_used = budget_doc.pool_budget_used
+            budget_pool_balance = budget_doc.pool_budget_balance    
+            if is_pool_budget_head(account.budget_head):
+                if jv_flag == True:
+                    budget_pool_used = ((budget_doc.pool_budget_used or 0) + (account.debit or 0))
+                    budget_pool_balance = ((budget_doc.pool_budget_balance or 0)- (account.debit or 0))
+                else:
+                    budget_pool_used = ((budget_doc.pool_budget_used or 0) - (account.debit or 0))
+                    budget_pool_balance = ((budget_doc.pool_budget_balance or 0) + (account.debit or 0))
+                #logging.debug(f"in JV updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
+            else:
+                # we need to do this so that in case of non-pool we initialize these values
+                budget_pool_used = budget_doc.pool_budget_used or 0
+                budget_pool_balance = budget_doc.pool_budget_balance or 0
+            if jv_flag == True: # this is JV submit
+                budget_total_used = ((budget_doc.total_used_amount or 0) + ( account.debit))
+                budget_total_balance = ((budget_doc.total_balance_amount or 0) - (account.debit or 0)) 
+                budget_jv = ((budget_doc.total_additional_je or 0) + (account.debit or 0))
+            else:
+                # This is JV cancel
+                budget_total_used = ((budget_doc.total_used_amount or 0) - ( account.debit))
+                budget_total_balance = ((budget_doc.total_balance_amount or 0) + (account.debit or 0))
+                budget_jv = ((budget_doc.total_additional_je or 0) - (account.debit or 0))
+            percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
+            used_percentage = percent or 0
+            #logging.debug(f"in JV updating parent-2  {budget_pool_used}, {budget_pool_balance}, {budget_total_balance},{budget_total_used},{budget_jv}")
+            frappe.db.sql("""
+                        UPDATE `tabVCM Budget`
+                        SET total_used_amount = %s,
+                            total_balance_amount = %s,
+                            pool_budget_used = %s,
+                            pool_budget_balance = %s,
+                            total_additional_je = %s,
+                            used_percent = %s
+                        WHERE name = %s
+                    """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_jv, used_percentage, budget_doc.name))      
             frappe.db.commit()
-    return True
 
 
 

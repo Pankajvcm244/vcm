@@ -190,14 +190,7 @@ HKMPaymentEntry = VCMPaymentEntry
 
 from hkm.erpnext___custom.overrides import HKMJournalEntry
 from vcm.erpnext_vcm.overrides import VCMJournalEntry
-
-
-
-
-
-
-
-#HKMJournalEntry = VCMJournalEntry
+HKMJournalEntry = VCMJournalEntry
 
 # Document Events
 # ---------------

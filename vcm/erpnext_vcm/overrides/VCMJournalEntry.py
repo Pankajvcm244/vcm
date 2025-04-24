@@ -39,7 +39,7 @@ class VCMJournalEntry(JournalEntry):
         #logging.debug(f"VCM JV Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
             if validate_budget_head_n_location_mandatory(self) == True:
-                update_vcm_budget_from_jv(self)       
+                update_vcm_budget_from_jv(self, True)       
    
 
     def on_cancel(self):
@@ -51,7 +51,7 @@ class VCMJournalEntry(JournalEntry):
             #if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
             if validate_budget_head_n_location_mandatory(self) == True:
                 #logging.debug(f"VCM JV on_cancel budget")
-                update_vcm_budget_from_jv(self) 
+                update_vcm_budget_from_jv(self, False) 
                 #delete_vcm_transaction_log(self,"JV Cancelled")
         
 

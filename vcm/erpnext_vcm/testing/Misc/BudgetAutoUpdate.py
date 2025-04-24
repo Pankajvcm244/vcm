@@ -244,9 +244,9 @@ def update_JV_AutoBudget():
 def update_parent_AutoBudget():
     # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
     # Path to Excel file (Store this in your private files folder)
-    #bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
+    #bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
     
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMParent-4.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMParentANNADANA-4.xlsx"
  
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -301,6 +301,7 @@ def update_parent_AutoBudget():
                 UPDATE `tabVCM Budget`
                 SET total_used_amount = %s,
                     total_balance_amount = %s,
+                    pool_budget_total = %s,
                     pool_budget_used = %s,
                     pool_budget_balance = %s,
                     total_unpaid_purchase_order = %s,
@@ -309,7 +310,7 @@ def update_parent_AutoBudget():
                     total_additional_je = %s,
                     used_percent = %s
                 WHERE name = %s
-            """, (total_used, total_balance, pool_used,pool_balance, po_amount, pi_amount,pe_amount,jv_amount,used_per ,  budget_name))      
+            """, (total_used, total_balance, pool_total, pool_used, pool_balance, po_amount, pi_amount, pe_amount, jv_amount,used_per, budget_name))      
             frappe.db.commit()
             updated_count += 1
             #logging.error(f"****** update count :  {updated_count} ")

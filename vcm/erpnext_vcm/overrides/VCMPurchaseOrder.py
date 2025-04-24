@@ -86,7 +86,7 @@ class VCMPurchaseOrder(PurchaseOrder):
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
                     #logging.debug(f"VCM PO on_Submit-2 calling update_vcm_po_budget_usage")
-                    update_vcm_po_budget_usage(self)             
+                    update_vcm_po_budget_usage(self, True)             
                     
         
 
@@ -98,7 +98,7 @@ class VCMPurchaseOrder(PurchaseOrder):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_po_budget_usage(self) 
+                    update_vcm_po_budget_usage(self,False) 
                     #logging.debug(f"VCM PO on_cancell-2 created log {po_amount}")
         
     
