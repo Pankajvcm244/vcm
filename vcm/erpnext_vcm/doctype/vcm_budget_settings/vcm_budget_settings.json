@@ -47,7 +47,6 @@
    "reqd": 1
   },
   {
-   "default": "25-26",
    "fieldname": "financial_year",
    "fieldtype": "Link",
    "label": "Financial Year",
@@ -75,7 +74,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-04-03 14:36:03.275805",
+ "modified": "2025-04-24 08:12:04.223511",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget Settings",
