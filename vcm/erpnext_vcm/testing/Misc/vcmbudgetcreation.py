@@ -16,8 +16,9 @@ logging.basicConfig(level=logging.DEBUG)
 def add_vcmbudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
-    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-1.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YFH-Noida.xlsx"
+    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"  # Change as needed
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YatraBudget240425.xlsx"
+    #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Test1.xlsx"
 
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -31,7 +32,7 @@ def add_vcmbudget():
     df = df.dropna(how="all")
 
     # Validate columns
-    required_columns = {"Company", "COST CENTRE", "BUDGET HEAD", "LOCATION", "TOTAL"}
+    required_columns = {"Company", "COST CENTRE", "Fiscal Year", "BUDGET HEAD", "LOCATION", "TOTAL"}
     if not required_columns.issubset(df.columns):
         frappe.throw("Missing required columns in the Excel file.")
         return
@@ -52,13 +53,13 @@ def add_vcmbudget():
         budget_head = row.get("BUDGET HEAD")
         location = row.get("LOCATION")
         total = row.get("TOTAL")
+        fiscal_year = row.get("Fiscal Year")
         
         # Check if cost center exists 
         if not frappe.db.exists("Cost Center", cost_center):
             print(f"Error: Cost Center {cost_center} does not exist in the system.")
             not_a_costcenter += 1
             continue
-
         # Check if budget center exists 
         if not frappe.db.exists("Budget Head", budget_head):
             print(f"Error: Budget Head {budget_head} does not exist in the system.")
@@ -77,7 +78,7 @@ def add_vcmbudget():
                 if existing_child:
                     # Update the existing budget head's amount
                     existing_child.original_amount = total
-                    existing_child.proposed_by = "Admin Upload"
+                    existing_child.proposed_by = "ERP Upload"
                     #print(f"Updated Budget Head total {total}, {budget_head} for Cost Center {cost_center}.")
                 else:
                     # Append a new budget head entry
@@ -87,12 +88,10 @@ def add_vcmbudget():
                         "proposed_by": "Admin Upload"
                     })
                     #print(f"Added Budget Head {budget_head} to Cost Center {cost_center}.")
-
                 # Save the updated document
                 budget_doc.save()
                 frappe.db.commit()
                 updated_count += 1
-
             else:
                 # Create a new VCM Budget document with a child table
                 new_budget = frappe.get_doc({
@@ -100,22 +99,18 @@ def add_vcmbudget():
                     "company": company_name,
                     "cost_center": cost_center,
                     "location": location,
-                    "fiscal_year": "2025-2026",  # Consider fetching dynamically
+                    "fiscal_year": fiscal_year,  
                     "budget_items": [{
                         "budget_head": budget_head,
                         "original_amount": total,
                         "proposed_by": "Admin Upload"
-                    }],
-            
+                    }],            
                 })
-
                 new_budget.insert(ignore_permissions=True)
                 frappe.db.commit()
                 added_count += 1
-                #print(f"Created new VCM Budget for Cost Center {cost_center}.")
-
+                print(f"Created new VCM Budget for Cost Center {cost_center}.")
         except Exception as e:
             print(f"Error processing {cost_center} - {budget_head}: {str(e)}")
             error += 1
-
     print(f"VCM Budget added: {added_count}, Updated: {updated_count}, Errors: {error}, Missing Cost Centers: {not_a_costcenter}, Missing Budget Heads: {not_a_budgethead}")

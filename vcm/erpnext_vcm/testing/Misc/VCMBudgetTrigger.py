@@ -105,7 +105,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
 
     if budget_updated_flag == True:
         # If the budget head does not match, log a message
-        logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")  
+        logging.debug(f"******* PO Budget head mismatch: NOT FOUND {vcm_budget_head}, {vcm_cost_center}, {vcm_company}, {vcm_location}, {fiscal_year}")  
     # Save and commit changes    
     # budget_doc.save(ignore_permissions=True)
     # frappe.db.commit()    
@@ -231,7 +231,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
             break   
     if budget_updated_flag:
         # If the budget head does not match, log a message
-        logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")
+        logging.debug(f"******* PI Budget head mismatch: NOT FOUND {vcm_budget_head}, {vcm_cost_center}, {vcm_company}, {vcm_location}, {fiscal_year}")  
     # budget_doc.save(ignore_permissions=True)
     # frappe.db.commit()    
     return True
@@ -354,7 +354,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
             break
 
     if budget_updated_flag:
-        logging.debug(f"*******Budget head mismatch: NOT FOUND {vcm_budget_head}")
+        logging.debug(f"******* PE Budget head mismatch: NOT FOUND {vcm_budget_head}, {vcm_cost_center}, {vcm_company}, {vcm_location}, {fiscal_year}")  
     # budget_doc.save(ignore_permissions=True)
     # frappe.db.commit()
     return True
@@ -424,11 +424,9 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
             OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
         )
     """)
-    condition_string = " AND ".join(conditions) 
-
+    condition_string = " AND ".join(conditions)
     selected_table = "tabJournal Entry"
-    #amount_field = "total_debit"  # or use `base_paid_amount` for consistency
-      
+    #amount_field = "total_debit"  # or use `base_paid_amount` for consistency      
     query = f"""
                 SELECT
                     {alias}.name,                    
@@ -446,9 +444,8 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
             """
     result = frappe.db.sql(query, filters, as_dict=True)
     #logging.debug(f"Payment Entry usage result: {result}")    
-    total_jv_amount = result[0].get("net_budget_change", 0) if result else 0
+    total_jv_amount = result[0].get("net_budget_change", 0) or 0 if result else 0
     #logging.debug(f"Total paid amount for JV: {total_jv_amount}, Budget Head: {vcm_budget_head}")
-
     for budget_item in budget_doc.get("budget_items") or []:
         if budget_item.budget_head == vcm_budget_head:
             budget_updated_flag = False
@@ -473,7 +470,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
             frappe.db.commit()
             break
     if budget_updated_flag:
-        logging.debug(f"*******Budget head mismatch JV: NOT FOUND {vcm_budget_head}")
+        logging.debug(f"******* JV Budget head mismatch: NOT FOUND {vcm_budget_head}, {vcm_cost_center}, {vcm_company}, {vcm_location}, {fiscal_year}")  
     # budget_doc.save(ignore_permissions=True)
     # frappe.db.commit()
     return True
