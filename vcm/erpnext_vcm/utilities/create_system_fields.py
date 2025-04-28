@@ -5,15 +5,24 @@ logging.basicConfig(level=logging.DEBUG)
 
 def get_system_fields():
     custom_fields = {
-        "Stock Entry": [
+
+         "Stock Entry": [
             dict(
-                fieldname="material_recipient",
-                label="Material Recipient",
-                fieldtype="Link",
-                options="User",
-                insert_after="stock_entry_type",
+                fieldname="vcm_remarks",
+                label="VCM Remarks",
+                fieldtype="Data",
+                insert_after="material_recipient",
             )
         ]
+        # "Stock Entry": [
+        #     dict(
+        #         fieldname="material_recipient",
+        #         label="Material Recipient",
+        #         fieldtype="Link",
+        #         options="User",
+        #         insert_after="stock_entry_type",
+        #     )
+        # ]
         # "Item": [
         #     dict(
         #         fieldname="vcm_item_creation_request",

@@ -8,6 +8,9 @@ import frappe
 from frappe import _
 from frappe.query_builder.functions import Coalesce, Sum
 from frappe.utils import cint, date_diff, flt, getdate
+from pypika.functions import Sum, Coalesce, Count
+import frappe
+
 
 
 def execute(filters=None):
@@ -34,52 +37,70 @@ def validate_filters(filters):
 		frappe.throw(_("To Date cannot be before From Date."))
 
 
+
 def get_data(filters):
-	mr = frappe.qb.DocType("Material Request")
-	mr_item = frappe.qb.DocType("Material Request Item")
+    mr = frappe.qb.DocType("Material Request")
+    mr_item = frappe.qb.DocType("Material Request Item")
+    po_item = frappe.qb.DocType("Purchase Order Item")  # Linked PO items
 
-	query = (
-		frappe.qb.from_(mr)
-		.join(mr_item)
-		.on(mr_item.parent == mr.name)
-		.select(
-			mr.name.as_("material_request"),
-			mr.transaction_date.as_("date"),
-			mr.owner.as_("mrrequestor"),
-			mr.set_warehouse.as_("warehouse"),
-			mr.department.as_("mrdepartment"),
-			mr.purpose.as_("purpose"),
-			mr_item.schedule_date.as_("required_date"),
-			mr_item.item_code.as_("item_code"),
-			mr_item.custom_vcm_remark.as_("custom_vcm_remarks"),
-			Sum(Coalesce(mr_item.qty, 0)).as_("qty"),
-			Sum(Coalesce(mr_item.stock_qty, 0)).as_("stock_qty"),
-			Coalesce(mr_item.uom, "").as_("uom"),
-			Coalesce(mr_item.stock_uom, "").as_("stock_uom"),
-			Sum(Coalesce(mr_item.ordered_qty, 0)).as_("ordered_qty"),
-			Sum(Coalesce(mr_item.received_qty, 0)).as_("received_qty"),
-			(Sum(Coalesce(mr_item.stock_qty, 0)) - Sum(Coalesce(mr_item.received_qty, 0))).as_(
-				"qty_to_receive"
-			),
-			Sum(Coalesce(mr_item.received_qty, 0)).as_("received_qty"),
-			(Sum(Coalesce(mr_item.stock_qty, 0)) - Sum(Coalesce(mr_item.ordered_qty, 0))).as_("qty_to_order"),
-			mr_item.item_name,
-			mr_item.description,
-			mr.company,
-		)
-		.where(
-			(mr.material_request_type == "Purchase")
-			& (mr.docstatus == 1)
-			& (mr.status != "Stopped")
-			& (mr.per_received < 100)
-		)
-	)
+    query = (
+        frappe.qb.from_(mr)
+        .join(mr_item)
+        .on(mr_item.parent == mr.name)
+        .left_join(po_item)
+        .on(
+            (po_item.material_request == mr.name)
+            & (po_item.material_request_item == mr_item.name)
+        )
+        .select(
+            mr.name.as_("material_request"),
+            mr.transaction_date.as_("date"),
+            mr.owner.as_("mrrequestor"),
+            mr.set_warehouse.as_("warehouse"),
+            mr.department.as_("mrdepartment"),
+            mr.purpose.as_("purpose"),
+            mr_item.schedule_date.as_("required_date"),
+            mr_item.item_code.as_("item_code"),
+            mr_item.custom_vcm_remark.as_("custom_vcm_remarks"),
+            Sum(Coalesce(mr_item.qty, 0)).as_("qty"),
+            Sum(Coalesce(mr_item.stock_qty, 0)).as_("stock_qty"),
+            Coalesce(mr_item.uom, "").as_("uom"),
+            Coalesce(mr_item.stock_uom, "").as_("stock_uom"),
+            Sum(Coalesce(mr_item.ordered_qty, 0)).as_("ordered_qty"),
+            Sum(Coalesce(mr_item.received_qty, 0)).as_("received_qty"),
+            (Sum(Coalesce(mr_item.stock_qty, 0)) - Sum(Coalesce(mr_item.received_qty, 0))).as_("qty_to_receive"),
+            (Sum(Coalesce(mr_item.stock_qty, 0)) - Sum(Coalesce(mr_item.ordered_qty, 0))).as_("qty_to_order"),
+            mr_item.item_name,
+            mr_item.description,
+            mr.company,
+            Count("DISTINCT " + po_item.parent).as_("po_count")  # Count of linked POs
+        )
+        .where(
+            (mr.material_request_type == "Purchase")
+            & (mr.docstatus == 1)
+            & (mr.status != "Stopped")
+            & (mr.per_received < 100)
+        )
+    )
 
-	query = get_conditions(filters, query, mr, mr_item)  # add conditional conditions
+    query = get_conditions(filters, query, mr, mr_item)  # Apply filters
+    query = query.groupby(mr.name, mr_item.item_code).orderby(mr.transaction_date, mr_item.schedule_date)
 
-	query = query.groupby(mr.name, mr_item.item_code).orderby(mr.transaction_date, mr.schedule_date)
-	data = query.run(as_dict=True)
-	return data
+    data = query.run(as_dict=True)
+
+    # Add comma-separated PO names  (simulate GroupConcat)
+    for row in data:
+        po_ids = frappe.db.get_all(
+            "Purchase Order Item",
+            filters={
+                "material_request": row["material_request"],
+                "item_code": row["item_code"]
+            },
+            fields=["DISTINCT parent"]
+        )
+        row["po_ids"] = ", ".join(d["parent"] for d in po_ids)
+
+    return data
 
 
 def get_conditions(filters, query, mr, mr_item):
@@ -230,6 +251,7 @@ def get_columns(filters):
 					"fieldtype": "Link",
 					"width": 140,
 				},
+				
 				{
 					"label": _("Item Code"),
 					"fieldname": "item_code",
@@ -306,8 +328,13 @@ def get_columns(filters):
 				"options": "Company",
 				"width": 100,
 			},
+			{
+				"label": _("Linked PO(s)"),
+				"fieldname": "po_ids",
+				"fieldtype": "Data",
+				"width": 200,
+			},
 		]
 	)
 
 	return columns
-
