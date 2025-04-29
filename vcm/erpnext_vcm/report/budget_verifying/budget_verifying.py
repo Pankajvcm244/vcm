@@ -81,8 +81,6 @@ def get_data(filters):
             conditions.append(f"{child_alias}.location = %(location)s")
         if filters.get("budget_head"):
             conditions.append(f"{child_alias}.budget_head = %(budget_head)s")
-        if filters.get("fiscal_year"):
-            conditions.append(f"{child_alias}.fiscal_year = %(fiscal_year)s")
         if filters.get("company"):
             conditions.append(f"{alias}.company = %(company)s")        
         if filters.get("from_date") and filters.get("to_date"):
@@ -99,8 +97,6 @@ def get_data(filters):
             conditions.append(f"{alias}.budget_head = %(budget_head)s")
         if filters.get("company"):
             conditions.append(f"{alias}.company = %(company)s")
-        if filters.get("fiscal_year"):
-            conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
         if filters.get("from_date") and filters.get("to_date"):
             conditions.append(f"{alias}.{date_field} BETWEEN %(from_date)s AND %(to_date)s")
 
