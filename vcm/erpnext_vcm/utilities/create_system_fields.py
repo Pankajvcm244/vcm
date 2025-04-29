@@ -6,14 +6,14 @@ logging.basicConfig(level=logging.DEBUG)
 def get_system_fields():
     custom_fields = {
 
-         "Stock Entry": [
-            dict(
-                fieldname="vcm_remarks",
-                label="VCM Remarks",
-                fieldtype="Data",
-                insert_after="material_recipient",
-            )
-        ]
+        #  "Stock Entry": [
+        #     dict(
+        #         fieldname="vcm_remarks",
+        #         label="VCM Remarks",
+        #         fieldtype="Data",
+        #         insert_after="material_recipient",
+        #     )
+        # ]
         # "Stock Entry": [
         #     dict(
         #         fieldname="material_recipient",

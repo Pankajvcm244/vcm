@@ -2,8 +2,6 @@ import frappe
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-
-
 def execute(filters=None):
     if not filters:
         filters = {}
@@ -21,6 +19,8 @@ def get_columns(filters):
         {"label": "Cost Center", "fieldname": "cost_center", "fieldtype": "Link", "options": "Cost Center", "width": 150},
         {"label": "Location", "fieldname": "location", "fieldtype": "Data", "width": 75},
         {"label": "Budget Head", "fieldname": "budget_head", "fieldtype": "Data", "width": 150},
+         {"label": "Fiscal Year", "fieldname": "fiscal_year", "fieldtype": "Data", "width": 150},
+
     ]
     if document_type == "Purchase Invoice":
         columns.append({"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100})
@@ -73,16 +73,18 @@ def get_data(filters):
     # Adjust filters based on doctype structure
     if use_child_fields:
         child_alias = "jea"
-        if filters.get("supplier"):
-            conditions.append(f"{child_alias}.party = %(supplier)s")
+        # if filters.get("supplier"):
+        #     conditions.append(f"{child_alias}.party = %(supplier)s")
         if filters.get("cost_center"):
             conditions.append(f"{child_alias}.cost_center = %(cost_center)s")
         if filters.get("location"):
             conditions.append(f"{child_alias}.location = %(location)s")
         if filters.get("budget_head"):
             conditions.append(f"{child_alias}.budget_head = %(budget_head)s")
+        if filters.get("fiscal_year"):
+            conditions.append(f"{child_alias}.fiscal_year = %(fiscal_year)s")
         if filters.get("company"):
-            conditions.append(f"{alias}.company = %(company)s")
+            conditions.append(f"{alias}.company = %(company)s")        
         if filters.get("from_date") and filters.get("to_date"):
             conditions.append(f"{alias}.{date_field} BETWEEN %(from_date)s AND %(to_date)s")
         conditions.append("acc.root_type = 'Expense'")
@@ -97,6 +99,8 @@ def get_data(filters):
             conditions.append(f"{alias}.budget_head = %(budget_head)s")
         if filters.get("company"):
             conditions.append(f"{alias}.company = %(company)s")
+        if filters.get("fiscal_year"):
+            conditions.append(f"{alias}.fiscal_year = %(fiscal_year)s")
         if filters.get("from_date") and filters.get("to_date"):
             conditions.append(f"{alias}.{date_field} BETWEEN %(from_date)s AND %(to_date)s")
 
@@ -118,6 +122,7 @@ def get_data(filters):
                 {alias}.location,
                 {alias}.company,
                 {alias}.budget_head,
+                {alias}.fiscal_year,
                 CASE
                     WHEN pii.purchase_order IS NOT NULL THEN 'Yes'
                     ELSE 'No'
@@ -131,28 +136,28 @@ def get_data(filters):
 
     elif document_type == "Journal Entry":
         query = f"""
-            SELECT
-                {alias}.name,
-                jea.party AS supplier,
-                {alias}.{date_field} AS date,
-                {alias}.{amount_field} AS total_amount,
-                CASE 
-                    WHEN jea.debit > 0 THEN 'Debit'
-                    WHEN jea.credit > 0 THEN 'Credit'
-                    ELSE 'Neutral'
-                END AS entry_type,
-                jea.account,
-                jea.cost_center,
-                jea.location,
-                {alias}.company,
-                jea.budget_head,
-                acc.root_type AS root_type
-            FROM `tabJournal Entry` {alias}
-            LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
-            LEFT JOIN `tabAccount` acc ON acc.name = jea.account
-            WHERE {condition_string}
-        """
-
+                SELECT
+                    {alias}.name,
+                    jea.party AS supplier, 
+                    {alias}.{date_field} AS date,                   
+                    SUM(jea.debit - jea.credit) AS net_budget_change,
+                    CASE 
+                        WHEN SUM(jea.debit) > SUM(jea.credit) THEN 'Debit'
+                        WHEN SUM(jea.credit) > SUM(jea.debit) THEN 'Credit'
+                        ELSE 'Neutral'
+                    END AS entry_type, 
+                    jea.account,
+                    jea.cost_center,
+                    jea.location,
+                    jea.fiscal_year,
+                    {alias}.company,
+                    jea.budget_head,           
+                    acc.root_type AS root_type
+                FROM `tabJournal Entry` {alias}
+                LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+                LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+                WHERE {condition_string}                
+            """
     elif document_type == "Payment Entry":
         query = f"""
             SELECT
@@ -164,6 +169,7 @@ def get_data(filters):
                 {alias}.location,
                 {alias}.company,
                 {alias}.budget_head,
+                {alias}.fiscal_year,
                 CASE
                     WHEN COUNT(DISTINCT per.reference_name) > 0 THEN 'Yes'
                     ELSE 'No'
@@ -191,6 +197,7 @@ def get_data(filters):
             {alias}.location,
             {alias}.company,
             {alias}.budget_head
+            {alias}.fiscal_year
         """
 
         query = f"""
