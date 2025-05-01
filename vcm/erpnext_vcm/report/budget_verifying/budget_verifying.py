@@ -152,7 +152,8 @@ def get_data(filters):
                 FROM `tabJournal Entry` {alias}
                 LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
                 LEFT JOIN `tabAccount` acc ON acc.name = jea.account
-                WHERE {condition_string}                
+                WHERE {condition_string}
+                GROUP BY {alias}.name, jea.party, jea.account                
             """
     elif document_type == "Payment Entry":
         query = f"""
@@ -192,7 +193,7 @@ def get_data(filters):
             {alias}.cost_center,
             {alias}.location,
             {alias}.company,
-            {alias}.budget_head
+            {alias}.budget_head,
             {alias}.fiscal_year
         """
 
