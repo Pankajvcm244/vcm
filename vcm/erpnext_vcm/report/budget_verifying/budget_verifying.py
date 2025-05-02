@@ -17,6 +17,7 @@ def get_columns(filters):
         {"label": "ID", "fieldname": "name", "fieldtype": "Link", "options": document_type, "width": 150},
         {"label": "Company", "fieldname": "company", "fieldtype": "Link", "options": "Company", "width": 150},
         {"label": "Cost Center", "fieldname": "cost_center", "fieldtype": "Link", "options": "Cost Center", "width": 150},
+        {"label": "Budget Applicable", "fieldname": "vcm_budget_applicable", "fieldtype": "Link", "options": "Cost Center", "width": 100},
         {"label": "Location", "fieldname": "location", "fieldtype": "Data", "width": 75},
         {"label": "Budget Head", "fieldname": "budget_head", "fieldtype": "Data", "width": 150},
          {"label": "Fiscal Year", "fieldname": "fiscal_year", "fieldtype": "Data", "width": 150},
@@ -119,6 +120,7 @@ def get_data(filters):
                 {alias}.company,
                 {alias}.budget_head,
                 {alias}.fiscal_year,
+                cc.custom_vcm_budget_applicable AS vcm_budget_applicable,
                 CASE
                     WHEN pii.purchase_order IS NOT NULL THEN 'Yes'
                     ELSE 'No'
@@ -126,6 +128,7 @@ def get_data(filters):
                 GROUP_CONCAT(DISTINCT pii.purchase_order SEPARATOR ', ') AS po_number
             FROM `{selected_table}` {alias}
             LEFT JOIN `tabPurchase Invoice Item` pii ON pii.parent = {alias}.name
+            LEFT JOIN `tabCost Center` cc ON cc.name = {alias}.cost_center
             WHERE {condition_string}
             GROUP BY {alias}.name
         """
@@ -144,6 +147,7 @@ def get_data(filters):
                     END AS entry_type, 
                     jea.account,
                     jea.cost_center,
+                    cc.custom_vcm_budget_applicable AS vcm_budget_applicable,
                     jea.location,
                     jea.fiscal_year,
                     {alias}.company,
@@ -152,6 +156,7 @@ def get_data(filters):
                 FROM `tabJournal Entry` {alias}
                 LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
                 LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+                LEFT JOIN `tabCost Center` cc ON cc.name = jea.cost_center
                 WHERE {condition_string}
                 GROUP BY {alias}.name, jea.party, jea.account                
             """
@@ -163,6 +168,7 @@ def get_data(filters):
                 {alias}.{date_field} AS date,
                 {alias}.{amount_field} AS total_amount,
                 {alias}.cost_center,
+                cc.custom_vcm_budget_applicable AS vcm_budget_applicable,
                 {alias}.location,
                 {alias}.company,
                 {alias}.budget_head,
@@ -174,6 +180,7 @@ def get_data(filters):
                 GROUP_CONCAT(DISTINCT per.reference_name SEPARATOR ', ') AS linked_references
             FROM `tabPayment Entry` {alias}
             LEFT JOIN `tabPayment Entry Reference` per ON per.parent = {alias}.name
+            LEFT JOIN `tabCost Center` cc ON cc.name = {alias}.cost_center
             WHERE {condition_string}
             GROUP BY {alias}.name
         """
@@ -191,16 +198,18 @@ def get_data(filters):
 
         select_fields += f"""
             {alias}.cost_center,
+            cc.custom_vcm_budget_applicable AS vcm_budget_applicable,
             {alias}.location,
             {alias}.company,
             {alias}.budget_head,
-            {alias}.fiscal_year
+            {alias}.fiscal_year            
         """
 
         query = f"""
             SELECT
                 {select_fields}
-            FROM `{selected_table}` {alias}
+            FROM `{selected_table}` {alias}            
+            LEFT JOIN `tabCost Center` cc ON cc.name = {alias}.cost_center
             WHERE {condition_string}
         """
 
