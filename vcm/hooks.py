@@ -353,7 +353,7 @@ fixtures = [
                 "Payment Entry",
                 "Journal Entry",
                 "Customer",
-                # "Asset",
+                "Asset",
                 #"Supplier"
             ],],
         ],
