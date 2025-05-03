@@ -817,43 +817,169 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
 
 @frappe.whitelist()          
 def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budget_head, vcm_company):
-    return False
+    #return False
+    fiscal_start = "2025-04-01"  # Hardcoded fiscal year start
+    alias = "je"
+    filters = {} 
     """
     Adjusts the VCM budget based on Payment Reconciliation for multiple invoices and payments.
     Explicitly fetches and processes related Payment Entries & Purchase Invoices.
     """
-    #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation},{vcm_cost_center},{vcm_budget_head}")
-    vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-    if vcm_budget_settings.payment_reconciliation == "Yes":
-        #logging.debug(f"in adjust_vcm_budget_reconciliation 1 {payment_details}")       
-        # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
-        budget_name = frappe.db.get_value(
-            "VCM Budget", 
-            {"company": vcm_company,"location":payment_details.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":vcm_cost_center,"docstatus":1},
-            "name")
-        #logging.debug(f"in adjust_vcm_budget_reconciliation Budget name {budget_name}") 
-        # Fetch budget settings based on Cost Center or Project
-        if frappe.db.exists("VCM Budget", budget_name):
-            budget_doc = frappe.get_doc("VCM Budget", budget_name)
-        else:
-            #If there is no busget for this cost center then just move on
-            logging.debug(f"in adjust_vcm_budget_reconciliation  Budget not found error {budget_name}")
-            return True
-        budget_updated_flag = True
-        for budget_item in budget_doc.get("budget_items") or []: 
-                #logging.debug(f"vcm_budget_reconc 2-2 {payment_details.allocated_amount},{vcm_cost_center}, {budget_item.budget_head}, {vcm_budget_head},{payment_details.budget_head}")           
-                #if budget_item.budget_head == payment_details.budget_head:
-                if budget_item.budget_head == vcm_budget_head:
-                    budget_updated_flag = False                
-                    budget_item.unpaid_purchase_invoice -= payment_details.allocated_amount
-                    budget_item.used_budget -= payment_details.allocated_amount
-                    budget_item.balance_budget += payment_details.allocated_amount                
-                    #logging.debug(f"vcm_budget_reconc 2-2, {budget_item.unpaid_purchase_invoice},{budget_item.used_budget},{budget_item.balance_budget}")                           
-                    break 
-        # Save and commit changes
-        budget_doc.save(ignore_permissions=True)
-        frappe.db.commit()
-        return True    
+    logging.debug(f"in adjust_vcm_budget_reconciliation 1 {payment_details}") 
+    budget_name = frappe.db.get_value(
+        "VCM Budget", 
+        {
+            "company": vcm_company,
+            "location": payment_details.location,
+            "fiscal_year": pe_doc.fiscal_year,
+            "cost_center": vcm_cost_center,
+            "docstatus": 1
+        },
+        "name"
+    )
+    if frappe.db.exists("VCM Budget", budget_name):
+        budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    else:
+        # If there is no budget for this cost center then just move on
+        logging.debug(f"in update_vcm_JV_budget_usage: No budget exists for {budget_name}")
+        return 0 
+    filters = {
+        "from_date": fiscal_start,
+        "company": vcm_company,
+        "cost_center": vcm_cost_center,
+        "fiscal_year":account.fiscal_year,
+        "location": payment_details.location,
+        "budget_head": account.budget_head,
+    }
+    # Compose condition string for query
+    conditions = [
+        f"{alias}.docstatus = 1",
+        f"{alias}.posting_date >= %(from_date)s",
+        f"{alias}.company = %(company)s",
+        f"jea.cost_center = %(cost_center)s",
+        f"jea.location = %(location)s",
+        f"jea.fiscal_year = %(fiscal_year)s",
+        f"jea.budget_head = %(budget_head)s",
+        "acc.root_type = 'Expense'",
+    ]
+    conditions.append("""
+        (
+            jea.reference_type IS NULL 
+            OR jea.reference_type NOT IN ('Purchase Order', 'Purchase Invoice')
+        )
+    """)
+    condition_string = " AND ".join(conditions) 
+    selected_table = "tabJournal Entry"            
+    
+    query = f"""
+        SELECT
+            {alias}.name,                    
+            SUM(jea.debit - jea.credit) AS net_budget_change,
+            CASE 
+                WHEN SUM(jea.debit) > SUM(jea.credit) THEN 'Debit'
+                WHEN SUM(jea.credit) > SUM(jea.debit) THEN 'Credit'
+                ELSE 'Neutral'
+            END AS entry_type,            
+            acc.root_type AS root_type
+        FROM `{selected_table}` {alias}
+        LEFT JOIN `tabJournal Entry Account` jea ON jea.parent = {alias}.name
+        LEFT JOIN `tabAccount` acc ON acc.name = jea.account
+        WHERE {condition_string}                
+    """
+    result = frappe.db.sql(query, filters, as_dict=True)
+    total_jv_amount = result[0].get("net_budget_change", 0) or 0 if result else 0
+    #logging.debug(f"Total paid amount for JV: {total_jv_amount}, {account.budget_head}")
+    # Update the budget item
+    for item in budget_doc.get("budget_items") or []:
+        if item.budget_head == account.budget_head:
+            item.additional_je = total_jv_amount
+            item.used_budget = (
+                (item.paid_payment_entry or 0)
+                + (item.unpaid_purchase_invoice or 0)
+                + (item.unpaid_purchase_order or 0)
+                + (item.additional_je or 0)
+            )
+            item.balance_budget = (
+                (item.current_budget or 0)
+                - (item.used_budget or 0)
+            )
+            frappe.db.sql("""
+            UPDATE `tabVCM Budget Child Table`
+            SET additional_je = %s,
+                used_budget = %s,
+                balance_budget = %s
+            WHERE name = %s
+            """, (total_jv_amount, item.used_budget, item.balance_budget,item.name))        
+            frappe.db.commit()            
+            break
+    # # Now update parent totals
+    #initialize these with base value
+    delta_amount = -(account.debit - account.credit)
+    #logging.debug(f"in JV updating parent-2 {delta_amount},  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}, {account.debit}")
+    budget_pool_used = budget_doc.pool_budget_used or 0
+    budget_pool_balance = budget_doc.pool_budget_balance or 0  
+    if is_pool_budget_head(account.budget_head):
+        budget_pool_used += delta_amount
+        budget_pool_balance -= delta_amount
+        #logging.debug(f"in JV updating parent-2-1  {budget_pool_used}, {budget_pool_balance}")
+    else:
+        # we need to do this so that in case of non-pool we initialize these values
+        budget_pool_used = budget_doc.pool_budget_used or 0
+        budget_pool_balance = budget_doc.pool_budget_balance or 0
+
+    budget_total_used = (budget_doc.total_used_amount or 0) + delta_amount
+    budget_total_balance = (budget_doc.total_balance_amount or 0) - delta_amount
+    budget_jv = (budget_doc.total_additional_je or 0) + delta_amount
+
+    percent = (budget_total_used / (budget_doc.total_amount + budget_doc.total_amended_amount )) * 100
+    used_percentage = percent or 0
+    #logging.debug(f"in JV updating parent-3  Pused {budget_doc.pool_budget_used}, Pbal:  {budget_doc.pool_budget_balance}, Tbal:{budget_doc.total_balance_amount},TUsed: {budget_doc.total_used_amount}, {account.debit}")
+    #logging.debug(f"in JV updating parent-2  {budget_pool_used}, {budget_pool_balance}, {budget_total_balance},{budget_total_used},{budget_jv}")
+    frappe.db.sql("""
+                UPDATE `tabVCM Budget`
+                SET total_used_amount = %s,
+                    total_balance_amount = %s,
+                    pool_budget_used = %s,
+                    pool_budget_balance = %s,
+                    total_additional_je = %s,
+                    used_percent = %s
+                WHERE name = %s
+            """, (budget_total_used, budget_total_balance, budget_pool_used, budget_pool_balance, budget_jv, used_percentage, budget_doc.name))      
+    frappe.db.commit()
+
+
+    # #logging.debug(f"VCM adjust_vcm_budget_reconciliation {vcm_budget_settings.payment_reconciliation},{vcm_cost_center},{vcm_budget_head}")
+    # vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
+    # if vcm_budget_settings.payment_reconciliation == "Yes":
+              
+    #     # Fetch VCM Budget document name for a given company, location, fiscal year, and cost center where Docstatus = 1
+    #     budget_name = frappe.db.get_value(
+    #         "VCM Budget", 
+    #         {"company": vcm_company,"location":payment_details.location,"fiscal_year":vcm_budget_settings.financial_year,"cost_center":vcm_cost_center,"docstatus":1},
+    #         "name")
+    #     #logging.debug(f"in adjust_vcm_budget_reconciliation Budget name {budget_name}") 
+    #     # Fetch budget settings based on Cost Center or Project
+    #     if frappe.db.exists("VCM Budget", budget_name):
+    #         budget_doc = frappe.get_doc("VCM Budget", budget_name)
+    #     else:
+    #         #If there is no busget for this cost center then just move on
+    #         logging.debug(f"in adjust_vcm_budget_reconciliation  Budget not found error {budget_name}")
+    #         return True
+    #     budget_updated_flag = True
+    #     for budget_item in budget_doc.get("budget_items") or []: 
+    #             #logging.debug(f"vcm_budget_reconc 2-2 {payment_details.allocated_amount},{vcm_cost_center}, {budget_item.budget_head}, {vcm_budget_head},{payment_details.budget_head}")           
+    #             #if budget_item.budget_head == payment_details.budget_head:
+    #             if budget_item.budget_head == vcm_budget_head:
+    #                 budget_updated_flag = False                
+    #                 budget_item.unpaid_purchase_invoice -= payment_details.allocated_amount
+    #                 budget_item.used_budget -= payment_details.allocated_amount
+    #                 budget_item.balance_budget += payment_details.allocated_amount                
+    #                 #logging.debug(f"vcm_budget_reconc 2-2, {budget_item.unpaid_purchase_invoice},{budget_item.used_budget},{budget_item.balance_budget}")                           
+    #                 break 
+    #     # Save and commit changes
+    #     budget_doc.save(ignore_permissions=True)
+    #     frappe.db.commit()
+    #     return True    
 
 @frappe.whitelist()
 def cancel_vcm_PI_reconciliation(purchase_invoice):

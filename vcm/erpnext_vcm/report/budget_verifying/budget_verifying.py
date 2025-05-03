@@ -31,7 +31,8 @@ def get_columns(filters):
         columns.append({"label": "Linked References", "fieldname": "linked_references", "fieldtype": "Data", "width": 200})
     elif document_type == "Journal Entry":
         columns.append({"label": "Root Type", "fieldname": "root_type", "fieldtype": "Data", "width": 100})
-        columns.append({"label": "Root Type", "fieldname": "entry_type", "fieldtype": "Data", "width": 100})     
+        columns.append({"label": "Root Type", "fieldname": "entry_type", "fieldtype": "Data", "width": 100}) 
+        columns.append({"label": "JV A/C", "fieldname": "jv_account", "fieldtype": "Data", "width": 100})     
     columns.append({"label": "Transaction Date", "fieldname": "date", "fieldtype": "Date", "width": 120} )
     columns.append({"label": "Total Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 150})
     columns.append({"label": "Supplier", "fieldname": "supplier", "fieldtype": "Link", "options": "Supplier", "width": 150})
@@ -139,13 +140,17 @@ def get_data(filters):
                     {alias}.name,
                     jea.party AS supplier, 
                     {alias}.{date_field} AS date,                   
-                    SUM(jea.debit - jea.credit) AS net_budget_change,
+                    SUM(CASE 
+                        WHEN jea.debit > 0 THEN jea.debit
+                        WHEN jea.credit > 0 THEN -jea.credit
+                        ELSE 0
+                    END) AS total_amount,
                     CASE 
                         WHEN SUM(jea.debit) > SUM(jea.credit) THEN 'Debit'
                         WHEN SUM(jea.credit) > SUM(jea.debit) THEN 'Credit'
                         ELSE 'Neutral'
                     END AS entry_type, 
-                    jea.account,
+                    jea.account AS jv_account,
                     jea.cost_center,
                     cc.custom_vcm_budget_applicable AS vcm_budget_applicable,
                     jea.location,
@@ -158,8 +163,19 @@ def get_data(filters):
                 LEFT JOIN `tabAccount` acc ON acc.name = jea.account
                 LEFT JOIN `tabCost Center` cc ON cc.name = jea.cost_center
                 WHERE {condition_string}
-                GROUP BY {alias}.name, jea.party, jea.account                
-            """
+                GROUP BY 
+                    {alias}.name,
+                    jea.party,
+                    jea.account,
+                    jea.cost_center,
+                    cc.custom_vcm_budget_applicable,
+                    jea.location,
+                    jea.fiscal_year,
+                    {alias}.company,
+                    jea.budget_head,
+                    acc.root_type,
+                    {alias}.{date_field}                
+                """
     elif document_type == "Payment Entry":
         query = f"""
             SELECT
