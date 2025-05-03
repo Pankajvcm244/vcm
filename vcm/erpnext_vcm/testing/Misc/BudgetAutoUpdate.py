@@ -20,6 +20,7 @@ def update_PO_AutoBudget():
     #Updated 4028, 0 PO.\n\n Errors: [].
     #"Updated 4086, 0 PO.\n\n Errors: []." 17/4/2025
     # Updated 4473, 0 PO.\n\n Errors: []." 25/4/2025
+    #"Updated 4473, 0 PO.\n\n Errors: []."  2/5/2025 finalerp-5
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
@@ -76,6 +77,7 @@ def update_PI_AutoBudget():
     #Updated 4028, 0 PO.\n\n Errors: [].
     #"Updated 4086, 0 PO.\n\n Errors: []." 17/4/2025
     # Updated 4473, 0 PI.\n\n Errors: []." 25/4/2025
+    #"Updated 4473, 0 PI.\n\n Errors: []." 2/5/2025 finalerp-5
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
@@ -134,7 +136,7 @@ def update_PE_AutoBudget():
     #"Updated PE 4086, Skipped 0.\n\n Errors: []."
     #"Updated PE 4086, Skipped 0.\n\n Errors: []." 17/4/2024
     #"Updated PE 4473, Skipped 0.\n\n Errors: []." 25/4/2025
-
+    # "Updated PE 4473, Skipped 0.\n\n Errors: []."  2/5/2025 finalerp-5
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
@@ -192,7 +194,7 @@ def update_JV_AutoBudget():
     #"Updated JV 4031, Skipped 0.\n\n Errors: []."
     #"Updated JV 4086, Skipped 0.\n\n Errors: []." 17/4/2025
     # "Updated JV 4473, Skipped 0.\n\n Errors: []." 25/4/2025
-    
+    # "Updated JV 4473, Skipped 0.\n\n Errors: []." 2/5/2025 finalerp-5
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
