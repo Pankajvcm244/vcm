@@ -15,6 +15,8 @@ from vcm.erpnext_vcm.testing.Misc.VCMBudgetTrigger import (
     update_PE_Budget,
     update_JV_Budget,
 )
+from vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget import is_pool_budget_head
+
 
 def update_PO_AutoBudget():
     #Updated 4028, 0 PO.\n\n Errors: [].
@@ -247,7 +249,7 @@ def update_JV_AutoBudget():
     #return f"Updated {updated_count} invoices.\n\n Errors: {errors}, {len(errors)}."
     return f"Updated JV {updated_count}, Skipped {skipped_count}.\n\n Errors: {errors}."
 
-def update_parent_AutoBudget():
+def update_parent_manual_AutoBudget():
     # bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
     # Path to Excel file (Store this in your private files folder)
     #bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_parent_AutoBudget
@@ -327,3 +329,63 @@ def update_parent_AutoBudget():
     # Return script execution summary
     #return f"Updated {updated_count} invoices.\n\n Errors: {errors}, {len(errors)}."
     return f"Updated {updated_count}, {skipped_count} PO.\n\n Errors: {errors}."
+
+def update_vcm_parent_AutoBudget():
+        # budgets = frappe.get_all("VCM Budget", pluck="name")
+        # for name in budgets:
+        name = "VCM Budget-2024-25-0001"
+        update_vcm_budget_totals(name)
+
+def update_vcm_budget_totals(budget_name):
+    doc = frappe.get_doc("VCM Budget", budget_name)
+    total_po = 0
+    total_pi = 0
+    total_pe = 0
+    total_je = 0
+    total_amount = 0
+    total_used = 0
+    total_balance = 0
+    total_budget = 0
+    total_amended = 0
+    total_pool_budget = 0
+    total_pool_used = 0
+    total_pool_balance = 0
+    total_used_percent = 0
+
+    for row in doc.budget_items:
+        total_po += row.unpaid_purchase_order or 0
+        total_pi += row.unpaid_purchase_invoice or 0
+        total_pe += row.paid_payment_entry or 0
+        total_je += row.additional_je or 0  
+
+        total_budget += row.original_budget or 0
+        total_amended += row.amended_till_now or 0
+        total_amount += row.original_amount or 0
+        total_balance += row.balance_budget or 0
+        total_used += row.used_budget or 0
+
+        if is_pool_budget_head(row.budget_head):
+            total_pool_budget += row.current_budget or 0
+            total_pool_used += row.used_budget or 0
+            total_pool_balance += row.balance_budget or 0         
+    
+    #percent is for total parent not childwise
+    percent = (total_used/ (total_amount + total_amended )) * 100;  
+    total_used_percent = percent or 0
+    logging.debug(f"Budget: %:{total_used_percent}, T: {total_amount}, A: {total_amended}, TB: {total_balance}, TU{total_used}, PO: {total_po}, PI: {total_pi}, PE: {total_pe}, JE: {total_je}, PB: {total_pool_budget}, PU: {total_pool_used}, PBL: {total_pool_balance} ")
+    # doc.db_set("total_unpaid_purchase_order", total_po)
+    # doc.db_set("total_unpaid_purchase_invoice", total_pi)
+    # doc.db_set("total_paid_payment_entry", total_pe)
+    # doc.db_set("total_additional_je", total_je)
+
+    # doc.db_set("total_amount", total_amount)
+    # doc.db_set("total_amended_amount", total_amended)
+    # doc.db_set("used_percent", total_used_percent)
+    # doc.db_set("total_balance_amount", total_balance)
+    # doc.db_set("total_used_amount", total_used)
+  
+    # doc.db_set("pool_budget_total", total_pool_budget)
+    # doc.db_set("pool_budget_used", total_pool_used)
+    # doc.db_set("pool_budget_balance", total_pool_balance) 
+
+    frappe.msgprint(f"Totals updated for {budget_name}")

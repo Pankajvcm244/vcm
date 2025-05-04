@@ -59,6 +59,7 @@ def get_data(filters):
             mr.set_warehouse.as_("warehouse"),
             mr.department.as_("mrdepartment"),
             mr.purpose.as_("purpose"),
+			mr.cost_center.as_("costcenter"),
             mr_item.schedule_date.as_("required_date"),
             mr_item.item_code.as_("item_code"),
             mr_item.custom_vcm_remark.as_("custom_vcm_remarks"),
@@ -206,13 +207,7 @@ def prepare_chart_data(item_data):
 
 def get_columns(filters):
 	columns = [
-		{
-			"label": _("Material Request"),
-			"fieldname": "material_request",
-			"fieldtype": "Link",
-			"options": "Material Request",
-			"width": 150,
-		},
+		{"label": _("Material Request"), "fieldname": "material_request", "fieldtype": "Link","options": "Material Request","width": 150,},
 		{"label": _("Date"), "fieldname": "date", "fieldtype": "Date", "width": 90},
 		{"label": _("Required By"), "fieldname": "required_date", "fieldtype": "Date", "width": 100},
 	]
@@ -220,6 +215,12 @@ def get_columns(filters):
 	if not filters.get("group_by_mr"):
 		columns.extend(
 			[
+				{
+					"label": _("Cost Center"),
+					"fieldname": "costcenter",
+					"fieldtype": "Data",
+					"width": 140,
+				},
 				{
 					"label": _("MR Department"),
 					"fieldname": "mrdepartment",
