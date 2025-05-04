@@ -34,7 +34,7 @@ def update_PO_Budget_new(company, location, fiscal_year, cost_center, budget_hea
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
         #If there is no budget for this cost center then just move on
-        logging.debug(f"in validate_vcm_po No budget exists  {budget_name}")
+        logging.debug(f"in validate_vcm_po No budget exists  {budget_name}, Cost Center {vcm_cost_center}, LOC {vcm_location}")
         return 0 
     filters = {
         "cost_center": vcm_cost_center,
@@ -157,7 +157,7 @@ def update_PI_Budget(company, location, fiscal_year, cost_center, budget_head):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
         #If there is no budget for this cost center then just move on
-        logging.debug(f"in validate_vcm_po No budget exists  {budget_name}")
+        logging.debug(f"in PI validate_vcm_po No budget exists  {budget_name}, Cost Center {vcm_cost_center}, LOC {vcm_location}")
         return 0 
     filters = {
         "cost_center": vcm_cost_center,
@@ -278,7 +278,7 @@ def update_PE_Budget(company, location, fiscal_year, cost_center, budget_head):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
         # If there is no budget for this cost center then just move on
-        logging.debug(f"in update_vcm_pe_budget_usage: No budget exists for {budget_name}")
+        logging.debug(f"in PE validate_vcm_po No budget exists  {budget_name}, Cost Center {vcm_cost_center}, LOC {vcm_location}")
         return 0 
 
     filters = {
@@ -396,7 +396,7 @@ def update_JV_Budget(company, location, fiscal_year, cost_center, budget_head):
         budget_doc = frappe.get_doc("VCM Budget", budget_name)
     else:
         # If there is no budget for this cost center then just move on
-        logging.debug(f"in update_vcm_pe_budget_usage: No budget exists for {budget_name}")
+        logging.debug(f"in JV validate_vcm_po No budget exists  {budget_name}, Cost Center {vcm_cost_center}, LOC {vcm_location}")
         return 0  
     filters = {
         "cost_center": vcm_cost_center,

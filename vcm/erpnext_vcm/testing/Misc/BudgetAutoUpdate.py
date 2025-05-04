@@ -26,7 +26,7 @@ def update_PO_AutoBudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-6.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YFH-Noida.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -83,7 +83,7 @@ def update_PI_AutoBudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-6.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YFH-Noida.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -142,7 +142,7 @@ def update_PE_AutoBudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-6.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YFH-Noida.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -200,7 +200,7 @@ def update_JV_AutoBudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-6.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YFH-Noida.xlsx"
     # Ensure file exists
     if not os.path.exists(file_path):
@@ -331,10 +331,14 @@ def update_parent_manual_AutoBudget():
     return f"Updated {updated_count}, {skipped_count} PO.\n\n Errors: {errors}."
 
 def update_vcm_parent_AutoBudget():
-        # budgets = frappe.get_all("VCM Budget", pluck="name")
-        # for name in budgets:
-        name = "VCM Budget-2024-25-0001"
-        update_vcm_budget_totals(name)
+        #bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_vcm_parent_AutoBudget
+        budgets = frappe.get_all("VCM Budget", pluck="name")
+        #name = "HKMV-2025-2026-VRN-YOGA FOR HAPPINESS - HKMV"
+        for name in budgets:
+            update_vcm_budget_totals(name)
+        #Budget: %:87.72692063492063, T: 315000.0, A: 0, TB: 38660.2, TU276339.8, PO: 231924.8, PI: 23940.0, PE: 20475.0, JE: 0, 
+        # PB: 315000.0, PU: 276339.8, PBL: 38660.2
+        
 
 def update_vcm_budget_totals(budget_name):
     doc = frappe.get_doc("VCM Budget", budget_name)
@@ -358,7 +362,7 @@ def update_vcm_budget_totals(budget_name):
         total_pe += row.paid_payment_entry or 0
         total_je += row.additional_je or 0  
 
-        total_budget += row.original_budget or 0
+        total_budget += row.original_amount or 0
         total_amended += row.amended_till_now or 0
         total_amount += row.original_amount or 0
         total_balance += row.balance_budget or 0
@@ -372,20 +376,20 @@ def update_vcm_budget_totals(budget_name):
     #percent is for total parent not childwise
     percent = (total_used/ (total_amount + total_amended )) * 100;  
     total_used_percent = percent or 0
-    logging.debug(f"Budget: %:{total_used_percent}, T: {total_amount}, A: {total_amended}, TB: {total_balance}, TU{total_used}, PO: {total_po}, PI: {total_pi}, PE: {total_pe}, JE: {total_je}, PB: {total_pool_budget}, PU: {total_pool_used}, PBL: {total_pool_balance} ")
-    # doc.db_set("total_unpaid_purchase_order", total_po)
-    # doc.db_set("total_unpaid_purchase_invoice", total_pi)
-    # doc.db_set("total_paid_payment_entry", total_pe)
-    # doc.db_set("total_additional_je", total_je)
+    logging.debug(f"Budget {budget_name}, Budget: %:{total_used_percent}, T: {total_amount}, Amend: {total_amended}, TB: {total_balance}, TU: {total_used}, PO: {total_po}, PI: {total_pi}, PE: {total_pe}, JE: {total_je}, PT: {total_pool_budget}, PU: {total_pool_used}, PBL: {total_pool_balance} ")
+    doc.db_set("total_unpaid_purchase_order", total_po)
+    doc.db_set("total_unpaid_purchase_invoice", total_pi)
+    doc.db_set("total_paid_payment_entry", total_pe)
+    doc.db_set("total_additional_je", total_je)
 
-    # doc.db_set("total_amount", total_amount)
-    # doc.db_set("total_amended_amount", total_amended)
-    # doc.db_set("used_percent", total_used_percent)
-    # doc.db_set("total_balance_amount", total_balance)
-    # doc.db_set("total_used_amount", total_used)
+    doc.db_set("total_amount", total_amount)
+    doc.db_set("total_amended_amount", total_amended)
+    doc.db_set("used_percent", total_used_percent)
+    doc.db_set("total_balance_amount", total_balance)
+    doc.db_set("total_used_amount", total_used)
   
-    # doc.db_set("pool_budget_total", total_pool_budget)
-    # doc.db_set("pool_budget_used", total_pool_used)
-    # doc.db_set("pool_budget_balance", total_pool_balance) 
+    doc.db_set("pool_budget_total", total_pool_budget)
+    doc.db_set("pool_budget_used", total_pool_used)
+    doc.db_set("pool_budget_balance", total_pool_balance) 
 
-    frappe.msgprint(f"Totals updated for {budget_name}")
+    #frappe.msgprint(f"Totals updated for {budget_name}")
