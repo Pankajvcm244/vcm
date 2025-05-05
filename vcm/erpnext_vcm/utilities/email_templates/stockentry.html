@@ -1,0 +1,147 @@
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Poppins:wght@400;600;800&display=swap");
+  
+    html * {
+      font-size: 1rem;
+      font-family: "Montserrat", sans-serif;
+      color: #000000;
+    }
+  
+    thead {
+      background-color: #e0e0e0;
+    }
+  
+    .highlight {
+      background-color: #18465d;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #f5d8d8;
+    }
+  
+    .subheading {
+      color: indigo;
+      padding-left: 5px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  
+    .details_column {
+      margin: 5px;
+      display: flex;
+      justify-content: start;
+      font-size: 1rem;
+    }
+  
+    .action_button {
+      border-radius: 2px;
+      display: inline-block;
+      font-family: Montserrat, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 8px 12px;
+      text-decoration: none;
+      width: 90%;
+    }
+  </style>
+  
+  <div class="clearfix"></div>
+  <div class="box">
+    <div class="grid-body">
+      <div class="rows text-left">
+        <div>
+          <div style="overflow-x: auto">
+            <table class="table table-bordered table-hover" style="table-layout: fixed; width: 100%">
+              <thead>
+                <tr>
+                  <th class="text-center">{{ _("Company") }}</th>
+                  <th>{{ _("Source Warehouse") }}</th>
+                  <th>{{ _("Target Warehouse") }}</th>
+                </tr>
+              </thead>
+              <tbody style="font-weight: 600">
+                <tr>
+                  <td class="text-center">{{ doc.company }}</td>
+                  <td>{{ doc.from_warehouse }}</td>
+                  <td>{{ doc.to_warehouse }}</td>
+                </tr>
+              </tbody>
+              <thead>
+                <tr>
+                  <th>{{ _("Number") }}</th>
+                  <th>{{ _("Status") }}</th>
+                  <th>{{ _("Cost Center") }}</th>
+                </tr>
+              </thead>
+              <tbody style="font-weight: 600">
+                <tr>
+                  <td>{{ doc.name }}</td>
+                  <td>{{ doc.workflow_state }}</td>
+                  <td>{{ doc.cost_center }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+        <p class="subheading">⚞ {{ _("Item Details") }}</p>
+        <div style="overflow-x: auto">
+          <table class="table table-bordered table-hover" style="table-layout: fixed; width: 100%">
+            <thead>
+              <tr>
+                <th class="text-left">{{ _("Item Code") }}</th>
+                <th class="text-left">{{ _("Item") }}</th>
+                <th>{{ _("Qty") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in doc.items %}
+              <tr>
+                <td class="text-left">{{ d.item_code }}</td>
+                <td class="text-left">{{ d.item_name }}</td>
+                <td>{{ d.qty }} {{ d.uom }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+  
+        <hr />
+  
+        <table class="table table-bordered table-hover" style="table-layout: fixed; width: 100%">
+          <thead>
+            <tr>
+              <th class="text-center">{{ _("Recommender") }}</th>
+              <th class="text-center">{{ _("First Approver") }}</th>
+              <th class="text-center">{{ _("Final Approver") }}</th>
+            </tr>
+          </thead>
+          <tbody style="font-weight: 600">
+            <tr>
+              <td class="text-center">{{ doc.recommended_by }}</td>
+              <td class="text-center">{{ doc.first_approver }}</td>
+              <td class="text-center">{{ doc.final_approver }}</td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <p class="subheading">⚞ {{ _("Actions") }}</p>
+        <table class="table table-borderless table-hover" style="table-layout: fixed; width: 100%">
+          <tbody>
+            <tr>
+              <th class="text-center">
+                <a href="{{approval_link}}" target="_blank" style="color: #fff; background-color: #349106" class="action_button">Approve</a>
+              </th>
+              <th class="text-center">
+                <a href="{{rejection_link}}" target="_blank" class="action_button" style="color: #fff; background-color: #ff0000">Reject</a>
+              </th>
+              <th class="text-center">
+                <a href="{{document_link}}" target="_blank" class="action_button" style="color: #000; background-color: #c7cc37">View</a>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  

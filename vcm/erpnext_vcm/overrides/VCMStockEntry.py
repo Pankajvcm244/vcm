@@ -1,11 +1,19 @@
-from erpnext.stock.doctype.stock_entry.stock_entry import StockEntry
 import frappe
+from erpnext.stock.doctype.stock_entry.stock_entry import StockEntry
 from frappe import _, throw
 from frappe.model.docstatus import DocStatus
 from frappe.utils import flt
 from frappe.utils.data import getdate
 from frappe.model.naming import getseries
 import datetime
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
+
+# from vcm.erpnext_vcm.overrides.stock_alm.stockalm import (
+#     assign_and_notify_next_authority,
+#     get_stock_alm_level,
+# )
+# from datetime import date
 
 class VCMStockEntry(StockEntry):
     def autoname(self):
@@ -76,9 +84,56 @@ class VCMStockEntry(StockEntry):
             **email_args
         )
 
+    # def before_save(self):
+    #     #self.update_extra_description_from_mrn()
+    #     self.refresh_alm()
 
-    
+    # def on_update(self):
+    #     super().on_update()
+    #     assign_and_notify_next_authority(self)
 
+
+
+    # def refresh_alm(self):
+    #     if self.stock_entry_type != "Material Transfer":
+    #         return  # Skip if it's not a stock transfer
+      
+    #     alm_level = get_stock_alm_level(self)
+
+    #     if alm_level is not None:
+    #         self.recommended_by = alm_level.recommender
+    #         self.first_approver = alm_level.first_approver
+    #         self.final_approver = alm_level.final_approver
+    #     else:
+    #         frappe.message("ALM Levels are not set for this ALM Center in this document")
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # def refresh_alm(self):
+    #     if self.stock_entry_type != "Material Transfer":
+    #         return  # Skip if it's not a stock transfer
+    #     if self.company != "TOUCHSTONE FOUNDATION VRINDAVAN - NCR":
+    #         return  # Skip if the company is not the one we want
+    #     alm_level = get_alm_level(self)
+    #     if alm_level is not None:
+    #         self.first_approver = alm_level.first_approver
+    #         self.final_approver = alm_level.final_approver
+    #     else:
+    #         frappe.throw("ALM Levels are not set for this ALM Center in this document")
+  
 
 
 

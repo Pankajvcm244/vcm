@@ -1,0 +1,59 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-02 14:57:43.399158",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "target_warehouse",
+  "recommender",
+  "first_approver",
+  "final_approver"
+ ],
+ "fields": [
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Target Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "first_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "First Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "final_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Final Approver",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "recommender",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Recommender",
+   "options": "User"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-03 12:48:56.253057",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Warehouse ALM Child Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
