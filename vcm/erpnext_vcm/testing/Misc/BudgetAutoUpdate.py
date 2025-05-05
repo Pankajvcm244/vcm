@@ -23,6 +23,7 @@ def update_PO_AutoBudget():
     #"Updated 4086, 0 PO.\n\n Errors: []." 17/4/2025
     # Updated 4473, 0 PO.\n\n Errors: []." 25/4/2025
     #"Updated 4473, 0 PO.\n\n Errors: []."  2/5/2025 finalerp-5
+    # "Updated 4555, 0 PO.\n\n Errors: []."  2/5/2025 finalerp-6
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/pankaj3.xlsx"  # Change as needed
@@ -331,7 +332,7 @@ def update_parent_manual_AutoBudget():
     return f"Updated {updated_count}, {skipped_count} PO.\n\n Errors: {errors}."
 
 def update_vcm_parent_AutoBudget():
-        #bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_vcm_parent_AutoBudget
+        #bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.BudgetAutoUpdate.update_vcm_parent_AutoBudget
         budgets = frappe.get_all("VCM Budget", pluck="name")
         #name = "HKMV-2025-2026-VRN-YOGA FOR HAPPINESS - HKMV"
         for name in budgets:
