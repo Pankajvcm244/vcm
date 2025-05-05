@@ -66,8 +66,10 @@ class VCMPurchaseOrder(PurchaseOrder):
         validate_work_order_item(self)
         validate_one_time_vendor(self)
         validate_cost_center(self)
-        #self.validate_mrn_availble()
+        # Disable this as at VCM MRN is not mandatory for all items 
+        # self.validate_mrn_availble()
         validate_buying_dates(self)
+        self.validate_mrn_quantity()
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
@@ -91,15 +93,19 @@ class VCMPurchaseOrder(PurchaseOrder):
         
 
     def on_cancel(self): 
-        super().on_cancel()        
+        super().on_cancel()  
+        if frappe.db.exists("Purchase Invoice Item", {"purchase_order": self.name}):
+            #logging.debug(f"VCM Cannot cancel PO as it is linked to a Purchase Invoice")
+            #frappe.throw("Cannot cancel PO as it is linked to a Purchase Invoice")
+            return      
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
-        logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
+        #logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 if validate_budget_head_n_location_mandatory(self) == True:
                     update_vcm_po_budget_usage(self,False) 
-                    #logging.debug(f"VCM PO on_cancell-2 created log {po_amount}")
+                    #logging.debug(f"VCM PO on_cancell-2 created log")
         
     
     def before_insert(self):
@@ -135,6 +141,38 @@ class VCMPurchaseOrder(PurchaseOrder):
                 )
         return
 
+    def validate_mrn_quantity(self):
+        default_tolerance = frappe.db.get_single_value("Stock Settings", "over_delivery_receipt_allowance") or 0
+
+        for item in self.items:
+            if item.material_request and item.material_request_item:
+                mr_qty = frappe.db.get_value("Material Request Item", item.material_request_item, "qty") or 0
+
+                # Get all other submitted PO quantities against this MR item (excluding current doc if resubmitting)
+                #AND po.docstatus IN (0, 1)  -- include draft + submitted 
+                existing_po_qty = frappe.db.sql("""
+                    SELECT SUM(qty) FROM `tabPurchase Order Item` poi
+                    INNER JOIN `tabPurchase Order` po ON po.name = poi.parent
+                    WHERE poi.material_request_item = %s
+                    AND po.docstatus IN (0, 1)                     
+                    AND po.name != %s
+                """, (item.material_request_item, self.name))[0][0] or 0
+
+                # Optional: get item-specific tolerance
+                try:
+                    tolerance = frappe.db.get_value("Item", item.item_code, "over_delivery_receipt_tolerance") or default_tolerance
+                except Exception:
+                    tolerance = default_tolerance
+
+                allowed_qty = mr_qty + (mr_qty * tolerance / 100)
+                total_po_qty = existing_po_qty + item.qty  # Including this PO
+
+                if total_po_qty > allowed_qty:
+                    frappe.throw((f"Item <b>{item.item_code}</b> exceeds total allowed quantity for linked Material Request.<br>"
+                        f"Requested: {mr_qty}, Allowed: {allowed_qty}, Already Ordered: {existing_po_qty}, "
+                        f"This PO: {item.qty}, Total: {total_po_qty}"),
+                        title="Over-Allowance Detected"
+                    )
 
 
     def set_naming_series(self):
