@@ -817,7 +817,7 @@ def update_vcm_budget_from_jv(jv_doc, jv_flag):
 
 @frappe.whitelist()          
 def adjust_vcm_budget_reconciliation(payment_details, vcm_cost_center, vcm_budget_head, vcm_company):
-    #return False
+    return False
     fiscal_start = "2025-04-01"  # Hardcoded fiscal year start
     alias = "je"
     filters = {} 
