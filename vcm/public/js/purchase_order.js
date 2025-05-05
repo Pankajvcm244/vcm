@@ -22,6 +22,24 @@ frappe.ui.form.on("Purchase Order", {
             };
         });
     },
+    // This code is linking all MRN linked to PO in custom_linked_material_request field
+    refresh(frm) {
+        if (frm.doc.docstatus !== 0) return;  // Only run for Draft
+
+        if (!frm.doc.items || frm.doc.items.length === 0) return;
+
+        let material_requests = new Set();
+
+        frm.doc.items.forEach(row => {
+            if (row.material_request) {
+                material_requests.add(row.material_request);
+            }
+        });
+
+        let requests_string = Array.from(material_requests).join(', ');
+        frm.set_value('custom_linked_material_request', requests_string);
+    },
+
     validate: function(frm) {
         if (!frm.doc.cost_center) {
             frappe.msgprint(__("Cost Center is mandatory."));
