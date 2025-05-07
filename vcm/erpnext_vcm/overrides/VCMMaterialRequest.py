@@ -18,7 +18,7 @@ class VCMMaterialRequest(MaterialRequest):
     def before_save(self):
         super().before_save()
         #super().before_save() #Since there is no before_insert in parent
-        logging.debug(f"in MR Before save")
+        #logging.debug(f"in MR Before save")
         if (self.material_request_type == "Purchase"):
             alm_level = get_mrn_alm_level(self)
             if alm_level is not None:
@@ -26,7 +26,7 @@ class VCMMaterialRequest(MaterialRequest):
     
     def validate(self):
         super().validate()
-        logging.debug(f"in VCMMaterialRequest validate  {self}  ")
+        #logging.debug(f"in VCMMaterialRequest validate  {self}  ")
         if(self.material_request_type == "Purchase"):
             alm_level = get_mrn_alm_level(self)
             if alm_level is not None:
@@ -46,7 +46,7 @@ class VCMMaterialRequest(MaterialRequest):
             alm_level = get_mrn_alm_level(self)
             #  in case of no approval flow set, on submit set workflow state as Final Approved
             if alm_level is None:
-                #logging.debug(f"in MR on_submit  {self}  ")
+                #logging.debug(f"in MR on_submit alm level not found, approving ")
                 self.workflow_state = "Final Level Approved"
         
     def on_cancel(self):
@@ -67,15 +67,15 @@ class VCMMaterialRequest(MaterialRequest):
             frappe.throw("Department is not set.")
         #if hasattr(self, "location") and self.location == "":
         #    frappe.throw("Location is not set.")
-        logging.debug(f"in MR refresh_alm  {self.department} ")
+        #logging.debug(f"in MR refresh_alm  {self.department} ")
         alm_level = get_mrn_alm_level(self)
         if alm_level is not None:
             self.custom_l1_approver = alm_level.custom_l1_approver
             self.custom_l2_approver = alm_level.custom_l2_approver
             self.custom_final_approver = alm_level.custom_final_approver
-            logging.debug(f"MR refresh_alm {self.custom_l1_approver} {self.custom_l2_approver} {self.custom_final_approver}")
-        else:
-            frappe.throw("Material Request approval Levels are not set, please set the same")
+            #logging.debug(f"MR refresh_alm {self.custom_l1_approver} {self.custom_l2_approver} {self.custom_final_approver}")
+        # else:
+        #     logging.debug(f"Material Request approval Levels are not set, please set the same")
 
 @frappe.whitelist()
 def resend_approver_request(docname, method):
