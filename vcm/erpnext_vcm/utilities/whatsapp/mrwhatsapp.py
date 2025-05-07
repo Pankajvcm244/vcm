@@ -17,10 +17,11 @@ from frappe.workflow.doctype.workflow_action.workflow_action import (
 from frappe.utils.password import get_decrypted_password
 
 def send_whatsapp_approval(doc, user, mobile_no, allowed_options):
+    return
     #logging.debug(f"VCM send_whatsapp_approval 1 {user}, {mobile_no}")
-    approval_link = get_approval_link(doc, user, allowed_options)
-    rejection_link = get_rejection_link(doc, user)
-    send_whatsapp(doc, mobile_no, approval_link, rejection_link)
+    #approval_link = get_approval_link(doc, user, allowed_options)
+    # rejection_link = get_rejection_link(doc, user)
+    # send_whatsapp(doc, mobile_no, approval_link, rejection_link)
 
 def get_short_link_name(long_link):
     doc = frappe.get_doc(
@@ -33,6 +34,7 @@ def get_short_link_name(long_link):
 def send_whatsapp(
     doc: Document, mobile_no: str, approval_link: str, rejection_link: str
 ):
+    return
     approval_link_name = get_short_link_name(approval_link)
     rejection_link_name = get_short_link_name(rejection_link)
     #logging.debug(f"**** send_whatsapp 1 {doc}, {approval_link_name}, {rejection_link_name}")
@@ -50,9 +52,9 @@ def send_whatsapp(
     
 
     site_name = cstr(frappe.local.site)
-    po_name  = doc.name
+    mr_name  = doc.name
 
-    po_image_link = f"https://{site_name}/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.get_purchase_order_image?docname={doc.name}"
+    mr_image_link = f"https://{site_name}/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.get_purchase_order_image?docname={doc.name}"
 
     headers = {
          "Content-Type": "application/json",
@@ -102,7 +104,7 @@ def get_approval_link(doc, user, allowed_options):
         return get_confirm_workflow_action_url(doc, "Final Approve", user)
     else:
         frappe.throw(
-            "Next ALM User is not allowed to approve the Document. Please ask for permission."
+            "Next ALM User is not allowed to approve this MR Document. Please ask for permission."
         )
 
 
@@ -111,7 +113,8 @@ def get_rejection_link(doc, user):
 
 
 def get_confirm_workflow_action_url(doc, action, user):
-    logging.debug(f"VCM  get_confirm_workflow_action_url 1 {doc}, {action}, {user}")
+    #logging.debug(f"VCM  get_confirm_workflow_action_url 1 {doc}, {action}, {user}")
+    return
     # this is like that with / and . do not change
     confirm_action_method = "/api/method/vcm.erpnext_vcm.utilities.whatsapp.powhatsapp.confirm_action"
 
@@ -127,6 +130,7 @@ def get_confirm_workflow_action_url(doc, action, user):
 
 @frappe.whitelist(allow_guest=True)
 def get_purchase_order_image(docname):
+    return
     docs = frappe.get_all("Purchase Order", fields=["*"], filters={"name": docname})
     if not docs:
         frappe.throw("Doesn't exist.")

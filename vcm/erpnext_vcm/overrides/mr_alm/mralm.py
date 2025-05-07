@@ -89,15 +89,15 @@ def assign_and_notify_mrn_next_authority(doc, method="Email"):
 
 
 def is_eligible_to_send_on_whatsapp(user, mobile_no):
-    logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
+    #logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 1 {user}, {mobile_no}")
     # user_meta = frappe.get_meta("User")
     #logging.debug(f"VCM  is_eligible_to_send_on_whatsapp 2 {user_meta}")
     # if user_meta.has_field("purchase_order_whatsapp_approval"):
     #     if not frappe.get_value("User", user, "purchase_order_whatsapp_approval"):
     #         return False
-    po_approval_settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
-    if po_approval_settings.po_whatsapp_enabled and mobile_no:
-        return True
+    # po_approval_settings = frappe.get_cached_doc("VCM WhatsAPP Settings")
+    # if po_approval_settings.po_whatsapp_enabled and mobile_no:
+    #     return True
     return False
 
 
@@ -130,7 +130,7 @@ def check_approver_assigned(doc):
                 approver_user = getattr(doc, "custom_l1_approver")
                 #logging.debug(f"in check_approver_assigned 1 {user}, {approver_user}, {proposed_state} ")
                 if approver_user  != user:
-                    frappe.throw("You are not allowed to approve this Store Req request.")
+                    frappe.throw("You are not allowed to approve this Material Request request.")
     if (proposed_state == "L2 Approved"):
         if (
                 getattr(doc, "custom_l2_approver") is not None
@@ -139,7 +139,7 @@ def check_approver_assigned(doc):
                 approver_user  = getattr(doc, "custom_l2_approver")
                 #logging.debug(f"in check_approver_assigned 2 {user}, {approver_user}, {proposed_state} ")
                 if approver_user  != user:
-                    frappe.throw("You are not allowed to approve this Store Req request.")
+                    frappe.throw("You are not allowed to approve this Material Request.")
     if (proposed_state == "Final Level Approved"):
         if (
                 getattr(doc, "custom_final_approver") is not None
@@ -148,7 +148,7 @@ def check_approver_assigned(doc):
                 approver_user  = getattr(doc, "custom_final_approver")
                 #logging.debug(f"in check_approver_assigned 3 {user}, {approver_user}, {proposed_state} ")
                 if approver_user  != user:
-                    frappe.throw("You are not allowed to approve this Store Req request.")
+                    frappe.throw("You are not allowed to approve this Material Request.")
     return
 
 def send_email_approval(doc, user):
@@ -170,7 +170,7 @@ def send_email_approval(doc, user):
             "vcm/erpnext_vcm/utilities/email_templates/mr_template.html",
             template_data,
         ),
-        "subject": "#PO :{} Approval".format(doc.name),
+        "subject": "#MR :{} Approval".format(doc.name),
         "reference_doctype": doc.doctype,
         "reference_name": doc.name,
         "reply_to": doc.owner,

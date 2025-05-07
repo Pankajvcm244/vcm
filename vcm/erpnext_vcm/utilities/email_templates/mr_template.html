@@ -74,8 +74,8 @@
               </tbody>
               <thead>
                 <tr>
-                  <th class="text-center">{{ _("PO Number") }}</th>                  
-                  <th class="text-center">{{ _("Supplier") }}</th>
+                  <th class="text-center">{{ _("MR Number") }}</th>                  
+                  <th class="text-center">{{ _("Target Warehouse") }}</th>
                   <th class="text-center">{{ _("Status") }}</th>
                   <th class="text-center">{{ _("Date") }}</th>
                 </tr>
@@ -83,7 +83,7 @@
               <tbody style="font-weight: 600">
                 <tr>
                   <td class="text-center">{{ doc.name }}</td>                  
-                  <td class="text-center">{{ doc.supplier_name }}</td>
+                  <td class="text-center">{{ doc.set_warehouse }}</td>
                   <td class="text-center">{{ doc.workflow_state }}</td>
                   <td class="text-center">{{ doc.transaction_date }}</td>
                 </tr>
@@ -141,8 +141,8 @@
           </div>
         </div>
         <div>
-          <p class="subheading">⚞ {{ _("Extra Description") }}</p>
-          <p style="padding-left: 10px">{{ doc.extra_description }}</p>
+          <p class="subheading">⚞ {{ _("Purpose") }}</p>
+          <p style="padding-left: 10px">{{ doc.purpose }}</p>
         </div>
         <hr />
         <div>
@@ -153,16 +153,16 @@
           >
             <thead>
               <tr>
-                <th class="text-center">{{ _("Recommender") }}</th>
-                <th class="text-center">{{ _("First Approver") }}</th>
+                <th class="text-center">{{ _("L1 Approver") }}</th>
+                <th class="text-center">{{ _("L2 Approver") }}</th>
                 <th class="text-center">{{ _("Final Approver") }}</th>
               </tr>
             </thead>
             <tbody style="font-weight: 600">
               <tr>
-                <td class="text-center">{{ doc.recommended_by }}</td>
-                <td class="text-center">{{ doc.first_approving_authority }}</td>
-                <td class="text-center">{{ doc.final_approving_authority }}</td>
+                <td class="text-center">{{ doc.custom_l1_approver }}</td>
+                <td class="text-center">{{ doc.custom_l2_approver }}</td>
+                <td class="text-center">{{ doc.custom_final_approver }}</td>
               </tr>
             </tbody>
           </table>

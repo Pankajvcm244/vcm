@@ -13,7 +13,7 @@ from frappe.utils import get_datetime
 
 
 def get_mrn_workflow_action_url(action, doc, user):
-    apply_action_method = "/api/method/vcm.erpnext_vcm.overides.mr_alm.mrworkflow_action.apply_action"
+    apply_action_method = "/api/method/vcm.erpnext_vcm.overrides.mr_alm.mrworkflow_action.apply_action"
 
     params = {
         "doctype": doc.get("doctype"),
