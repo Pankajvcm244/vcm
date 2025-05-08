@@ -32,8 +32,7 @@ class VCMSalesInv(SalesInvoice):
         # Get the current year in 2-digit format
         #year = postingdate.strftime("%y")
         postingyear = postingdate.year
-        postingmonth = postingdate.month
-    
+        postingmonth = postingdate.month    
 
         # Determine fiscal year
         if postingmonth < 4:  # If before April, it's part of the previous fiscal year
@@ -136,6 +135,13 @@ class VCMSalesInv(SalesInvoice):
                     self.name = prefix + getseries(prefix, 5)
                 else:
                     prefix = f"KMI{fiscal_year}-"   
+                    self.name = prefix + getseries(prefix, 6)
+            elif (self.pos_profile == 'Rajbhog POS'): 
+                if self.is_return:
+                    prefix = f"DRI{fiscal_year}R-"
+                    self.name = prefix + getseries(prefix, 5)
+                else:
+                    prefix = f"DRI{fiscal_year}-"   
                     self.name = prefix + getseries(prefix, 6)
         # 
         # these are Sales invoice series for direct creation of Sales Invoice

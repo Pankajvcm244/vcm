@@ -266,7 +266,22 @@ class VCMPOSInv(POSInvoice):
         # TNP - Noida POS
         # TSP - Surabhi POS
         # POS - Other POS Profiles
-        #
+        # RSR - Rajbhog POS
+        # TSP - Surabhi POS
+
+        postingdate = getdate(self.posting_date)
+        # Get the current month in 2-digit format
+        #month = postingdate.strftime("%m")
+        # Get the current year in 2-digit format
+        #year = postingdate.strftime("%y")
+        postingyear = postingdate.year
+        postingmonth = postingdate.month    
+
+        # Determine fiscal year like 2526 or 2627
+        if postingmonth < 4:  # If before April, it's part of the previous fiscal year
+            fiscal_year = f"{(postingyear-1)% 100}{postingyear % 100}"
+        else:
+            fiscal_year = f"{postingyear % 100}{(postingyear + 1) % 100}"
 
         #numbering series for Krishna Prasadam
         if (self.pos_profile == 'Krishna Prasadam Counter'):    
@@ -319,6 +334,9 @@ class VCMPOSInv(POSInvoice):
         #addded on 09-01-2025 for Kumbh Mela
         elif (self.pos_profile == 'Kumbh Mela_Merchandise POS'):  
             prefix = f"TKM-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)
+        elif (self.pos_profile == 'Rajbhog POS'):  
+            prefix = f"RSR-{fiscal_year}-"         
             self.name = prefix + getseries(prefix, 5)
         else:
             prefix = f"POS-{year}{month}-"         
