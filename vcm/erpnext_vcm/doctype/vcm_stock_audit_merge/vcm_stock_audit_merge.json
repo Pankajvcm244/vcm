@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-08 10:44:20.103847",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_swg8",
+  "warehouse",
+  "audit_references",
+  "amended_from",
+  "section_break_oxga",
+  "merged_items"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_swg8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "VCM Stock Audit Merge",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audit_references",
+   "fieldtype": "Table MultiSelect",
+   "label": "Audit References",
+   "options": "VCM Stock Audit Reference"
+  },
+  {
+   "fieldname": "merged_items",
+   "fieldtype": "Table",
+   "label": "Merged Items",
+   "options": "VCM Stock Audit Child Table"
+  },
+  {
+   "fieldname": "section_break_oxga",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-05-08 12:45:00.704000",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Stock Audit Merge",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

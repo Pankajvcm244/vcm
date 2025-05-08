@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-07 13:08:21.013776",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "uom",
+  "expected_quantity",
+  "actual_quantity",
+  "qty_difference",
+  "counted_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.parent_warehouse && doc.parent_warehouse.includes(\"Operations Store\")",
+   "fieldname": "expected_quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Expected Quantity",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Actual Quantity",
+   "set_only_once": 1
+  },
+  {
+   "depends_on": "eval:doc.parent && doc.parent.includes(\"Operations Store - HKMV\")",
+   "fieldname": "qty_difference",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty Difference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "counted_at",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Counted At",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.stock_uom",
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-08 16:29:45.011102",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM Stock Audit Child Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
