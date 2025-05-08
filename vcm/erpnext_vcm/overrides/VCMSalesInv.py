@@ -138,11 +138,11 @@ class VCMSalesInv(SalesInvoice):
                     self.name = prefix + getseries(prefix, 6)
             elif (self.pos_profile == 'Rajbhog POS'): 
                 if self.is_return:
-                    prefix = f"DRI{fiscal_year}R-"
-                    self.name = prefix + getseries(prefix, 5)
+                    prefix = f"DRRS{fiscal_year}R-"
+                    self.name = prefix + getseries(prefix, 4)
                 else:
-                    prefix = f"DRI{fiscal_year}-"   
-                    self.name = prefix + getseries(prefix, 6)
+                    prefix = f"DRRS{fiscal_year}-"   
+                    self.name = prefix + getseries(prefix, 5)
         # 
         # these are Sales invoice series for direct creation of Sales Invoice
         # 
