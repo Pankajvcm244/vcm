@@ -91,8 +91,9 @@ class VCMPaymentEntry(PaymentEntry):
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
                 #logging.debug(f"VCM PE Submit-2 calling revert budget")
-                if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_budget_on_payment_submit(self, False) 
+                # Let's not chekc fields while cancelling
+                #if validate_budget_head_n_location_mandatory(self) == True:
+                update_vcm_budget_on_payment_submit(self, False) 
                     
 
 

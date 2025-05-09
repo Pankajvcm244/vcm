@@ -47,8 +47,7 @@ class VCMMaterialRequest(MaterialRequest):
                 #logging.debug(f"in MR on_submit alm level not found, approving ")
                 self.workflow_state = "Final Level Approved"
         
-    def on_cancel(self):
-        super().on_cancel()
+    def on_cancel(self):        
         linked_po = frappe.get_all(
             "Purchase Order",
             filters={
@@ -59,6 +58,7 @@ class VCMMaterialRequest(MaterialRequest):
         )
         if linked_po:
             frappe.throw(f"Cannot cancel Material Request {self.name}. First cancel the linked Purchase Order(s): {', '.join(linked_po)}.")
+        super().on_cancel()
 
     def refresh_alm(self):
         if hasattr(self, "department") and self.department == "":

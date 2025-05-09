@@ -92,19 +92,26 @@ class VCMPurchaseOrder(PurchaseOrder):
                     
         
 
-    def on_cancel(self): 
-        super().on_cancel()  
-        if frappe.db.exists("Purchase Invoice Item", {"purchase_order": self.name}):
-            #logging.debug(f"VCM Cannot cancel PO as it is linked to a Purchase Invoice")
-            #frappe.throw("Cannot cancel PO as it is linked to a Purchase Invoice")
-            return      
+    def on_cancel(self):          
+        linked_pi = frappe.get_all(
+            "Purchase Invoice Item",
+            filters={
+                "purchase_order": self.name,
+                "docstatus": ["!=", 2]  # Exclude Cancelled Purchase Invoices
+            },
+            pluck="parent"  # Get the names of the linked Purchase Invoices
+        )
+        if linked_pi:
+            frappe.throw(f"Cannot cancel Purchase Order {self.name}. It is linked to active Purchase Invoice(s): {', '.join(linked_pi)}.")
+        super().on_cancel()      
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
         if vcm_budget_settings.po_budget_enabled == "Yes":
             vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
             if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
-                if validate_budget_head_n_location_mandatory(self) == True:
-                    update_vcm_po_budget_usage(self,False) 
+                # lets not chekc while cancellation Accoutingdimesion fields
+                #if validate_budget_head_n_location_mandatory(self) == True:
+                update_vcm_po_budget_usage(self,False) 
                     #logging.debug(f"VCM PO on_cancell-2 created log")
         
     

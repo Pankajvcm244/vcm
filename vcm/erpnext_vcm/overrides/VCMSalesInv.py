@@ -16,7 +16,7 @@ class VCMSalesInv(SalesInvoice):
     def autoname(self):
         # select a project name based on customer
         #dateF = getdate(self.posting_date)
-        #company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
+        company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
         #year = dateF.strftime("%y")
         #month = dateF.strftime("%m")
         #prefix = f"{company_abbr}-{year}{month}-"
@@ -242,7 +242,12 @@ class VCMSalesInv(SalesInvoice):
         elif (self.cost_center == 'Pushpanjali - VCMT'):
             prefix = f"DRPS{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)
-
+        elif (company_abbr == 'HKMV'):
+            prefix = f"HSI-{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 5)
+        elif (company_abbr == 'VCMT'):
+            prefix = f"VSI-{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 5)        
         else:
             # rest sales invoice will follow this series
             prefix = f"SI-{fiscal_year}-" 

@@ -48,10 +48,10 @@ class VCMJournalEntry(JournalEntry):
         #logging.debug(f"HKM JV on cancel Submit-1 {vcm_budget_settings.jv_budget_enabled}")
         if vcm_budget_settings.jv_budget_enabled == "Yes":
             #vcm_cost_center = frappe.get_doc("Cost Center", self.cost_center)
-            #if vcm_cost_center.custom_vcm_budget_applicable == "Yes":
-            if validate_budget_head_n_location_mandatory(self) == True:
+            #Let's not check fields while cancelling
+            #if validate_budget_head_n_location_mandatory(self) == True:
                 #logging.debug(f"VCM JV on_cancel budget")
-                update_vcm_budget_from_jv(self, False) 
+            update_vcm_budget_from_jv(self, False) 
                 #delete_vcm_transaction_log(self,"JV Cancelled")
         
 
