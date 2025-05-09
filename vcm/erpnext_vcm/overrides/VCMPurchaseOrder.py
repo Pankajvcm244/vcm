@@ -93,16 +93,8 @@ class VCMPurchaseOrder(PurchaseOrder):
         
 
     def on_cancel(self):          
-        linked_pi = frappe.get_all(
-            "Purchase Invoice Item",
-            filters={
-                "purchase_order": self.name,
-                "docstatus": ["!=", 2]  # Exclude Cancelled Purchase Invoices
-            },
-            pluck="parent"  # Get the names of the linked Purchase Invoices
-        )
-        if linked_pi:
-            frappe.throw(f"Cannot cancel Purchase Order {self.name}. It is linked to active Purchase Invoice(s): {', '.join(linked_pi)}.")
+        check_PI_against_PO(self)
+        check_PR_against_PO(self)     
         super().on_cancel()      
         vcm_budget_settings = frappe.get_doc("VCM Budget Settings")
         #logging.debug(f"VCM PO on cancel -1 {vcm_budget_settings.po_budget_enabled}")
@@ -181,7 +173,6 @@ class VCMPurchaseOrder(PurchaseOrder):
                         title="Over-Allowance Detected"
                     )
 
-
     def set_naming_series(self):
         company_abbr = frappe.get_cached_value("Company", self.company, "abbr")
         if self.meta.get_field("for_a_work_order") and self.for_a_work_order:
@@ -220,3 +211,31 @@ def validate_cost_center(self):
          frappe.throw( f"Cost Center is mandatory in Purchase Order " )
     if not self.set_warehouse:
          frappe.throw( f"Target Warehouse is mandatory in Purchase Order " )
+
+@frappe.whitelist()
+def check_PI_against_PO(self):
+        linked_pi = frappe.get_all(
+            "Purchase Invoice Item",
+            filters={
+                "purchase_order": self.name,
+                "docstatus": ["!=", 2]  # Exclude Cancelled Purchase Invoices
+            },
+            pluck="parent"  # Get the names of the linked Purchase Invoices
+        )
+        linked_pi = list(set(linked_pi))  # Remove duplicates
+        if linked_pi:
+            frappe.throw(f"Cannot cancel Purchase Order {self.name}. It is linked to active Purchase Invoice(s): {', '.join(linked_pi)}.")
+
+@frappe.whitelist()
+def check_PR_against_PO(self):
+        linked_pr = frappe.get_all(
+            "Purchase Receipt Item",
+            filters={
+                "purchase_order": self.name,
+                "docstatus": ["!=", 2]  # Exclude Cancelled Purchase Receipts
+            },
+            pluck="parent"  # Get the names of the linked Purchase Receipts
+        )
+        linked_pr = list(set(linked_pr))  # Remove duplicates
+        if linked_pr:
+            frappe.throw(f"Cannot cancel Purchase Order {self.name}. It is linked to active Purchase Receipt(s): {', '.join(linked_pr)}.")
