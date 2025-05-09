@@ -243,8 +243,8 @@ class VCMSalesInv(SalesInvoice):
             prefix = f"DRPS{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)
         elif (company_abbr == 'HKMV'):
-            prefix = f"HSI-{fiscal_year}-"
-            self.name = prefix + getseries(prefix, 5)
+            prefix = f"HVSI-{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 4)
         elif (company_abbr == 'VCMT'):
             prefix = f"VSI-{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)        
