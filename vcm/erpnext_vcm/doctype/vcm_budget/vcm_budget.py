@@ -5,6 +5,9 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import nowdate
 from frappe.utils import getdate
+import pandas as pd
+import os
+from frappe.utils.file_manager import get_file
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -119,3 +122,50 @@ def is_pool_budget_head(budget_head_name):
         return False
     budget_head = frappe.get_doc("Budget Head", budget_head_name)
     return budget_head.pool_budget_head == 1
+
+
+@frappe.whitelist()
+def excel_to_child_table(file_url, docname):
+    # Allowed users
+    allowed_users = ['Administrator','pankaj.sharma@vcm.org.in', 'prashant.yadav@vcm.org.in', 'sund@vcm.org.in', 'gaurav.vyas@vcm.org.in', ]; 
+    if frappe.session.user not in allowed_users:
+        frappe.throw("You are not authorized to upload Excel files.")
+
+   # Get the file document using the file_url
+    try:
+        file_doc = frappe.get_doc("File", {"file_url": file_url})
+    except frappe.DoesNotExistError:
+        frappe.throw(f"File not found in the system: {file_url}")
+
+    # Get the file content directly from the file document
+    file_content = file_doc.get_content()
+
+    # Use pandas to read the Excel file content directly from the binary data
+    try:
+        # pd.read_excel can read from binary data using a BytesIO buffer
+        from io import BytesIO
+        df = pd.read_excel(BytesIO(file_content))
+    except Exception as e:
+        frappe.throw(f"Failed to read Excel file: {e}")
+
+    # Verify if the required columns exist in the DataFrame
+    required_columns = ['BUDGET HEAD', 'TOTAL']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        frappe.throw(f"Missing required columns in the Excel file: {', '.join(missing_columns)}")
+    
+    # Load the parent document
+    doc = frappe.get_doc('VCM Budget', docname)
+    # Clear existing child rows if needed
+    doc.set('budget_items', [])
+
+    # Iterate and append rows
+    for _, row in df.iterrows():
+        doc.append('budget_items', {
+            'budget_head': row.get('BUDGET HEAD'),
+            'original_amount': row.get('TOTAL'),
+            'proposed_by': frappe.session.user 
+        })
+
+    doc.save()
+    frappe.db.commit()

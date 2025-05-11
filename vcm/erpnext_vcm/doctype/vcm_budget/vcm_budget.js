@@ -17,6 +17,33 @@ frappe.ui.form.on('VCM Budget', {
         //calculate_salary_amount(frm);
         //calculate_fa_amount(frm);
         calculate_pool_amount(frm);
+        
+        const allowed_users = ['Administrator','pankaj.sharma@vcm.org.in', 'prashant.yadav@vcm.org.in', 'sund@vcm.org.in', 'gaurav.vyas@vcm.org.in', ]; // Replace with actual emails
+        if (allowed_users.includes(frappe.session.user)) {
+        frm.add_custom_button('Upload Excel', () => {
+            frappe.prompt([
+            {
+                label: 'Select Excel File',
+                fieldname: 'excel_file',
+                fieldtype: 'Attach',
+                reqd: 1
+            }
+            ], function (values) {
+            frappe.call({
+                method: 'vcm.erpnext_vcm.doctype.vcm_budget.vcm_budget.excel_to_child_table',
+                args: {
+                file_url: values.excel_file,
+                docname: frm.doc.name
+                },
+                callback: function () {
+                frappe.msgprint('Budget Head table updated from Excel.');
+                frm.reload_doc();
+                }
+            });
+            });
+        });
+        }
+        //Till here upload excel file
 
     },   
     budget_items_add: function(frm, cdt, cdn) {

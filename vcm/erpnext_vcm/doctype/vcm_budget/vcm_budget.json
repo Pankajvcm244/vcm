@@ -70,8 +70,7 @@
    "fieldname": "budget_items",
    "fieldtype": "Table",
    "label": "Budget Items",
-   "options": "VCM Budget Child Table",
-   "reqd": 1
+   "options": "VCM Budget Child Table"
   },
   {
    "allow_on_submit": 1,
@@ -230,7 +229,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-03 15:20:03.570478",
+ "modified": "2025-05-11 14:00:28.343925",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Budget",
@@ -245,7 +244,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   },
   {
@@ -281,7 +279,6 @@
    "report": 1,
    "role": "Accounts Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],
