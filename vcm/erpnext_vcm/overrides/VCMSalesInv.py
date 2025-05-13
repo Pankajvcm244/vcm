@@ -242,6 +242,12 @@ class VCMSalesInv(SalesInvoice):
         elif (self.cost_center == 'Pushpanjali - VCMT'):
             prefix = f"DRPS{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)
+        elif (self.cost_center == 'Annakoot Catering - TSF'):
+            prefix = f"ICI{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 5)
+        elif (self.cost_center == 'Event Hall Bookings - TSF'):
+            prefix = f"EHI{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 5)
         elif (company_abbr == 'HKMV'):
             prefix = f"HVSI-{fiscal_year}-"
             self.name = prefix + getseries(prefix, 4)
