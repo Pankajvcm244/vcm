@@ -64,13 +64,14 @@ def execute(filters=None):
                 data_map[d]["price_rate"],
                 data_map[d]["tax_template"],
                 data_map[d]["tax_rate"],
-                {
-                    "content": data_map[d]["sale_rate"],
-                    "editable": 1,
-                    # 'format': (value) => {
-                    # 	return value.fontcolor('blue');
-                    # }
-                },
+                data_map[d]["sale_rate"],
+                # {
+                #     "content": data_map[d]["sale_rate"],
+                #     "editable": 1,
+                #     # 'format': (value) => {
+                #     # 	return value.fontcolor('blue');
+                #     # }
+                # },
             ]
         )
 

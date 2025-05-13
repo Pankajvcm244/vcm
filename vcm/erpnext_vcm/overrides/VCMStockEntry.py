@@ -6,14 +6,14 @@ from frappe.utils import flt
 from frappe.utils.data import getdate
 from frappe.model.naming import getseries
 import datetime
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
-# from vcm.erpnext_vcm.overrides.stock_alm.stockalm import (
-#     assign_and_notify_next_authority,
-#     get_stock_alm_level,
-# )
-# from datetime import date
+from vcm.erpnext_vcm.overrides.stock_alm.stockalm import (
+    assign_and_notify_next_authority,
+    get_stock_alm_level,
+)
+from datetime import date
 
 class VCMStockEntry(StockEntry):
     def autoname(self):
@@ -30,11 +30,88 @@ class VCMStockEntry(StockEntry):
         prefix = f"{company_abbr}-STE-{fiscal_year}-"
         self.name = prefix + getseries(prefix, 6)
 
+    # def validate(self):
+    #     super().validate()
+    #     if self.stock_entry_type == "Material Transfer":
+    #         self.validate_stock_qty()
 
+    # def correct_qty_exceeding_actual(self):
+    #     for row in self.items:
+    #         # Get actual stock from Bin (current stock in warehouse)
+    #         actual_qty = frappe.db.get_value(
+    #             "Bin", 
+    #             {"item_code": row.item_code, "warehouse": row.s_warehouse}, 
+    #             "actual_qty"
+    #         ) or 0
+
+    #         if row.qty > actual_qty:
+    #             frappe.msgprint({
+    #                 "title": "Auto-Corrected Quantity",
+    #                 "message": f"Row #{row.idx} — Quantity ({row.qty}) exceeds available stock ({actual_qty}). Automatically set to {actual_qty}.",
+    #                 "indicator": "orange"
+    #             })
+    #             row.qty = actual_qty
+    #             row.transfer_qty = actual_qty  # also update transfer_qty if needed
+
+    def correct_qty_exceeding_actual(self):
+        for row in self.items:
+            actual_qty = frappe.db.get_value(
+                "Bin",
+                {"item_code": row.item_code, "warehouse": row.s_warehouse},
+                "actual_qty"
+                ) or 0
+
+        if row.qty > actual_qty:
+            frappe.msgprint(
+                f"Row #{row.idx} — Quantity ({row.qty}) exceeds available stock ({actual_qty}). Automatically set to {actual_qty}.",
+                title="Auto-Corrected Quantity",
+                indicator="orange"
+            )
+            row.qty = actual_qty
+            row.transfer_qty = actual_qty
+
+        
     def on_submit(self):
+        # self.validate_stock_qty()
         super().on_submit()
+        #self.validate_stock_qty()
         if self.stock_entry_type == "Material Issue":
             self.send_material_issue_email()
+            if hasattr(self, "stock_entry_type") and self.stock_entry_type == "Material Transfer":
+                alm_level = get_stock_alm_level(self)
+                if alm_level is None:
+                    self.workflow_state = "Final Level Approved"
+
+    
+    def before_submit(self):
+        if self.stock_entry_type == "Material Transfer":
+            self.correct_qty_exceeding_actual()
+
+    def before_save(self):
+        #self.update_extra_description_from_mrn()
+        self.refresh_alm()
+        
+
+    def on_update(self):
+        super().on_update()
+        assign_and_notify_next_authority(self)
+
+
+
+    def refresh_alm(self):
+        if self.stock_entry_type != "Material Transfer":
+            return  # Skip if it's not a stock transfer
+      
+        alm_level = get_stock_alm_level(self)
+
+        if alm_level is not None:
+            self.recommended_by = alm_level.recommender
+            self.first_approver = alm_level.first_approver
+            self.final_approver = alm_level.final_approver
+        else:
+            frappe.msgprint("ALM Levels are not set for this ALM Center in this document")
+
+            
 
     def send_material_issue_email(self):
         # Get recipient email from User doctype
@@ -84,29 +161,7 @@ class VCMStockEntry(StockEntry):
             **email_args
         )
 
-    # def before_save(self):
-    #     #self.update_extra_description_from_mrn()
-    #     self.refresh_alm()
-
-    # def on_update(self):
-    #     super().on_update()
-    #     assign_and_notify_next_authority(self)
-
-
-
-    # def refresh_alm(self):
-    #     if self.stock_entry_type != "Material Transfer":
-    #         return  # Skip if it's not a stock transfer
-      
-    #     alm_level = get_stock_alm_level(self)
-
-    #     if alm_level is not None:
-    #         self.recommended_by = alm_level.recommender
-    #         self.first_approver = alm_level.first_approver
-    #         self.final_approver = alm_level.final_approver
-    #     else:
-    #         frappe.message("ALM Levels are not set for this ALM Center in this document")
-            
+ 
 
 
 
@@ -115,25 +170,6 @@ class VCMStockEntry(StockEntry):
 
 
 
-
-
-
-
-
-
-
-    # def refresh_alm(self):
-    #     if self.stock_entry_type != "Material Transfer":
-    #         return  # Skip if it's not a stock transfer
-    #     if self.company != "TOUCHSTONE FOUNDATION VRINDAVAN - NCR":
-    #         return  # Skip if the company is not the one we want
-    #     alm_level = get_alm_level(self)
-    #     if alm_level is not None:
-    #         self.first_approver = alm_level.first_approver
-    #         self.final_approver = alm_level.final_approver
-    #     else:
-    #         frappe.throw("ALM Levels are not set for this ALM Center in this document")
-  
 
 
 
