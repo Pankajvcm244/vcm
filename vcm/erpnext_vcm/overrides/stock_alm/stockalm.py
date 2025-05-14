@@ -46,9 +46,9 @@ def assign_and_notify_next_authority(doc, method="Email"):
     logging.debug(f"in assign_and_notify_next_authority s{doc},")
     user = None
     current_state = doc.workflow_state
-    states = ("Checked", "Recommender","First Level Approved")
+    states = ("Checked", "Recommended","First Level Approved")
     approvers = (
-        "recommender",
+        "recommended_by",
         "first_approver",
         "final_approver",
     )
