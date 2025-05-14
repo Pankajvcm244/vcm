@@ -27,10 +27,24 @@ frappe.ui.form.on("VCM Stock Audit", {
                 return;
             }
 			// Check if warehouse contains "Operations Store"
-            if (!frm.doc.warehouse.includes("Operations Store - HKMV")) {
-                frappe.msgprint("This action is only allowed for 'Operations Store - HKMV' warehouses.");
-                return;
-            }
+            // if (!frm.doc.warehouse.includes("Operations Store - HKMV")) {
+            //     frappe.msgprint("This action is only allowed for 'Operations Store - HKMV' warehouses.");
+            //     return;
+            // }
+			const allowed_warehouses = [
+				"Operations Store - HKMV",
+				"Operations Store - VCMT",
+				"Krishna Prasadam POS - HKMV",
+				"Annadan Store - HKMV",
+				"Sadhu Seva - HKMV",
+				"Pushpanjali Store - VCMT",
+				"Krishnamrita Store - HKMV"
+			];
+
+			if (!allowed_warehouses.includes(frm.doc.warehouse)) {
+				frappe.msgprint("This action is only allowed for the following warehouses: " + allowed_warehouses.join(", "));
+				return;
+			}
 
             frappe.call({
                 method: "vcm.erpnext_vcm.doctype.vcm_stock_audit.vcm_stock_audit.get_items_with_stock",
