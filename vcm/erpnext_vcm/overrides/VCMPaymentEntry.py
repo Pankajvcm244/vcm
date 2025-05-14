@@ -17,7 +17,6 @@ from vcm.erpnext_vcm.utilities.vcm_budget_update_usage import (
     validate_budget_head_n_location_mandatory,
 )
 
-
 class VCMPaymentEntry(PaymentEntry): 
     def autoname(self):
         dateF = getdate(self.posting_date)
@@ -68,9 +67,6 @@ class VCMPaymentEntry(PaymentEntry):
                 if validate_budget_head_n_location_mandatory(self) == True:
                     validate_vcm_budget_on_payment_entry(self)
         return
-
-
-
 
 def notify_purchase_person_on_payment_entry(self):
         vcm_whatsapp_settings = frappe.get_doc("VCM WhatsAPP Settings") 
