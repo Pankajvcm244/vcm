@@ -349,7 +349,7 @@ fixtures = [
                 "VCM Gate-In",
                 "Material Request Item",
                 # "Sales Invoice",
-                # "Stock Entry",
+                "Stock Entry",
                 "Payment Entry",
                 "Journal Entry",
                 "Customer",

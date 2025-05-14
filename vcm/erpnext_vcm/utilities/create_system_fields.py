@@ -5,35 +5,31 @@ logging.basicConfig(level=logging.DEBUG)
 
 def get_system_fields():
     custom_fields = {
+        #    "Stock Entry": [
+        #     dict(
+        #         fieldname="recommended_by",
+        #         label="Recommended By",
+        #         fieldtype="Data",
+        #         insert_after="posting_time",
+        #     )
+        # ]
+        #   "Stock Entry": [
+        #     dict(
+        #         fieldname="first_approver",
+        #         label="First Approver",
+        #         fieldtype="Data",
+        #         insert_after="posting_time",
+        #     )
+        # ]
 
-
-
-           "Stock Entry": [
-            dict(
-                fieldname="recommended_by",
-                label="Recommended By",
-                fieldtype="Data",
-                insert_after="posting_time",
-            )
-        ],
-
-          "Stock Entry": [
-            dict(
-                fieldname="first_approver",
-                label="First Approver",
-                fieldtype="Data",
-                insert_after="posting_time",
-            )
-        ],
-
-          "Stock Entry": [
-            dict(
-                fieldname="final_approver",
-                label="Final Approver",
-                fieldtype="Data",
-                insert_after="first_approver",
-            )
-        ]
+        #   "Stock Entry": [
+        #     dict(
+        #         fieldname="final_approver",
+        #         label="Final Approver",
+        #         fieldtype="Data",
+        #         insert_after="first_approver",
+        #     )
+        # ]
 
         #  "Stock Entry": [
         #     dict(
