@@ -1,0 +1,196 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-12 14:14:02.295218",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_8lff",
+  "amended_from",
+  "company",
+  "cost_center",
+  "status",
+  "fiscal_year",
+  "column_break_xihw",
+  "request_type",
+  "supplier",
+  "purchase_order",
+  "remarks__justification",
+  "po_details_section",
+  "po_amount",
+  "advance_requested_in_po",
+  "advance__paid",
+  "column_break_taat",
+  "remaining_advance",
+  "payment_requested",
+  "section_break_gmrp",
+  "po_payment_details",
+  "section_break_dekd",
+  "pending_invoice_detail_column",
+  "pending_invoice_detail"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_8lff",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Supplier Payment Request",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Advance Payments (against PO)",
+   "fieldname": "request_type",
+   "fieldtype": "Select",
+   "label": "Request Type",
+   "options": "Advance Payments (against PO)\nCredit Payments (against Invoice)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier",
+   "reqd": 1
+  },
+  {
+   "fieldname": "remarks__justification",
+   "fieldtype": "Data",
+   "label": "Remarks / Justification"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nRejected\nPaid"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xihw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "po_details_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Details"
+  },
+  {
+   "fieldname": "po_amount",
+   "fieldtype": "Currency",
+   "label": "PO Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "advance__paid",
+   "fieldtype": "Currency",
+   "label": "Advance  Paid",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_requested",
+   "fieldtype": "Currency",
+   "label": "Payment Requested"
+  },
+  {
+   "fieldname": "remaining_advance",
+   "fieldtype": "Currency",
+   "label": "Remaining Advance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_gmrp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_taat",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "advance_requested_in_po",
+   "fieldtype": "Currency",
+   "label": "Advance Requested in PO",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_dekd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pending_invoice_detail_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pending_invoice_detail",
+   "fieldtype": "Table",
+   "label": "Pending Invoice Detail",
+   "options": "PI Payment Details"
+  },
+  {
+   "fieldname": "po_payment_details",
+   "fieldtype": "Table",
+   "label": "PO Payment Details",
+   "options": "PO Payment Detail"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-05-14 14:39:22.750864",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "Supplier Payment Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

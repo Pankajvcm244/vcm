@@ -68,6 +68,18 @@ frappe.ui.form.on("Purchase Order", {
                     },
                 };                
             });    
+    },
+    custom_advance_percentage(frm) {
+        if (frm.doc.custom_advance_percentage && frm.doc.grand_total) {
+            const calculated_advance = (frm.doc.grand_total * frm.doc.custom_advance_percentage) / 100;
+            frm.set_value("custom_advance_amount", calculated_advance);
+        }
+    },
+    grand_total(frm) {
+        // Recalculate if % is filled
+        if (frm.doc.custom_advance_percentage) {
+            frm.trigger("custom_advance_percentage");
+        }
     }
 });
 
