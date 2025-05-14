@@ -30,45 +30,30 @@ class VCMStockEntry(StockEntry):
         prefix = f"{company_abbr}-STE-{fiscal_year}-"
         self.name = prefix + getseries(prefix, 6)
 
-    # def validate(self):
-    #     super().validate()
-    #     if self.stock_entry_type == "Material Transfer":
-    #         self.validate_stock_qty()
-
-    # def correct_qty_exceeding_actual(self):
-    #     for row in self.items:
-    #         # Get actual stock from Bin (current stock in warehouse)
-    #         actual_qty = frappe.db.get_value(
-    #             "Bin", 
-    #             {"item_code": row.item_code, "warehouse": row.s_warehouse}, 
-    #             "actual_qty"
-    #         ) or 0
-
-    #         if row.qty > actual_qty:
-    #             frappe.msgprint({
-    #                 "title": "Auto-Corrected Quantity",
-    #                 "message": f"Row #{row.idx} — Quantity ({row.qty}) exceeds available stock ({actual_qty}). Automatically set to {actual_qty}.",
-    #                 "indicator": "orange"
-    #             })
-    #             row.qty = actual_qty
-    #             row.transfer_qty = actual_qty  # also update transfer_qty if needed
+    def validate(self):
+        super().validate()
+        if self.stock_entry_type == "Material Transfer":
+            self.correct_qty_exceeding_actual()
 
     def correct_qty_exceeding_actual(self):
         for row in self.items:
+            # Get actual stock from Bin (current stock in warehouse)
             actual_qty = frappe.db.get_value(
-                "Bin",
-                {"item_code": row.item_code, "warehouse": row.s_warehouse},
+                "Bin", 
+                {"item_code": row.item_code, "warehouse": row.s_warehouse}, 
                 "actual_qty"
-                ) or 0
+            ) or 0
 
-        if row.qty > actual_qty:
-            frappe.msgprint(
-                f"Row #{row.idx} — Quantity ({row.qty}) exceeds available stock ({actual_qty}). Automatically set to {actual_qty}.",
-                title="Auto-Corrected Quantity",
-                indicator="orange"
-            )
-            row.qty = actual_qty
-            row.transfer_qty = actual_qty
+            if row.qty > actual_qty:
+                frappe.msgprint(
+                    msg=f"Row #{row.idx} — Quantity ({row.qty}) exceeds available stock ({actual_qty}). Automatically set to {actual_qty}.",
+                    title="Auto-Corrected Quantity",
+                    indicator="orange"
+                )
+                row.qty = actual_qty
+                row.transfer_qty = actual_qty
+
+   
 
         
     def on_submit(self):
