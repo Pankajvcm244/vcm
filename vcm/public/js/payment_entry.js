@@ -9,6 +9,22 @@ frappe.ui.form.on("Payment Entry", {
             };
         });
     },
+    refresh: function(frm) {
+        // fill purchase_person from PI and PO
+        if (frm.doc.references && frm.doc.references.length > 0) {
+            const ref = frm.doc.references[0]; // assuming single reference
+            const doctype = ref.reference_doctype;
+            const docname = ref.reference_name;
+            if (doctype && docname) {
+                frappe.db.get_doc(doctype, docname).then(source_doc => {
+                    // Set value from source document's purchase_person
+                    if (source_doc.custom_purchase_person) {
+                        frm.set_value('custom_purchase_person', source_doc.custom_purchase_person);
+                    }
+                });
+            }
+        }
+    },
     cost_center: function(frm) {
         fetch_budget_data(frm);
     },
