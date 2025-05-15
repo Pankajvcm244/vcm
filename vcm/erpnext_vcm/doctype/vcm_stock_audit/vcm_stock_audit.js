@@ -37,7 +37,7 @@ frappe.ui.form.on("VCM Stock Audit", {
 				"Krishna Prasadam POS - HKMV",
 				"Annadan Store - HKMV",
 				"Sadhu Seva - HKMV",
-				"Pushpanjali Store - VCMT",
+				"Pushpanjali Stores - VCMT",
 				"Krishnamrita Store - HKMV"
 			];
 
