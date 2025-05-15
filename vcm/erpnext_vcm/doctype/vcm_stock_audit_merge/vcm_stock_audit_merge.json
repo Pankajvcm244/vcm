@@ -46,15 +46,17 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Warehouse",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-08 12:45:00.704000",
+ "modified": "2025-05-14 21:37:05.505670",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Stock Audit Merge",

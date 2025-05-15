@@ -12,7 +12,8 @@
   "expected_quantity",
   "actual_quantity",
   "qty_difference",
-  "counted_at"
+  "counted_at",
+  "comments"
  ],
  "fields": [
   {
@@ -66,13 +67,18 @@
    "fieldtype": "Data",
    "label": "UOM",
    "read_only": 1
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Data",
+   "label": "Comments"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-08 16:29:45.011102",
+ "modified": "2025-05-15 06:29:59.931175",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "VCM Stock Audit Child Table",

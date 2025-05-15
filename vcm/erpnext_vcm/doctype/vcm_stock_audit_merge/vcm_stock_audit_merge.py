@@ -33,9 +33,17 @@ def merge_audits(docname):
             if key in merged_data:
                 # If item exists, add actual quantity only
                 merged_data[key]["actual_quantity"] += row.actual_quantity or 0
+                # Take higher expected_quantity
+                if (row.expected_quantity or 0) > merged_data[key]["expected_quantity"]:
+                    merged_data[key]["expected_quantity"] = row.expected_quantity or 0
                 merged_data[key]["qty_difference"] =(
                     merged_data[key]["actual_quantity"] - merged_data[key]["expected_quantity"]
                 )
+                # Merge comments
+                existing_comments = merged_data[key]["comments"] or ""
+                new_comments = row.comments or ""
+                if new_comments and new_comments not in existing_comments:
+                    merged_data[key]["comments"] = existing_comments + "\n" + new_comments if existing_comments else new_comments
             else:
                 # If item is new, take all fields
                 merged_data[key] = {
@@ -45,16 +53,14 @@ def merge_audits(docname):
                     "expected_quantity": row.expected_quantity or 0,
                     "actual_quantity": row.actual_quantity or 0,
                     "qty_difference": (row.actual_quantity or 0) - (row.expected_quantity or 0),
-                    "counted_at": row.counted_at
+                    "counted_at": row.counted_at,
+                    "comments": row.comments
                 }
-
     # Clear old data
     doc.set("merged_items", [])
-
     # Add merged data to child table
     for item in merged_data.values():
         doc.append("merged_items", item)
-
     doc.save()
     return "Merged successfully!"
 
