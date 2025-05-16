@@ -6,14 +6,13 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_8lff",
-  "amended_from",
   "company",
-  "cost_center",
-  "status",
-  "fiscal_year",
-  "column_break_xihw",
   "request_type",
+  "purchase_person",
   "supplier",
+  "amended_from",
+  "status",
+  "column_break_xihw",
   "purchase_order",
   "remarks__justification",
   "po_details_section",
@@ -63,8 +62,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Supplier",
-   "options": "Supplier",
-   "reqd": 1
+   "options": "Supplier"
   },
   {
    "fieldname": "remarks__justification",
@@ -78,29 +76,8 @@
    "options": "Draft\nPending Approval\nApproved\nRejected\nPaid"
   },
   {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company",
-   "reqd": 1
-  },
-  {
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_xihw",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "fiscal_year",
-   "fieldtype": "Link",
-   "label": "Fiscal Year",
-   "options": "Fiscal Year",
-   "reqd": 1
   },
   {
    "fieldname": "po_details_section",
@@ -163,13 +140,26 @@
    "fieldtype": "Table",
    "label": "PO Payment Details",
    "options": "PO Payment Detail"
+  },
+  {
+   "fieldname": "purchase_person",
+   "fieldtype": "Link",
+   "label": "Purchase Person",
+   "options": "User"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-14 14:39:22.750864",
+ "modified": "2025-05-16 15:27:26.197328",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Supplier Payment Request",

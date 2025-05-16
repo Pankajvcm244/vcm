@@ -67,7 +67,7 @@ frappe.ui.form.on("Supplier Payment Request", {
             method: "frappe.client.get_list",
             args: {
                 doctype: "Purchase Invoice",
-                fields: ["name", "posting_date", "due_date", "grand_total", "outstanding_amount"],
+                fields: ["name", "posting_date","supplier","custom_purchase_person", "fiscal_year", "location", "cost_center","due_date", "grand_total", "outstanding_amount"],
                 filters: {
                     supplier: frm.doc.supplier,
                     docstatus: 1,
@@ -85,7 +85,73 @@ frappe.ui.form.on("Supplier Payment Request", {
                             posting_date: row.posting_date,
                             due_date: row.due_date,
                             grand_total: row.grand_total,
-                            outstanding_amount: row.outstanding_amount
+                            outstanding_amount: row.outstanding_amount,
+                            purchase_person: row.custom_purchase_person,
+                            fiscal_year: row.fiscal_year,
+                            location: row.location,
+                            cost_center: row.cost_center,
+                            supplier: row.supplier,
+                            amount_to_be_paid: row.outstanding_amount
+
+                        });
+                    });
+                    frm.refresh_field("pending_invoice_detail");
+                }
+            }
+            });
+            //PI entries for supplier
+        }
+    },
+    purchase_person: function(frm) {
+        const rt = frm.doc.request_type;
+        if (rt === "Advance Payments (against PO)") {
+            frm.clear_table("pending_invoice_detail");
+            frm.refresh_fields("pending_invoice_detail"); 
+            frm.set_query("purchase_order", function() {
+                return {
+                    filters: {
+                        supplier: frm.doc.supplier,
+                        company: frm.doc.company,
+                        status: ["not in", ["Closed", "Completed"]],
+                        docstatus: 1
+                    }
+                };
+            });
+            //} 
+        }
+        if (rt === "Credit Payments (against Invoice)") { 
+            frm.clear_table("po_payment_details");
+            frm.refresh_fields("po_payment_details");           
+            // Get PI entries for supplier
+            frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Purchase Invoice",
+                fields: ["name", "custom_purchase_person", "supplier", "fiscal_year", "location", "cost_center","posting_date", "due_date", "grand_total", "outstanding_amount"],
+                filters: {
+                    custom_purchase_person: frm.doc.purchase_person,
+                    docstatus: 1,
+                    company: frm.doc.company,
+                    outstanding_amount: [">", 0]
+                },
+                limit_page_length: 100
+            },
+            callback: function (r) {
+                if (r.message) {
+                    frm.clear_table("pending_invoice_detail");
+                    r.message.forEach(row => {
+                        const child = frm.add_child("pending_invoice_detail", {
+                            invoice: row.name,
+                            posting_date: row.posting_date,
+                            due_date: row.due_date,
+                            grand_total: row.grand_total,
+                            outstanding_amount: row.outstanding_amount,
+                            purchase_person: row.custom_purchase_person,
+                            fiscal_year: row.fiscal_year,
+                            location: row.location,
+                            cost_center: row.cost_center,
+                            supplier: row.supplier,
+                            amount_to_be_paid: row.outstanding_amount
                         });
                     });
                     frm.refresh_field("pending_invoice_detail");

@@ -165,59 +165,76 @@ def create_payment_entry_for_selected_invoices(docname):
     doc = frappe.get_doc("Supplier Payment Request", docname)
 
     if doc.request_type != "Credit Payments (against Invoice)":
-        frappe.throw(("Request Type must be 'Credit Payments (against Invoice)'."))
+        frappe.throw("Request Type must be 'Credit Payments (against Invoice)'.")
 
-    references = []
-    total_amount = 0
+    invoice_groups = {}
 
+    # Step 1: Group invoices by dimension combinations (including blanks)
     for row in doc.pending_invoice_detail:
-        if row.include_in_payment:
-            references.append({
-                "reference_doctype": "Purchase Invoice",
-                "reference_name": row.invoice,
-                "allocated_amount": row.outstanding_amount
-            })      
-    if not references:
-        frappe.throw(("Please select at least one invoice to create Payment Entry."))
+        if not row.include_in_payment:
+            continue
 
-    supplier = frappe.db.get_value("Purchase Invoice", references[0]["reference_name"], "supplier")
-    company = doc.company
+        invoice_doc = frappe.get_doc("Purchase Invoice", row.invoice)
 
-    pe = frappe.new_doc("Payment Entry")
-    pe.payment_type = "Pay"
-    pe.party_type = "Supplier"
-    pe.party = supplier
-    pe.posting_date = nowdate()
-    pe.company = company
-    pe.cost_center = doc.cost_center
-    pe.fiscal_year = doc.fiscal_year
-    # pe.paid_from = frappe.get_cached_value("Company", company, "default_bank_account")
-    # pe.paid_to = frappe.get_cached_value("Company", company, "default_payable_account")
-    pe.paid_from = "2320 - Canara Bank- Annakoot & Brajras - TSF"
-    pe.paid_to = "Sundry Creditors - Suppliers - TSF"
-    #remove this hard coding later on Pankaj
-    
-    pe.mode_of_payment = "Bank Transfer"
+        # Use row-level or fallback to Supplier Payment Request-level
+        cost_center = getattr(row, "cost_center", None) or doc.get("cost_center")
+        location = getattr(row, "location", None) or doc.get("location")
+        fiscal_year = doc.fiscal_year  # always taken from doc
+        supplier = invoice_doc.supplier
 
-    for row in doc.pending_invoice_detail:
-        if row.include_in_payment:
-            if not supplier:
-                supplier = frappe.db.get_value("Purchase Invoice", row.invoice, "supplier")
-                pe.party = supplier
+        # Keep blank values in the key
+        group_key = (supplier, cost_center, location, fiscal_year)
 
+        invoice_groups.setdefault(group_key, []).append({
+            "invoice": row.invoice,
+            "outstanding_amount": row.amount_to_be_paid
+        })
+
+    if not invoice_groups:
+        frappe.throw("Please select at least one invoice to create Payment Entry.")
+
+    created_entries = []
+
+    # Step 2: Create a Payment Entry per unique group
+    for key, invoice_list in invoice_groups.items():
+        supplier, cost_center, location, fiscal_year = key
+        total_amount = sum(float(inv["outstanding_amount"]) for inv in invoice_list)
+
+        pe = frappe.new_doc("Payment Entry")
+        pe.payment_type = "Pay"
+        pe.party_type = "Supplier"
+        pe.party = supplier
+        pe.posting_date = nowdate()
+        pe.company = doc.company
+
+        # Dimensions — set only if not None
+        if cost_center:
+            pe.cost_center = cost_center
+        if location:
+            pe.location = location
+        if fiscal_year:
+            pe.fiscal_year = fiscal_year
+
+        # Customize accounts or make dynamic
+        pe.paid_from = "2320 - Canara Bank- Annakoot & Brajras - TSF"
+        pe.paid_to = "Sundry Creditors - Suppliers - TSF"
+        pe.mode_of_payment = "Bank Transfer"
+
+        for inv in invoice_list:
             pe.append("references", {
                 "reference_doctype": "Purchase Invoice",
-                "reference_name": row.invoice,
-                "allocated_amount": row.outstanding_amount
+                "reference_name": inv["invoice"],
+                "allocated_amount": float(inv["outstanding_amount"])
             })
 
-            total_amount += row.outstanding_amount
-    pe.paid_amount = total_amount
-    pe.received_amount = total_amount
-    pe.reference_no = doc.name
-    pe.reference_date = nowdate()
+        pe.paid_amount = total_amount
+        pe.received_amount = total_amount
+        pe.reference_no = doc.name
+        pe.reference_date = nowdate()
 
-    pe.insert(ignore_permissions=True)
-    #pe.submit()
+        pe.insert(ignore_permissions=True)
+        # pe.submit()
 
-    return pe.name
+        created_entries.append(pe.name)
+
+    return created_entries

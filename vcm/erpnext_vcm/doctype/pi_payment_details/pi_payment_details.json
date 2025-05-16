@@ -7,10 +7,16 @@
  "engine": "InnoDB",
  "field_order": [
   "invoice",
+  "purchase_person",
+  "cost_center",
+  "location",
+  "fiscal_year",
   "posting_date",
   "due_date",
+  "supplier",
   "grand_total",
   "outstanding_amount",
+  "amount_to_be_paid",
   "include_in_payment"
  ],
  "fields": [
@@ -51,13 +57,58 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Include in Payment"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Location",
+   "options": "Budget Location",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount_to_be_paid",
+   "fieldtype": "Data",
+   "label": "Amount To Be Paid"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_person",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purchase Person",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-14 12:44:33.033622",
+ "modified": "2025-05-16 14:37:41.013305",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "PI Payment Details",
