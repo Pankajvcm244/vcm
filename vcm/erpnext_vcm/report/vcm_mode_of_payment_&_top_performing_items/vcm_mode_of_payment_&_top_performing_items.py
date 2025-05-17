@@ -68,7 +68,6 @@ def execute(filters=None):
         WHERE {conditions_sql}
         GROUP BY si_item.item_code, si_item.item_name
         ORDER BY total_qty DESC
-        LIMIT 10
         """.format(conditions_sql=conditions_sql), 
         values, as_dict=True
     )
