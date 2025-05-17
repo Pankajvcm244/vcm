@@ -86,6 +86,7 @@ def cancel_stock_entry(doc):
         frappe.log_error(f"Error canceling Stock Entry {doc.stock_entry_reference}: {str(e)}", "Stock Entry Cancellation Error")
         frappe.throw(f"<b style='color: red;'>Failed to cancel Stock Entry.</b><br><br><b>Error:</b> {str(e)}")
 
+
 def send_email_notification(doc):
     """Send a modern email notification after submission of VcmFocBilling."""
 
@@ -148,8 +149,6 @@ def send_email_notification(doc):
     message += """
             </table>
 
-           
-
             <div style="margin-top: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #dc3545;">
                 <strong>📞 Need Help?</strong><br>
                 Contact Krishna Prasadam Counter:<br>
@@ -166,8 +165,12 @@ def send_email_notification(doc):
     """
 
     try:
+        # Prepare CC if email_cc is filled
+        cc_list = [doc.email_cc] if doc.email_cc else []
+
         frappe.sendmail(
             recipients=[recipient_email],
+            cc=cc_list,
             subject=subject,
             message=message
         )
@@ -176,5 +179,6 @@ def send_email_notification(doc):
         error_message = f"❌ Error sending email for {doc.name}: {str(e)}"
         frappe.log_error(error_message, "Email Notification Error")
         frappe.throw(f"Failed to send email. Please contact the ERP team. Error: {str(e)}")
+
 
 

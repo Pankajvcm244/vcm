@@ -7,6 +7,7 @@
  "field_order": [
   "foc_devotee_email",
   "foc_devotee_name",
+  "email_cc",
   "column_break_dfxj",
   "remarks",
   "grand_total",
@@ -128,12 +129,18 @@
    "label": "Material Recipient",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "email_cc",
+   "fieldtype": "Link",
+   "label": "Email CC",
+   "options": "User"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-19 09:54:04.086294",
+ "modified": "2025-05-15 17:48:38.584729",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "KP FOC Issue",
