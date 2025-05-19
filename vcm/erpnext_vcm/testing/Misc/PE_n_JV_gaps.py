@@ -1,77 +1,82 @@
-#bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.PE_n_JV_gaps.export_payment_journal_discrepancies_to_excel
+#bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.PE_n_JV_gaps.export_pe_je_discrepancies
 
 import frappe
 import pandas as pd
 import os
 
-def export_payment_journal_discrepancies_to_excel():
-    rows = []
+import frappe
+import pandas as pd
+import os
+from datetime import datetime, timedelta
 
-    # Step 1: Find Payment Entries linked to Journal Entries
-    journal_links = frappe.db.sql("""
-        SELECT 
-            jea.reference_name AS payment_entry,
-            je.name AS journal_entry,
-            jea.account,
-            jea.debit,
-            jea.credit,
-            je.company AS je_company,
-            jea.cost_center,
-            jea.budget_head
+def find_matching_journal_entry(pe):
+    """
+    Try to find a Journal Entry matching the Payment Entry based on party, amount, and date.
+    """
+    return frappe.db.sql("""
+        SELECT
+            je.name, je.posting_date, je.company, jea.account,
+            jea.debit, jea.credit, jea.cost_center, jea.budget_head, jea.location
         FROM `tabJournal Entry` je
         JOIN `tabJournal Entry Account` jea ON je.name = jea.parent
-        WHERE jea.reference_type = 'Payment Entry'
-        AND je.docstatus = 1
-    """, as_dict=True)
+        WHERE
+            je.docstatus = 1
+            AND je.posting_date BETWEEN DATE_SUB(%s, INTERVAL 5 DAY) AND DATE_ADD(%s, INTERVAL 5 DAY)
+            AND jea.party = %s
+            AND ABS(jea.debit - %s) < 0.01 OR ABS(jea.credit - %s) < 0.01
+        LIMIT 1
+    """, (pe.posting_date, pe.posting_date, pe.party, pe.paid_amount, pe.paid_amount), as_dict=True)
 
-    # Step 2: Process and compare with Payment Entry
-    for link in journal_links:
-        try:
-            pe = frappe.get_doc("Payment Entry", link.payment_entry)
+def export_pe_je_discrepancies():
+    rows = []
+    payment_entries = frappe.get_all("Payment Entry", filters={"docstatus": 1}, fields=["name", "posting_date", "party", "paid_amount", "paid_from", "paid_to", "company"])
 
-            pe_deduction = pe.deductions[0] if pe.deductions else None
+    for pe_data in payment_entries:
+        pe = frappe.get_doc("Payment Entry", pe_data.name)
+        je_matches = find_matching_journal_entry(pe)
 
-            discrepancy = {
-                "Payment Entry": pe.name,
-                "Journal Entry": link.journal_entry,
-                "Company (PE)": pe.company,
-                "Company (JE)": link.je_company,
-                "Party (PE)": pe.party,
-                "Account (PE Paid From)": pe.paid_from,
-                "Account (PE Paid To)": pe.paid_to,
-                "Account (JE)": link.account,
-                "PE Amount": pe.paid_amount,
-                "JE Debit": link.debit,
-                "JE Credit": link.credit,
-                "Cost Center (PE)": pe_deduction.cost_center if pe_deduction else "",
-                "Cost Center (JE)": link.cost_center,
-                "Budget Head (PE)": pe_deduction.budget_head if pe_deduction else "",
-                "Budget Head (JE)": link.budget_head,
-                "Location (PE)": getattr(pe, "location", ""),
-                "Location (JE)": getattr(frappe.get_doc("Journal Entry", link.journal_entry), "location", "")
-            }
+        if not je_matches:
+            continue  # No match found
 
-            # Check for differences
-            if any([
-                discrepancy["Company (PE)"] != discrepancy["Company (JE)"],
-                discrepancy["Account (PE Paid To)"] != link.account and discrepancy["Account (PE Paid From)"] != link.account,
-                abs(discrepancy["PE Amount"] - (link.debit or 0) - (link.credit or 0)) > 0.01,
-                discrepancy["Cost Center (PE)"] != discrepancy["Cost Center (JE)"],
-                discrepancy["Budget Head (PE)"] != discrepancy["Budget Head (JE)"],
-                discrepancy["Location (PE)"] != discrepancy["Location (JE)"],
-            ]):
-                rows.append(discrepancy)
+        je = je_matches[0]
 
-        except Exception:
-            frappe.log_error(frappe.get_traceback(), "Payment-Journal Discrepancy Error")
+        pe_deduction = pe.deductions[0] if pe.deductions else {}
+
+        discrepancy = {
+            "Payment Entry": pe.name,
+            "Journal Entry": je.name,
+            "Company (PE)": pe.company,
+            "Company (JE)": je.company,
+            "Party": pe.party,
+            "Account (PE Paid From)": pe.paid_from,
+            "Account (PE Paid To)": pe.paid_to,
+            "JE Account": je.account,
+            "PE Amount": pe.paid_amount,
+            "JE Amount": je.debit or je.credit,
+            "Cost Center (PE)": pe.get("cost_center", ""),
+            "Cost Center (JE)": je.cost_center,
+            "Budget Head (PE)": pe.get("budget_head", ""),
+            "Budget Head (JE)": je.budget_head,
+            "Location (PE)": pe.get("location", ""),
+            "Location (JE)": je.location,
+        }
+
+        # Check for differences
+        if any([
+            discrepancy["Company (PE)"] != discrepancy["Company (JE)"],
+            discrepancy["JE Account"] not in [discrepancy["Account (PE Paid From)"], discrepancy["Account (PE Paid To)"]],
+            abs(discrepancy["PE Amount"] - discrepancy["JE Amount"]) > 0.01,
+            discrepancy["Cost Center (PE)"] != discrepancy["Cost Center (JE)"],
+            discrepancy["Budget Head (PE)"] != discrepancy["Budget Head (JE)"],
+            discrepancy["Location (PE)"] != discrepancy["Location (JE)"],
+        ]):
+            rows.append(discrepancy)
 
     if not rows:
         print("✅ No discrepancies found.")
         return
 
-    # Step 3: Export to Excel
     df = pd.DataFrame(rows)
-    export_path = os.path.join(frappe.utils.get_site_path(), "private", "files", "payment_journal_discrepancies.xlsx")
+    export_path = os.path.join(frappe.utils.get_site_path(), "private", "files", "pe_je_discrepancies.xlsx")
     df.to_excel(export_path, index=False)
-
-    print(f"✅ Discrepancy report exported to: {export_path}")
+    print(f"✅ Exported to {export_path}")

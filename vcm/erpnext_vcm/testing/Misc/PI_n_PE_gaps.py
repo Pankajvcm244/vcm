@@ -1,5 +1,5 @@
 
-# bench --site pankaj.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.PI_n_PE_gaps.export_invoice_payment_discrepancies_to_excel
+# bench --site erp.vcmerp.in execute vcm.erpnext_vcm.testing.Misc.PI_n_PE_gaps.export_invoice_payment_discrepancies_to_excel
 
 import frappe
 import pandas as pd
@@ -48,12 +48,12 @@ def export_invoice_payment_discrepancies_to_excel():
                 "Credit To (PI)": pi.credit_to,
                 "PI Amount": pi.grand_total,
                 "PE Allocated": ref.allocated_amount,
-                "Cost Center (PI)": pi_item.cost_center if pi_item else "",
-                "Cost Center (PE)": pe_deduction.cost_center if pe_deduction else "",
-                "Location (PI)": getattr(pi, "location", ""),
-                "Location (PE)": getattr(pe, "location", ""),
-                "Budget Head (PI)": pi_item.budget_head if pi_item and hasattr(pi_item, "budget_head") else "",
-                "Budget Head (PE)": pe_deduction.budget_head if pe_deduction and hasattr(pe_deduction, "budget_head") else "",
+                "Cost Center (PI)": pi.cost_center,
+                "Cost Center (PE)": pe.get("cost_center", ""),
+                "Location (PI)": pi.location,
+                "Location (PE)": pe.get("location", ""),
+                "Budget Head (PI)": pi.budget_head,
+                "Budget Head (PE)": pe.get("budget_head", ""),
             }
 
             # Only include rows with mismatches
