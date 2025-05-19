@@ -277,6 +277,7 @@ def create_material_request(material_requests):
 				"company": company,
 				"transaction_date": nowdate(),
 				"material_request_type": "Material Transfer" if request_type == "Transfer" else request_type,
+				"title": f"AUTO: {request_type} Request - {warehouse}"
 			})
 
 			for d in grouped_items:
