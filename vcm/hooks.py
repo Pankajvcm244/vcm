@@ -216,23 +216,23 @@ HKMJournalEntry = VCMJournalEntry
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"vcm.tasks.all"
 # 	],
-# 	"daily": [
-# 		"vcm.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"vcm.tasks.hourly"
-# 	],
+	"daily": [
+		"vcm.erpnext_vcm.utilities.custom_reorder.reorder_item"
+	],
+	# "hourly": [
+	# 	"vcm.erpnext_vcm.utilities.custom_reorder.custom_daily_reorder"
+	# ],
 # 	"weekly": [
 # 		"vcm.tasks.weekly"
 # 	],
 # 	"monthly": [
 # 		"vcm.tasks.monthly"
 # 	],
-# }
+}
 
 # Testing
 # -------

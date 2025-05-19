@@ -99,6 +99,7 @@ def create_payment_entry_from_request(docname):
     pe.party_type = "Supplier"
     pe.cost_center = doc.cost_center
     pe.fiscal_year = doc.fiscal_year
+    pe.budget_head = doc.budget_head
     pe.party = doc.supplier
     pe.company = doc.company
     pe.paid_from = paid_from_account
@@ -181,9 +182,11 @@ def create_payment_entry_for_selected_invoices(docname):
         location = getattr(row, "location", None) or doc.get("location")
         fiscal_year = doc.fiscal_year  # always taken from doc
         supplier = invoice_doc.supplier
+        budget_head = getattr(row, "budget_head", None) or doc.get("budget_head")
+
 
         # Keep blank values in the key
-        group_key = (supplier, cost_center, location, fiscal_year)
+        group_key = (supplier, cost_center, location, fiscal_year, budget_head)
 
         invoice_groups.setdefault(group_key, []).append({
             "invoice": row.invoice,
@@ -197,7 +200,7 @@ def create_payment_entry_for_selected_invoices(docname):
 
     # Step 2: Create a Payment Entry per unique group
     for key, invoice_list in invoice_groups.items():
-        supplier, cost_center, location, fiscal_year = key
+        supplier, cost_center, location, fiscal_year, budget_head = key
         total_amount = sum(float(inv["outstanding_amount"]) for inv in invoice_list)
 
         pe = frappe.new_doc("Payment Entry")
@@ -214,6 +217,8 @@ def create_payment_entry_for_selected_invoices(docname):
             pe.location = location
         if fiscal_year:
             pe.fiscal_year = fiscal_year
+        if budget_head:
+            pe.budget_head = budget_head
 
         # Customize accounts or make dynamic
         pe.paid_from = "2320 - Canara Bank- Annakoot & Brajras - TSF"

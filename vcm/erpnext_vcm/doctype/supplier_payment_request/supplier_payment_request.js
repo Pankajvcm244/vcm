@@ -67,7 +67,7 @@ frappe.ui.form.on("Supplier Payment Request", {
             method: "frappe.client.get_list",
             args: {
                 doctype: "Purchase Invoice",
-                fields: ["name", "posting_date","supplier","custom_purchase_person", "fiscal_year", "location", "cost_center","due_date", "grand_total", "outstanding_amount"],
+                fields: ["name", "posting_date","supplier","budget_head","custom_purchase_person", "fiscal_year", "location", "cost_center","due_date", "grand_total", "outstanding_amount"],
                 filters: {
                     supplier: frm.doc.supplier,
                     docstatus: 1,
@@ -90,6 +90,7 @@ frappe.ui.form.on("Supplier Payment Request", {
                             fiscal_year: row.fiscal_year,
                             location: row.location,
                             cost_center: row.cost_center,
+                            budget_head: row.budget_head,
                             supplier: row.supplier,
                             amount_to_be_paid: row.outstanding_amount
 
@@ -127,7 +128,7 @@ frappe.ui.form.on("Supplier Payment Request", {
             method: "frappe.client.get_list",
             args: {
                 doctype: "Purchase Invoice",
-                fields: ["name", "custom_purchase_person", "supplier", "fiscal_year", "location", "cost_center","posting_date", "due_date", "grand_total", "outstanding_amount"],
+                fields: ["name", "custom_purchase_person", "budget_head", "supplier", "fiscal_year", "location", "cost_center","posting_date", "due_date", "grand_total", "outstanding_amount"],
                 filters: {
                     custom_purchase_person: frm.doc.purchase_person,
                     docstatus: 1,
@@ -150,6 +151,7 @@ frappe.ui.form.on("Supplier Payment Request", {
                             fiscal_year: row.fiscal_year,
                             location: row.location,
                             cost_center: row.cost_center,
+                            budget_head: row.budget_head,
                             supplier: row.supplier,
                             amount_to_be_paid: row.outstanding_amount
                         });

@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-17 17:34:05.981562",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "auto_material_request_section",
+  "raise_mr_when_stock_reaches_reorder_level",
+  "notify_by_email_on_creation_of_automatic_mr"
+ ],
+ "fields": [
+  {
+   "fieldname": "auto_material_request_section",
+   "fieldtype": "Section Break",
+   "label": "Auto Material Request"
+  },
+  {
+   "default": "0",
+   "fieldname": "raise_mr_when_stock_reaches_reorder_level",
+   "fieldtype": "Check",
+   "label": "Raise MR When Stock Reaches Reorder Level"
+  },
+  {
+   "default": "0",
+   "fieldname": "notify_by_email_on_creation_of_automatic_mr",
+   "fieldtype": "Check",
+   "label": " Notify by Email on Creation of Automatic MR"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-05-17 17:36:17.283907",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM General Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Administrator",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
