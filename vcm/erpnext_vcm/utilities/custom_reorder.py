@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 @frappe.whitelist()
 def reorder_item():
 	"""Reorder item if stock reaches reorder level"""
-	logging.debug(f"in reorder_item ")
+	#logging.debug(f"in reorder_item ")
 	
 	# Fetch the VCM General Settings
 	settings = frappe.get_single("VCM General Settings")
@@ -32,7 +32,7 @@ def reorder_item():
 		return
 	
 	if cint(frappe.db.get_value("Stock Settings", None, "auto_indent")):
-		logging.debug(f" Stock settings is enabled  in reorder_item 2 ")
+		#logging.debug(f" Stock settings is enabled  in reorder_item 2 ")
 		return _reorder_item()
 	
 
@@ -47,7 +47,7 @@ def _reorder_item():
 	default_company = (
 		erpnext.get_default_company() or frappe.db.sql("""select name from tabCompany limit 1""")[0][0]
 	)
-	logging.debug(f"in _reorder_item 0 ")
+	#logging.debug(f"in _reorder_item 0 ")
 	items_to_consider = get_items_for_reorder()
 	#logging.debug(f"in reorder_item 1 {items_to_consider} ")#logging.debug(f"in reorder_item 1 {items_to_consider} ")
 	
@@ -85,7 +85,7 @@ def _reorder_item():
 				reorder_qty = deficiency
 
 			company = warehouse_company.get(kwargs.warehouse) or default_company
-			logging.debug(f"in reorder_item 3-2 MR {kwargs.item_code}, {kwargs.warehouse}, {reorder_qty} ")
+			#logging.debug(f"in reorder_item 3-2 MR {kwargs.item_code}, {kwargs.warehouse}, {reorder_qty} ")
 			material_requests[kwargs.material_request_type].setdefault(company, []).append(
 				{
 					"item_code": kwargs.item_code,
@@ -125,7 +125,7 @@ def _reorder_item():
 			)
 
 	if material_requests:
-		logging.debug(f"calling create_material_request   ")
+		#logging.debug(f"calling create_material_request   ")
 		return create_material_request(material_requests)
 
 
@@ -300,7 +300,7 @@ def create_material_request(material_requests):
 				qty = d.reorder_qty / conversion_factor
 				if must_be_whole_number:
 					qty = ceil(qty)
-				logging.debug(f" Create MR {item.item_code}, {item.item_name}, {qty} ")
+				#logging.debug(f" Create MR {item.item_code}, {item.item_name}, {qty} ")
 				mr.append("items", {
 					"doctype": "Material Request Item",
 					"item_code": d.item_code,
@@ -351,14 +351,14 @@ def send_email_notification(warehouse_type_mr_map):
     Send notification emails per (company, warehouse, request_type) with list of MRs
     """
 
-    logging.debug("send_email_notification: Start")
+    #logging.debug("send_email_notification: Start")
 
     # Fetch the VCM General Settings
     settings = frappe.get_single("VCM General Settings")
 
     # Check if the email send checkbox is enabled
     if not settings.notify_by_email_on_creation_of_automatic_mr:
-        logging.debug("send_email_notification: Email notifications are disabled in settings.")
+        #logging.debug("send_email_notification: Email notifications are disabled in settings.")
         return
 
     for key, mr_list in warehouse_type_mr_map.items():
@@ -367,10 +367,10 @@ def send_email_notification(warehouse_type_mr_map):
             company, warehouse, request_type = key[:3]
 
             email_list = get_email_list(company)
-            logging.debug(f"send_email_notification: Email list for {company} - {warehouse}: {email_list}")
+            #logging.debug(f"send_email_notification: Email list for {company} - {warehouse}: {email_list}")
 
             if not email_list:
-                logging.debug(f"send_email_notification: No email recipients found for {company}")
+                #logging.debug(f"send_email_notification: No email recipients found for {company}")
                 continue
 
             context = {
@@ -385,7 +385,7 @@ def send_email_notification(warehouse_type_mr_map):
             subject = _("Auto Order Material {0} Requests for Warehouse: {1}").format(type_label, warehouse)
 
             msg = frappe.render_template("utilities/email_templates/custom_reorder_mr.html", context)
-            logging.debug(f"send_email_notification: Rendered email content for {company} - {warehouse}")
+            #logging.debug(f"send_email_notification: Rendered email content for {company} - {warehouse}")
 
             frappe.sendmail(
                 recipients=email_list,
