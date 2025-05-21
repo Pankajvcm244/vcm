@@ -1,14 +1,14 @@
 frappe.ui.form.on("Payment Entry", {
-    onload: function(frm) {
-        frm.set_query("custom_purchase_person", function() {
-            return {
-                filters: {
-                    role: "Purchase User"
-                },
-                order_by: "full_name ASC"  // Sort alphabetically
-            };
-        });
-    },
+    // onload: function(frm) {
+    //     frm.set_query("custom_purchase_person", function() {
+    //         return {
+    //             filters: {
+    //                 role: "Purchase User"
+    //             },
+    //             order_by: "full_name ASC"  // Sort alphabetically
+    //         };
+    //     });
+    // },
     refresh: function(frm) {
         // fill purchase_person from PI and PO
         if (frm.doc.references && frm.doc.references.length > 0) {
