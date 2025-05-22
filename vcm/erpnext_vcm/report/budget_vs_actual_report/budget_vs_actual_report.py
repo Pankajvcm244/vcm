@@ -97,7 +97,15 @@ def get_data(filters):
                 pe.paid_amount AS amount,
                 'PE' AS source
             FROM `tabPayment Entry` pe
-            WHERE pe.docstatus = 1 AND pe.budget_head IS NOT NULL {pe_conditions}
+            LEFT JOIN `tabPayment Entry Reference` per ON per.parent = pe.name
+            WHERE pe.docstatus = 1
+                AND pe.budget_head IS NOT NULL
+                AND (
+                    per.reference_doctype IS NULL
+                    OR (per.reference_doctype NOT IN ('Purchase Invoice', 'Purchase Order'))
+                )
+                {pe_conditions}
+
 
             UNION ALL
 
