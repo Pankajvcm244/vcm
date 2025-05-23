@@ -6,12 +6,11 @@
 
 import json
 from math import ceil
-# bench --site pankaj.vcmerp.in execute erpnext.stock.reorder_item.reorder_item
 import frappe
-from frappe import _
-from frappe.utils import add_days, cint, flt, nowdate
-
 import erpnext
+from frappe import _
+from frappe.utils import add_days, cint, flt, nowdate, getdate
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -31,9 +30,7 @@ def reorder_item():
 	if not (frappe.db.a_row_exists("Company") and frappe.db.a_row_exists("Fiscal Year")):
 		return
 	
-	if cint(frappe.db.get_value("Stock Settings", None, "auto_indent")):
-		#logging.debug(f" Stock settings is enabled  in reorder_item 2 ")
-		return _reorder_item()
+	return _reorder_item()
 	
 
 def _reorder_item():
@@ -85,16 +82,24 @@ def _reorder_item():
 				reorder_qty = deficiency
 
 			company = warehouse_company.get(kwargs.warehouse) or default_company
-			#logging.debug(f"in reorder_item 3-2 MR {kwargs.item_code}, {kwargs.warehouse}, {reorder_qty} ")
-			material_requests[kwargs.material_request_type].setdefault(company, []).append(
-				{
-					"item_code": kwargs.item_code,
-					"warehouse": kwargs.warehouse,
-					"reorder_qty": reorder_qty,
-					"item_details": kwargs.item_details,
-				}
-			)
-			#logging.debug(f"in reorder_item 4 {kwargs.item_code}, {kwargs.warehouse}, {reorder_qty} ")
+			logging.debug(f"in reorder_item 3-2 MR {kwargs.item_code}, {kwargs.warehouse}, {reorder_qty} ")
+			entry = {
+				"item_code": kwargs.item_code,
+				"warehouse": kwargs.warehouse,  # TARGET warehouse
+				"reorder_qty": reorder_qty,
+				"item_details": kwargs.item_details,
+			}
+			# For Transfer requests, add source_warehouse explicitly from accouting tab of item default
+			source_warehouse = None
+			if kwargs.material_request_type == "Transfer":
+				#entry["source_warehouse"] = kwargs.source_warehouse or kwargs.warehouse  # fallback to target if not set
+				entry["source_warehouse"] = frappe.db.get_value(
+					"Item Default",
+					{"parent": kwargs.item_code, "parenttype": "Item"},
+					"default_warehouse"
+				)
+			material_requests[kwargs.material_request_type].setdefault(company, []).append(entry)
+			#logging.debug(f"in reorder_item 4 {kwargs.item_code}, {kwargs.warehouse}, {source_warehouse}, {reorder_qty} ")
 
 	#logging.debug(f"in reorder_item 5 {items_to_consider} ")
 	for item_code, reorder_levels in items_to_consider.items():
@@ -104,7 +109,8 @@ def _reorder_item():
 
 			add_to_material_request(
 				item_code=item_code,
-				warehouse=d.warehouse,
+				warehouse=d.warehouse,  # target
+				source_warehouse=d.source_warehouse if hasattr(d, "source_warehouse") else None,
 				reorder_level=d.warehouse_reorder_level,
 				reorder_qty=d.warehouse_reorder_qty,
 				material_request_type=d.material_request_type,
@@ -251,7 +257,12 @@ def create_material_request(material_requests):
 		if mr:
 			mr.log_error("Unable to create material request")
 
-	# This will store MRs grouped by (company, request_type, warehouse)
+	def should_run_purchase_request():
+		logging.debug(f"create_material_request PO checking {getdate(nowdate()).weekday()}    ")
+		# Monday is 0, friday is 4, 
+		return getdate(nowdate()).weekday() == 4  # Monday
+
+	# Group by (company, request_type, warehouse_key)
 	grouped_requests = frappe._dict()
 
 	# Group reorder lines
@@ -263,21 +274,38 @@ def create_material_request(material_requests):
 
 			for d in items:
 				d = frappe._dict(d)
-				warehouse = d.get("warehouse")
-				if not warehouse:
-					continue
-				key = (company, request_type, warehouse)
+				if request_type == "Transfer":
+					warehouse_key = d.get("source_warehouse")
+					#logging.debug(f"create_material_request TX Key  {warehouse_key}    ")
+					if not warehouse_key:
+						#logging.debug(f"Missing source_warehouse for Transfer  : {d.get('item_code')} ") 	
+						continue
+				else:  # Purchase
+					# if not should_run_purchase_request():
+					# 	continue
+					warehouse_key = d.get("warehouse")
+					#logging.debug(f"create_material_request PO Key {warehouse_key}    ")
+					if not warehouse_key:
+						#logging.debug(f"Missing warehouse for Purchase: {d.get('item_code')} ") 
+						continue
+				
+				key = (company, request_type, warehouse_key)
 				grouped_requests.setdefault(key, []).append(d)
+				#logging.debug(f"grouped req: {grouped_requests} ")
 
-	# Create MR per (company, request_type, warehouse)
-	for (company, request_type, warehouse), grouped_items in grouped_requests.items():
+	# Create MR per (company, request_type, warehouse_key)
+	for (company, request_type, warehouse_key), grouped_items in grouped_requests.items():
 		try:
 			mr = frappe.new_doc("Material Request")
 			mr.update({
 				"company": company,
 				"transaction_date": nowdate(),
 				"material_request_type": "Material Transfer" if request_type == "Transfer" else request_type,
-				"title": f"AUTO: {request_type} Request - {warehouse}"
+				"title": f"AUTO: {request_type} Request - {warehouse_key}",
+				# "set_from_warehouse": d.source_warehouse if request_type == "Transfer" else None,
+				# "set_warehouse": d.warehouse, # Always the target
+				"set_warehouse": grouped_items[0].warehouse , # Always the target
+				"set_from_warehouse": grouped_items[0].get("source_warehouse") if request_type == "Transfer" else None,
 			})
 
 			for d in grouped_items:
@@ -309,13 +337,13 @@ def create_material_request(material_requests):
 					"conversion_factor": conversion_factor,
 					"uom": uom,
 					"stock_uom": item.stock_uom,
-					"warehouse": d.warehouse,
+					"warehouse": d.warehouse, # Always the target
 					"item_name": item.item_name,
 					"description": item.description,
 					"item_group": item.item_group,
 					"brand": item.brand,
 				})
-
+			
 			schedule_dates = [d.schedule_date for d in mr.items]
 			mr.schedule_date = max(schedule_dates or [nowdate()])
 			mr.flags.ignore_mandatory = True
@@ -327,40 +355,39 @@ def create_material_request(material_requests):
 			_log_exception(mr)
 
 	# Optional: send email notifications
-	if getattr(frappe.local, "reorder_email_notify", None) is None:
-		frappe.local.reorder_email_notify = cint(
-			frappe.db.get_value("VCM General Settings", None, "notify_by_email_on_creation_of_automatic_mr")
-		)
+	# if getattr(frappe.local, "reorder_email_notify", None) is None:
+	# 	frappe.local.reorder_email_notify = cint(
+	# 		frappe.db.get_value("VCM General Settings", None, "notify_by_email_on_creation_of_automatic_mr")
+	# 	)
 
-	if frappe.local.reorder_email_notify:
-		# Correct grouping for email notification
-		warehouse_type_mr_map = frappe._dict()
-		for mr in mr_list:
-			key = (mr.company, mr.items[0].warehouse, mr.material_request_type)
-			warehouse_type_mr_map.setdefault(key, []).append(mr)
-		send_email_notification(warehouse_type_mr_map)
+	# if frappe.local.reorder_email_notify:
+	# 	# Correct grouping for email notification
+	# 	warehouse_type_mr_map = frappe._dict()
+	# 	for mr in mr_list:
+	# 		key = (mr.company, mr.items[0].warehouse, mr.material_request_type)
+	# 		warehouse_type_mr_map.setdefault(key, []).append(mr)
+	# 	#send_email_notification(warehouse_type_mr_map)
 
-	if exceptions_list:
-		notify_errors(exceptions_list)
+	# if exceptions_list:
+	# 	#this sends email for errors
+	# 	notify_errors(exceptions_list)
 
 	return mr_list
 
 
 def send_email_notification(warehouse_type_mr_map):
-    """
-    Send notification emails per (company, warehouse, request_type) with list of MRs
-    """
-
-    #logging.debug("send_email_notification: Start")
+	# """
+	# Send notification emails per (company, warehouse, request_type) with list of MRs
+	# """
+    #logging.debug(f"send_email_notification: Start")
 
     # Fetch the VCM General Settings
     settings = frappe.get_single("VCM General Settings")
 
     # Check if the email send checkbox is enabled
-    if not settings.notify_by_email_on_creation_of_automatic_mr:
-        #logging.debug("send_email_notification: Email notifications are disabled in settings.")
+    if settings.notify_by_email_on_creation_of_automatic_mr:
+        #logging.debug(f"send_email_notification: Email notifications are disabled in settings.")
         return
-
     for key, mr_list in warehouse_type_mr_map.items():
         try:
             # Unpack key safely
