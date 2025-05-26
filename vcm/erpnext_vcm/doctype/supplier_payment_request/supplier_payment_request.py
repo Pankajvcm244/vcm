@@ -7,6 +7,9 @@ from frappe.model.document import Document
 from frappe.model.naming import getseries
 from frappe.utils import nowdate
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 class SupplierPaymentRequest(Document):
     def autoname(self):
@@ -243,3 +246,67 @@ def create_payment_entry_for_selected_invoices(docname):
         created_entries.append(pe.name)
 
     return created_entries
+
+@frappe.whitelist()
+def get_purchase_orders_without_invoice_or_payment(doctype, txt, searchfield, start, page_len, filters):
+    #  We want to show Purchase Orders that:
+        # Have no Purchase Invoice
+        # Have no Payment Entry except if only cancelled PEs (docstatus = 2) exist, SO PE evein in draft will remove from PO list
+    company = filters.get("company")
+    department = filters.get("department")
+
+    return frappe.db.sql("""
+        SELECT po.name, po.supplier_name
+        FROM `tabPurchase Order` po
+        LEFT JOIN `tabPurchase Invoice Item` pii 
+            ON pii.purchase_order = po.name
+        WHERE pii.name IS NULL
+            AND NOT EXISTS (
+                SELECT 1
+                FROM `tabPayment Entry Reference` per
+                JOIN `tabPayment Entry` pe ON pe.name = per.parent
+                WHERE per.reference_name = po.name
+                  AND per.reference_doctype = 'Purchase Order'
+                  AND pe.docstatus != 2  -- Exclude only cancelled Payment Entries
+            )
+            AND po.docstatus = 1
+            AND po.status NOT IN ('Closed', 'Completed')
+            AND po.custom_advance_amount > 0
+            AND po.company = %(company)s
+            AND po.department = %(department)s
+            AND (po.name LIKE %(txt)s OR po.supplier_name LIKE %(txt)s)
+        GROUP BY po.name
+        ORDER BY po.name ASC
+        LIMIT %(start)s, %(page_len)s
+    """, {
+        "company": company,
+        "department": department,
+        "txt": f"%{txt}%",
+        "start": start,
+        "page_len": page_len
+    })
+
+
+@frappe.whitelist()
+def get_unlinked_payment_sum(supplier, company):
+    #logging.debug(f"in get_unlinked_payment_sum with supplier: {supplier}, company: {company}")
+    result = frappe.db.sql("""
+        SELECT SUM(pe.unallocated_amount) AS total_unsettled
+        FROM `tabPayment Entry` pe
+        WHERE pe.party_type = 'Supplier'
+          AND pe.party = %(supplier)s
+          AND pe.company = %(company)s
+          AND pe.docstatus = 1
+          AND pe.payment_type = 'Pay'
+          AND pe.unallocated_amount > 0
+          AND NOT EXISTS (
+              SELECT 1 FROM `tabPayment Entry Reference` per
+              WHERE per.parent = pe.name
+                AND per.reference_doctype = 'Purchase Invoice'
+          )
+    """, {
+        "supplier": supplier,
+        "company": company
+    }, as_dict=True)
+    #logging.debug(f"in get_unlinked_payment_sum with supplier: {result[0].total_unsettled}")
+    return result[0].total_unsettled or 0

@@ -31,138 +31,167 @@ frappe.ui.form.on("Supplier Payment Request", {
                 });
             });
         //}
+        // Always set department query based on selected company
+        frm.set_query("department", function() {
+            return {
+                filters: {
+                    company: frm.doc.company
+                }
+            };
+        });
     },
 
     onload: function(frm) {
-        if (frm.doc.supplier) {
-            frm.trigger("supplier");
-        }
-        if (frm.doc.supplier) {
-            frm.trigger("request_type");
-        }
+        if (frm.doc.request_type) {
+            frm.trigger("department");
+        }     
+        
         
     },
-    supplier: function(frm) {
+    department: function(frm) {
         const rt = frm.doc.request_type;
-        if (rt === "Advance Payments (against PO)") {
-            frm.clear_table("pending_invoice_detail");
-            frm.refresh_fields("pending_invoice_detail"); 
-            frm.set_query("purchase_order", function() {
-                return {
-                    filters: {
-                        supplier: frm.doc.supplier,
-                        company: frm.doc.company,
-                        status: ["not in", ["Closed", "Completed"]],
-                        docstatus: 1
-                    }
-                };
-            });
-            //} 
-        }
-        if (rt === "Credit Payments (against Invoice)") { 
-            frm.clear_table("po_payment_details");
-            frm.refresh_fields("po_payment_details");           
-            // Get PI entries for supplier
-            frappe.call({
-            method: "frappe.client.get_list",
-            args: {
-                doctype: "Purchase Invoice",
-                fields: ["name", "posting_date","supplier","budget_head","custom_purchase_person", "fiscal_year", "location", "cost_center","due_date", "grand_total", "outstanding_amount"],
-                filters: {
-                    supplier: frm.doc.supplier,
-                    docstatus: 1,
-                    company: frm.doc.company,
-                    outstanding_amount: [">", 0]
-                },
-                limit_page_length: 100
-            },
-            callback: function (r) {
-                if (r.message) {
-                    frm.clear_table("pending_invoice_detail");
-                    r.message.forEach(row => {
-                        const child = frm.add_child("pending_invoice_detail", {
-                            invoice: row.name,
-                            posting_date: row.posting_date,
-                            due_date: row.due_date,
-                            grand_total: row.grand_total,
-                            outstanding_amount: row.outstanding_amount,
-                            purchase_person: row.custom_purchase_person,
-                            fiscal_year: row.fiscal_year,
-                            location: row.location,
-                            cost_center: row.cost_center,
-                            budget_head: row.budget_head,
-                            supplier: row.supplier,
-                            amount_to_be_paid: row.outstanding_amount
 
-                        });
-                    });
-                    frm.refresh_field("pending_invoice_detail");
-                }
-            }
-            });
-            //PI entries for supplier
-        }
-    },
-    purchase_person: function(frm) {
-        const rt = frm.doc.request_type;
+        // Handle Advance Payments (against PO)
         if (rt === "Advance Payments (against PO)") {
             frm.clear_table("pending_invoice_detail");
-            frm.refresh_fields("pending_invoice_detail"); 
+            frm.refresh_fields("pending_invoice_detail");
+
             frm.set_query("purchase_order", function() {
                 return {
+                    query: "vcm.erpnext_vcm.doctype.supplier_payment_request.supplier_payment_request.get_purchase_orders_without_invoice_or_payment",
                     filters: {
-                        supplier: frm.doc.supplier,
                         company: frm.doc.company,
-                        status: ["not in", ["Closed", "Completed"]],
-                        docstatus: 1
+                        department: frm.doc.department
                     }
                 };
             });
-            //} 
         }
-        if (rt === "Credit Payments (against Invoice)") { 
+
+        // Handle Credit Payments (against Invoice)
+        if (rt === "Credit Payments (against Invoice)") {
             frm.clear_table("po_payment_details");
-            frm.refresh_fields("po_payment_details");           
-            // Get PI entries for supplier
+            frm.refresh_fields("po_payment_details");
+
+            // Step 1: Get Purchase Invoices for the selected department
             frappe.call({
-            method: "frappe.client.get_list",
-            args: {
-                doctype: "Purchase Invoice",
-                fields: ["name", "custom_purchase_person", "budget_head", "supplier", "fiscal_year", "location", "cost_center","posting_date", "due_date", "grand_total", "outstanding_amount"],
-                filters: {
-                    custom_purchase_person: frm.doc.purchase_person,
-                    docstatus: 1,
-                    company: frm.doc.company,
-                    outstanding_amount: [">", 0]
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Purchase Invoice",
+                    fields: [
+                        "name", "posting_date", "supplier", "budget_head",
+                        "custom_purchase_person", "fiscal_year", "location",
+                        "cost_center", "due_date", "grand_total", "outstanding_amount"
+                    ],
+                    filters: {
+                        department: frm.doc.department,
+                        docstatus: 1,
+                        company: frm.doc.company,
+                        outstanding_amount: [">", 0]
+                    },
+                    limit_page_length: 100
                 },
-                limit_page_length: 100
-            },
-            callback: function (r) {
-                if (r.message) {
-                    frm.clear_table("pending_invoice_detail");
-                    r.message.forEach(row => {
-                        const child = frm.add_child("pending_invoice_detail", {
-                            invoice: row.name,
-                            posting_date: row.posting_date,
-                            due_date: row.due_date,
-                            grand_total: row.grand_total,
-                            outstanding_amount: row.outstanding_amount,
-                            purchase_person: row.custom_purchase_person,
-                            fiscal_year: row.fiscal_year,
-                            location: row.location,
-                            cost_center: row.cost_center,
-                            budget_head: row.budget_head,
-                            supplier: row.supplier,
-                            amount_to_be_paid: row.outstanding_amount
+                callback: function(r) {
+                    if (r.message && r.message.length) {
+                        frm.clear_table("pending_invoice_detail");
+
+                        r.message.forEach(row => {
+                            // Add child row first with default unsettled_payments = 0
+                            const child = frm.add_child("pending_invoice_detail", {
+                                invoice: row.name,
+                                posting_date: row.posting_date,
+                                due_date: row.due_date,
+                                grand_total: row.grand_total,
+                                outstanding_amount: row.outstanding_amount,
+                                purchase_person: row.custom_purchase_person,
+                                fiscal_year: row.fiscal_year,
+                                location: row.location,
+                                cost_center: row.cost_center,
+                                budget_head: row.budget_head,
+                                supplier: row.supplier,
+                                amount_to_be_paid: row.outstanding_amount,
+                                unsettled_payments: 0
+                            });
+
+                            // Step 2: Fetch unlinked unallocated payment sum for this supplier
+                            frappe.call({
+                                method: "vcm.erpnext_vcm.doctype.supplier_payment_request.supplier_payment_request.get_unlinked_payment_sum",
+                                args: {
+                                    supplier: row.supplier,
+                                    company: frm.doc.company
+                                },
+                                callback: function(res) {
+                                    if (res.message !== null) {
+                                        child.unsettled_payments = res.message;
+                                        frm.refresh_field("pending_invoice_detail");
+                                    }
+                                }
+                            });
                         });
-                    });
-                    frm.refresh_field("pending_invoice_detail");
+                    }
                 }
-            }
             });
-            //PI entries for supplier
         }
     },
+    // purchase_person: function(frm) {
+    //     const rt = frm.doc.request_type;
+    //     if (rt === "Advance Payments (against PO)") {
+    //         frm.clear_table("pending_invoice_detail");
+    //         frm.refresh_fields("pending_invoice_detail"); 
+    //         frm.set_query("purchase_order", function() {
+    //             return {
+    //                 filters: {
+    //                     supplier: frm.doc.supplier,
+    //                     company: frm.doc.company,
+    //                     status: ["not in", ["Closed", "Completed"]],
+    //                     docstatus: 1
+    //                 }
+    //             };
+    //         });
+    //         //} 
+    //     }
+    //     if (rt === "Credit Payments (against Invoice)") { 
+    //         frm.clear_table("po_payment_details");
+    //         frm.refresh_fields("po_payment_details");           
+    //         // Get PI entries for supplier
+    //         frappe.call({
+    //         method: "frappe.client.get_list",
+    //         args: {
+    //             doctype: "Purchase Invoice",
+    //             fields: ["name", "custom_purchase_person", "budget_head", "supplier", "fiscal_year", "location", "cost_center","posting_date", "due_date", "grand_total", "outstanding_amount"],
+    //             filters: {
+    //                 custom_purchase_person: frm.doc.purchase_person,
+    //                 docstatus: 1,
+    //                 company: frm.doc.company,
+    //                 outstanding_amount: [">", 0]
+    //             },
+    //             limit_page_length: 100
+    //         },
+    //         callback: function (r) {
+    //             if (r.message) {
+    //                 frm.clear_table("pending_invoice_detail");
+    //                 r.message.forEach(row => {
+    //                     const child = frm.add_child("pending_invoice_detail", {
+    //                         invoice: row.name,
+    //                         posting_date: row.posting_date,
+    //                         due_date: row.due_date,
+    //                         grand_total: row.grand_total,
+    //                         outstanding_amount: row.outstanding_amount,
+    //                         purchase_person: row.custom_purchase_person,
+    //                         fiscal_year: row.fiscal_year,
+    //                         location: row.location,
+    //                         cost_center: row.cost_center,
+    //                         budget_head: row.budget_head,
+    //                         supplier: row.supplier,
+    //                         amount_to_be_paid: row.outstanding_amount
+    //                     });
+    //                 });
+    //                 frm.refresh_field("pending_invoice_detail");
+    //             }
+    //         }
+    //         });
+    //         //PI entries for supplier
+    //     }
+    // },
     request_type: function(frm) {
         const rt = frm.doc.request_type;
         // Handle Purchase Order visibility and requirement
