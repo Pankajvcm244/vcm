@@ -282,8 +282,8 @@ def create_material_request(material_requests):
 						continue
 					key = (company, request_type, source_warehouse, target_warehouse)
 				else:  # Purchase
-					# if not should_run_purchase_request():
-					# 	continue
+					if not should_run_purchase_request():
+						continue
 					warehouse = d.get("warehouse")
 					#logging.debug(f"create_material_request PO Key {warehouse_key}    ")
 					if not warehouse:
