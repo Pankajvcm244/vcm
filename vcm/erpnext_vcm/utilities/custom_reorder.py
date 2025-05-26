@@ -244,7 +244,7 @@ def get_item_warehouse_projected_qty(items_to_consider):
 
 def create_material_request(material_requests):
 	"""Create indent on reaching reorder level"""
-	"""Create separate MRs per target warehouse and request type (Transfer vs Purchase)"""
+	"""Create separate MRs per (source_warehouse, target_warehouse) for Transfer, or per warehouse for Purchase"""
 	mr_list = []
 	exceptions_list = []
 
@@ -260,9 +260,10 @@ def create_material_request(material_requests):
 	def should_run_purchase_request():
 		logging.debug(f"create_material_request PO checking {getdate(nowdate()).weekday()}    ")
 		# Monday is 0, friday is 4, 
-		return getdate(nowdate()).weekday() == 4  # Monday
+		return getdate(nowdate()).weekday() == 0  # Monday
 
-	# Group by (company, request_type, warehouse_key)
+	# Group by (company, request_type, source_warehouse, target_warehouse) for Transfer
+	# and (company, request_type, warehouse) for Purchase
 	grouped_requests = frappe._dict()
 
 	# Group reorder lines
@@ -275,37 +276,46 @@ def create_material_request(material_requests):
 			for d in items:
 				d = frappe._dict(d)
 				if request_type == "Transfer":
-					warehouse_key = d.get("source_warehouse")
-					#logging.debug(f"create_material_request TX Key  {warehouse_key}    ")
-					if not warehouse_key:
-						#logging.debug(f"Missing source_warehouse for Transfer  : {d.get('item_code')} ") 	
+					source_warehouse = d.get("source_warehouse")
+					target_warehouse = d.get("warehouse")
+					if not source_warehouse or not target_warehouse:
 						continue
+					key = (company, request_type, source_warehouse, target_warehouse)
 				else:  # Purchase
 					# if not should_run_purchase_request():
 					# 	continue
-					warehouse_key = d.get("warehouse")
+					warehouse = d.get("warehouse")
 					#logging.debug(f"create_material_request PO Key {warehouse_key}    ")
-					if not warehouse_key:
+					if not warehouse:
 						#logging.debug(f"Missing warehouse for Purchase: {d.get('item_code')} ") 
 						continue
+					key = (company, request_type, warehouse)		
 				
-				key = (company, request_type, warehouse_key)
 				grouped_requests.setdefault(key, []).append(d)
 				#logging.debug(f"grouped req: {grouped_requests} ")
 
 	# Create MR per (company, request_type, warehouse_key)
-	for (company, request_type, warehouse_key), grouped_items in grouped_requests.items():
+	for key, grouped_items in grouped_requests.items():
+		company = key[0]
+		request_type = key[1]
+
+		if request_type == "Transfer":
+			source_warehouse = key[2]
+			target_warehouse = key[3]
+		else:
+			target_warehouse = key[2]
+			source_warehouse = None		
 		try:
 			mr = frappe.new_doc("Material Request")
 			mr.update({
 				"company": company,
 				"transaction_date": nowdate(),
 				"material_request_type": "Material Transfer" if request_type == "Transfer" else request_type,
-				"title": f"AUTO: {request_type} Request - {warehouse_key}",
+				"title": f"AUTO MR:{request_type}-{source_warehouse} to {target_warehouse}" if request_type == "Transfer" else f"AUTO MR:Purchase-{target_warehouse}",
 				# "set_from_warehouse": d.source_warehouse if request_type == "Transfer" else None,
 				# "set_warehouse": d.warehouse, # Always the target
-				"set_warehouse": grouped_items[0].warehouse , # Always the target
-				"set_from_warehouse": grouped_items[0].get("source_warehouse") if request_type == "Transfer" else None,
+				"set_warehouse": target_warehouse,  # Always the target
+				"set_from_warehouse": source_warehouse if request_type == "Transfer" else None,
 			})
 
 			for d in grouped_items:
