@@ -215,7 +215,8 @@ def is_child_of_operations(cost_center, company_abbr):
     comp_abbr = company_abbr
     while parent:
         parent = frappe.db.get_value("Cost Center", parent, "parent_cost_center")
-        if parent == f"OPERATIONS - {comp_abbr}":
+        #if parent == f"OPERATIONS - {comp_abbr}":
+        if parent in [f"OPERATIONS - {comp_abbr}", f"TSF Businesses - {comp_abbr}"]:
             return True
     return False
 

@@ -253,6 +253,12 @@ class VCMSalesInv(SalesInvoice):
             self.name = prefix + getseries(prefix, 4)
         elif (company_abbr == 'VCMT'):
             prefix = f"VSI-{fiscal_year}-"
+            self.name = prefix + getseries(prefix, 5)
+        elif (company_abbr == 'TSF'):
+            if is_child_of_yatra(self.cost_center, company_abbr) == True:
+                prefix = f"TYI-{fiscal_year}"
+            else:            
+                prefix = f"TSI-{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)        
         else:
             # rest sales invoice will follow this series
@@ -331,3 +337,13 @@ def directly_mark_cancelled(name):
 @frappe.whitelist()
 def before_insert(doc, method):
         doc.place_of_supply = frappe.get_value("Company", doc.company, "state")  # Default to company state
+
+
+def is_child_of_yatra(cost_center, company_abbr):
+    parent = cost_center
+    comp_abbr = company_abbr
+    while parent:
+        parent = frappe.db.get_value("Cost Center", parent, "parent_cost_center")
+        if parent == f"Yatras - {comp_abbr}":
+            return True
+    return False
