@@ -256,7 +256,7 @@ class VCMSalesInv(SalesInvoice):
             self.name = prefix + getseries(prefix, 5)
         elif (company_abbr == 'TSF'):
             if is_child_of_yatra(self.cost_center, company_abbr) == True:
-                prefix = f"TYI-{fiscal_year}"
+                prefix = f"TYI-{fiscal_year}-"
             else:            
                 prefix = f"TSI-{fiscal_year}-"
             self.name = prefix + getseries(prefix, 5)        

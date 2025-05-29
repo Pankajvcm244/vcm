@@ -377,7 +377,7 @@ def update_vcm_budget_totals(budget_name):
     #percent is for total parent not childwise
     percent = (total_used/ (total_amount + total_amended )) * 100;  
     total_used_percent = percent or 0
-    logging.debug(f"Budget {budget_name}, Budget: %:{total_used_percent}, T: {total_amount}, Amend: {total_amended}, TB: {total_balance}, TU: {total_used}, PO: {total_po}, PI: {total_pi}, PE: {total_pe}, JE: {total_je}, PT: {total_pool_budget}, PU: {total_pool_used}, PBL: {total_pool_balance} ")
+    #logging.debug(f"Budget {budget_name}, Budget: %:{total_used_percent}, T: {total_amount}, Amend: {total_amended}, TB: {total_balance}, TU: {total_used}, PO: {total_po}, PI: {total_pi}, PE: {total_pe}, JE: {total_je}, PT: {total_pool_budget}, PU: {total_pool_used}, PBL: {total_pool_balance} ")
     doc.db_set("total_unpaid_purchase_order", total_po)
     doc.db_set("total_unpaid_purchase_invoice", total_pi)
     doc.db_set("total_paid_payment_entry", total_pe)

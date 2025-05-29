@@ -152,12 +152,12 @@ def get_data(filters):
             SUM(CASE WHEN e.month = 2 THEN e.amount ELSE 0 END) AS Feb,
             SUM(CASE WHEN e.month = 3 THEN e.amount ELSE 0 END) AS Mar,
 
-            SUM(e.amount) AS used_budget,
-            SUM(CASE WHEN e.source = 'PI' THEN e.amount ELSE 0 END) AS used_budget_pi,
-            SUM(CASE WHEN e.source = 'PE' THEN e.amount ELSE 0 END) AS used_budget_pe,
-            SUM(CASE WHEN e.source = 'JV' THEN e.amount ELSE 0 END) AS used_budget_jv,
-
-            COALESCE(b.current_budget, 0) - SUM(e.amount) AS balance_budget
+            COALESCE(SUM(e.amount), 0) AS used_budget,
+            COALESCE(SUM(CASE WHEN e.source = 'PI' THEN e.amount ELSE 0 END), 0) AS used_budget_pi,
+            COALESCE(SUM(CASE WHEN e.source = 'PE' THEN e.amount ELSE 0 END), 0) AS used_budget_pe,
+            COALESCE(SUM(CASE WHEN e.source = 'JV' THEN e.amount ELSE 0 END), 0) AS used_budget_jv,
+            
+            COALESCE(b.current_budget, 0) - COALESCE(SUM(e.amount), 0) AS balance_budget
 
         FROM `tabVCM Budget` v
         LEFT JOIN `tabVCM Budget Child Table` b ON b.parent = v.name
