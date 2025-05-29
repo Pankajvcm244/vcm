@@ -1,7 +1,7 @@
 // Copyright (c) 2025, pankaj.sharma@vcm.org.in and contributors
 // For license information, please see license.txt
 
-// frappe.query_reports["Material Request Lifecycle"] = {
+// frappe.query_reports["Purchase To Payment Items Summary"] = {
 // 	"filters": [
 
 // 	]
@@ -9,12 +9,7 @@
 
 
 
-
-
-//#####################################################   Default set i mont rnage and set TSF And Depart ment #################
-
-
-frappe.query_reports["Material Request Lifecycle"] = {
+frappe.query_reports["Purchase To Payment Items Summary"] = {
     "filters": [
       {
         "fieldname": "company",
@@ -50,4 +45,3 @@ frappe.query_reports["Material Request Lifecycle"] = {
       }
     ]
   }
-  

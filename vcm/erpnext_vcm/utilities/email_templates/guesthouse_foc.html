@@ -1,0 +1,117 @@
+ <!-- guest_house_foc_email.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9fafc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      border: 1px solid #e6ecf1;
+    }
+    .header {
+      background-color: #edf4fc;
+      color: #2c3e50;
+      padding: 20px;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid #dce6f1;
+    }
+    .content {
+      padding: 25px;
+      color: #444;
+    }
+    .content p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .table th {
+      background-color: #f1f6fb;
+      color: #333;
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #dde3ea;
+    }
+    .table td {
+      padding: 10px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .footer {
+      padding: 20px;
+      font-size: 13px;
+      color: #7a7a7a;
+      text-align: center;
+      background-color: #f9f9f9;
+      border-top: 1px solid #ececec;
+    }
+    .button {
+      display: inline-block;
+      margin: 10px 10px 0;
+      padding: 10px 25px;
+      background-color: #4caf50;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .button.reject {
+      background-color: #e74c3c;
+    }
+    .button.reject:hover {
+      background-color: #d7382f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">🛏️ Guest House Reservation Approval</div>
+    <div class="content">
+      
+      <p style="font-weight: bold;">Hare Krishna {{ devotee_name }},</p>
+
+      <p>A reservation has been made and requires your attention. Please review the details below and take the appropriate action:</p>
+
+      <table class="table">
+        <tr><th>Reservation ID</th><td>{{ name }}</td></tr>
+        <tr><th>Guest Name</th><td>{{ guest_name }}</td></tr>
+        <tr><th>Mobile</th><td>{{ mobile_no }}</td></tr>
+        <tr><th>Check-In</th><td>{{ check_in }}</td></tr>
+        <tr><th>Check-Out</th><td>{{ check_out }}</td></tr>
+        <tr><th>Number of Rooms</th><td>{{ number_of_rooms }}</td></tr>
+        <tr><th>Pax</th><td>{{ pax }}</td></tr>
+        <tr><th>Remarks</th><td>{{ remarks }}</td></tr>
+      </table>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="{{ approve_link }}" class="button">Approve</a>
+        <a href="{{ reject_link }}" class="button reject">Reject</a>
+      </div>
+    </div>
+    <div class="footer">
+      Thank you for your prompt response.<br><strong>VCM ERP System</strong>
+    </div>
+  </div>
+</body>
+</html>
