@@ -102,8 +102,9 @@ def get_data(filters):
                 AND pe.budget_head IS NOT NULL
                 AND (
                     per.reference_doctype IS NULL
-                    OR (per.reference_doctype NOT IN ('Purchase Invoice', 'Purchase Order'))
+                    OR (per.reference_doctype NOT IN ('Purchase Invoice', 'Journal Entry'))
                 )
+                
                 {pe_conditions}
 
 

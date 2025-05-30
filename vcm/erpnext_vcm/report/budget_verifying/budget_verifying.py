@@ -28,6 +28,7 @@ def get_columns(filters):
         columns.append({"label": "PO Number", "fieldname": "po_number", "fieldtype": "Data", "width": 150})    
     elif document_type == "Payment Entry":
         columns.append({"label": "Has Reference", "fieldname": "has_reference", "fieldtype": "Data", "width": 100})
+        columns.append({"label": "Has PO", "fieldname": "has_po", "fieldtype": "Data", "width": 100})
         columns.append({"label": "Linked References", "fieldname": "linked_references", "fieldtype": "Data", "width": 200})
     elif document_type == "Journal Entry":
         columns.append({"label": "Root Type", "fieldname": "root_type", "fieldtype": "Data", "width": 100})
@@ -193,6 +194,10 @@ def get_data(filters):
                     WHEN COUNT(DISTINCT per.reference_name) > 0 THEN 'Yes'
                     ELSE 'No'
                 END AS has_reference,
+                CASE
+                    WHEN SUM(CASE WHEN per.reference_doctype = 'Purchase Order' THEN 1 ELSE 0 END) > 0 THEN 'Yes'
+                    ELSE 'No'
+                END AS has_po,
                 GROUP_CONCAT(DISTINCT per.reference_name SEPARATOR ', ') AS linked_references
             FROM `tabPayment Entry` {alias}
             LEFT JOIN `tabPayment Entry Reference` per ON per.parent = {alias}.name

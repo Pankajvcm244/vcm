@@ -17,7 +17,7 @@ def add_vcmbudget():
     # Path to Excel file (Store this in your private files folder)
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/CostCentresCorrectionPooja.xlsx"  # Change as needed
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudget-finalerp-5.xlsx"  # Change as needed
-    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/YatraBudget240425.xlsx"
+    file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/VCMBudgetnew-5.xlsx"
     #file_path = "/home/ubuntu/frappe-bench/apps/vcm/vcm/erpnext_vcm/testing/excelfiles/Test1.xlsx"
 
     # Ensure file exists
@@ -114,3 +114,4 @@ def add_vcmbudget():
             print(f"Error processing {cost_center} - {budget_head}: {str(e)}")
             error += 1
     print(f"VCM Budget added: {added_count}, Updated: {updated_count}, Errors: {error}, Missing Cost Centers: {not_a_costcenter}, Missing Budget Heads: {not_a_budgethead}")
+

@@ -338,6 +338,9 @@ class VCMPOSInv(POSInvoice):
         elif (self.pos_profile == 'Rajbhog POS'):  
             prefix = f"RSR-{fiscal_year}-"         
             self.name = prefix + getseries(prefix, 5)
+        elif (self.pos_profile == 'Narsimha Counter POS'):  
+            prefix = f"TNC-{year}{month}-"         
+            self.name = prefix + getseries(prefix, 5)
         else:
             prefix = f"POS-{year}{month}-"         
             self.name = prefix + getseries(prefix, 5)             
