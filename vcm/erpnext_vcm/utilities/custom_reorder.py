@@ -77,6 +77,31 @@ def _reorder_item():
 		# 	logging.debug(f"in reorder_item 3-1 {kwargs.item_code}, {reorder_level}, {reorder_qty}, {projected_qty} ")
 		if (reorder_level or reorder_qty) and projected_qty <= reorder_level:
 			deficiency = reorder_level - projected_qty
+
+			
+			if deficiency > reorder_qty:
+				mr_qty = deficiency
+			else:
+				mr_qty = reorder_qty
+			
+			# get sourcewarehouse for log, anyway we will use it only in transfer case
+			vcm_source_warehouse = frappe.db.get_value(
+					"Item Default",
+					{"parent": kwargs.item_code, "parenttype": "Item"},
+					"default_warehouse" )
+
+			frappe.get_doc({
+				"doctype":"Auto Reorder Log",
+				"item_code": kwargs.get("item_code"),
+				"warehouse": kwargs.warehouse,  #Target Warehouse
+				"reorder_level": reorder_level,
+				"material_request_type": kwargs.get("material_request_type"),
+				"reorder_qty": reorder_qty,
+				"actual_qty": projected_qty,
+				"mr_reorder_qty":mr_qty,
+				"source_warehouse":vcm_source_warehouse,
+			}). insert(ignore_permissions=True)
+			
 			
 			if deficiency > reorder_qty:
 				reorder_qty = deficiency
@@ -93,11 +118,12 @@ def _reorder_item():
 			source_warehouse = None
 			if kwargs.material_request_type == "Transfer":
 				#entry["source_warehouse"] = kwargs.source_warehouse or kwargs.warehouse  # fallback to target if not set
-				entry["source_warehouse"] = frappe.db.get_value(
-					"Item Default",
-					{"parent": kwargs.item_code, "parenttype": "Item"},
-					"default_warehouse"
-				)
+				# entry["source_warehouse"] = frappe.db.get_value(
+				# 	"Item Default",
+				# 	{"parent": kwargs.item_code, "parenttype": "Item"},
+				# 	"default_warehouse"
+				# )
+				entry["source_warehouse"] =  vcm_source_warehouse
 			material_requests[kwargs.material_request_type].setdefault(company, []).append(entry)
 			#logging.debug(f"in reorder_item 4 {kwargs.item_code}, {kwargs.warehouse}, {source_warehouse}, {reorder_qty} ")
 

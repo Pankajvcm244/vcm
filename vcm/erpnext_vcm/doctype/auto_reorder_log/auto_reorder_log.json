@@ -1,0 +1,143 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-30 10:30:58.654848",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "reorder_qty",
+  "reorder_level",
+  "trigger_time",
+  "material_request",
+  "column_break_qigm",
+  "material_request_type",
+  "mr_reorder_qty",
+  "actual_qty",
+  "warehouse",
+  "source_warehouse",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "reorder_level",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Item Reorder Level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "material_request_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Material Request Type",
+   "options": "Purchase\nTransfer\nMaterial Issue\nManufacture",
+   "read_only": 1
+  },
+  {
+   "fieldname": "actual_qty",
+   "fieldtype": "Float",
+   "label": "Actual And Excepted Qty",
+   "read_only": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "trigger_time",
+   "fieldtype": "Datetime",
+   "label": "Trigger Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Target Warehouse",
+   "options": "Warehouse",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reorder_qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Item Reorder Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Auto Reorder Log",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mr_reorder_qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Mr Reorder Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qigm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "material_request",
+   "fieldtype": "Link",
+   "label": "Material Request",
+   "options": "Material Request"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-05-30 16:56:31.714142",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "Auto Reorder Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
