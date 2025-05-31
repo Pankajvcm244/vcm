@@ -8,9 +8,10 @@
  "field_order": [
   "invoice",
   "purchase_person",
+  "fiscal_year",
   "cost_center",
   "location",
-  "fiscal_year",
+  "budget_head",
   "posting_date",
   "due_date",
   "supplier",
@@ -113,13 +114,19 @@
    "fieldtype": "Currency",
    "label": "Unsettled Payments",
    "read_only": 1
+  },
+  {
+   "fieldname": "budget_head",
+   "fieldtype": "Link",
+   "label": "Budget Head",
+   "options": "Budget Head"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-05-26 14:58:21.748974",
+ "modified": "2025-05-28 11:51:11.749005",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "PI Payment Details",
