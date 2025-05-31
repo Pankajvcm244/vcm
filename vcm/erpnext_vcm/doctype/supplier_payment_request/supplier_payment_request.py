@@ -7,9 +7,19 @@ from frappe.model.document import Document
 from frappe.model.naming import getseries
 from frappe.utils import nowdate
 
+from erpnext.accounts.party import get_party_account
+
+from vcm.erpnext_vcm.doctype.supplier_payment_request.preq_alm.preqalm import (
+    assign_and_notify_next_preq_authority,
+    get_preq_alm_level,
+)
+
+from frappe.workflow.doctype.workflow_action.workflow_action import (
+    get_doc_workflow_state,
+)
+
 import logging
 logging.basicConfig(level=logging.DEBUG)
-
 
 class SupplierPaymentRequest(Document):
     def autoname(self):
@@ -24,33 +34,50 @@ class SupplierPaymentRequest(Document):
         # Set the name using the series (getseries)
         self.name = prefix + getseries(prefix, 2)
     
+    def before_save(self):
+        #logging.debug(f"in PREQ before_save")
+        self.refresh_preq_alm()
+    
+    def on_update(self):
+        #logging.debug(f"in PREQ on_update")        
+        assign_and_notify_next_preq_authority(self)
+
     def validate(self):
+        #logging.debug(f"in PREQ validate")
         # Check if the request type is "Advance Payments (against PO)"
         if self.request_type == "Advance Payments (against PO)":
+            # validate if amount is more than mentioned in PO
             validate_supplier_po_payment_request(self)
 
     def on_submit(self):
+        #logging.debug(f"in PREQ on_submit")
         # Check if the request type is "Advance Payments (against PO)"
         if self.request_type == "Advance Payments (against PO)":
             create_payment_entry_from_request(self.name)
-
         # Check if the request type is "Credit Payments (against Invoice)"
         elif self.request_type == "Credit Payments (against Invoice)":
-            create_payment_entry_for_selected_invoices(self.name)
-
-        # else:
-        #     frappe.throw(_("Invalid request type."))            
+            create_payment_entry_for_selected_invoices(self.name)        
+        elif self.request_type == "Adhoc Payment":
+            create_payment_entry_from_adhoc_request(self.name)
+    
+    def refresh_preq_alm(self):
+        #logging.debug(f"in PREQ refresh_preq_alm")
+        if hasattr(self, "department") and self.department == "":
+            frappe.throw("Department is not set.")
+        alm_level = get_preq_alm_level(self)
+        if alm_level is not None:
+            self.l1_approving_authority = alm_level.l1_approver
+            self.l2_approving_authority = alm_level.l2_approver
+            self.l3_approving_authority = alm_level.l3_approver
+            self.final_approving_authority = alm_level.final_approver
+            #logging.debug(f"in PREQ refresh_preq_alm {self.name}, {self.l1_approving_authority}, {self.l2_approving_authority}, {self.l3_approving_authority}, {self.final_approving_authority}")
+        else:
+            frappe.throw("ALM Levels are not set for Payment Req in this document")
 
 @frappe.whitelist()
 def create_payment_entry_from_request(docname):
+    #logging.debug(f"**********in PREQ create_payment_entry_from_request {docname}  ******************")
     doc = frappe.get_doc("Supplier Payment Request", docname)
-
-    # Preconditions
-    # if doc.docstatus != 1:
-    #     frappe.throw(_("Document must be submitted."))
-
-    # if doc.status != "Approved":
-    #     frappe.throw(_("Only approved requests are processed."))
 
     if doc.request_type != "Advance Payments (against PO)":
         frappe.throw(("Request type must be 'Advance Payment (against PO)'."))
@@ -77,36 +104,22 @@ def create_payment_entry_from_request(docname):
         },
         pluck="name"
     )
-
     if existing_pe:
         return f"Payment Entry {existing_pe[0]} already exists."
-
-    # Get accounts
-    # paid_from_account = frappe.get_value("Company", doc.company, "default_bank_account")
-    paid_from_account = "2320 - Canara Bank- Annakoot & Brajras - TSF"
-    if not paid_from_account:
-        frappe.throw(("Default bank account not set in Company"))
-
-    # paid_to_account = frappe.get_value("Account", {
-    #     "account_type": "Payable",
-    #     "company": doc.company
-    # })
-    #remove this hard coding later on Pankaj
-    paid_to_account = "Sundry Creditors - Suppliers - TSF"
-    if not paid_to_account:
-        frappe.throw(("No payable account found for company."))
 
     # Create Payment Entry
     pe = frappe.new_doc("Payment Entry")
     pe.payment_type = "Pay"
     pe.party_type = "Supplier"
-    pe.cost_center = doc.cost_center
-    pe.fiscal_year = doc.fiscal_year
-    pe.budget_head = doc.budget_head
+    pe.cost_center = po.cost_center
+    pe.fiscal_year = po.fiscal_year
+    pe.budget_head = po.budget_head
+    pe.location = po.location
     pe.party = doc.supplier
     pe.company = doc.company
-    pe.paid_from = paid_from_account
-    pe.paid_to = paid_to_account
+    # Get accounts
+    pe.paid_to = get_party_account("Supplier", doc.supplier, doc.company)
+    pe.paid_from = frappe.get_value("Company", doc.company, "default_cash_account")
     pe.paid_amount = doc.payment_requested
     pe.received_amount = doc.payment_requested
     pe.reference_no = doc.name
@@ -121,6 +134,39 @@ def create_payment_entry_from_request(docname):
     pe.insert(ignore_permissions=True)
     #pe.submit()
     return f"Payment Entry {pe.name} created successfully."
+
+@frappe.whitelist()
+def create_payment_entry_from_adhoc_request(docname):
+    doc = frappe.get_doc("Supplier Payment Request", docname)    
+
+    if doc.request_type != "Adhoc Payment":
+        frappe.throw(("Request type must be 'Adhoc Payment'."))    
+    
+    pe = frappe.new_doc("Payment Entry")
+    # Create Payment Entry
+    pe = frappe.new_doc("Payment Entry")
+    pe.payment_type = "Pay"
+    pe.party_type = "Supplier"
+    pe.cost_center = doc.cost_center
+    pe.fiscal_year = doc.fiscal_year
+    pe.budget_head = doc.budget_head
+    pe.location = doc.location
+    pe.party = doc.supplier
+    pe.company = doc.company
+    # Get accounts 
+    pe.paid_to = get_party_account("Supplier", doc.supplier, doc.company)
+    pe.paid_from = frappe.get_value("Company", doc.company, "default_cash_account")    
+    pe.source_exchange_rate = 1.0
+    pe.paid_amount = doc.adhoc_amount
+    pe.received_amount = doc.adhoc_amount
+    pe.reference_no = doc.name
+    pe.reference_date = doc.modified
+    pe.posting_date = frappe.utils.nowdate()    
+    pe.insert(ignore_permissions=True)
+    #pe.submit()
+    return f"Payment Entry {pe.name} created successfully."
+    
+    
 
 @frappe.whitelist()
 def validate_supplier_po_payment_request(doc):
@@ -183,7 +229,7 @@ def create_payment_entry_for_selected_invoices(docname):
         # Use row-level or fallback to Supplier Payment Request-level
         cost_center = getattr(row, "cost_center", None) or doc.get("cost_center")
         location = getattr(row, "location", None) or doc.get("location")
-        fiscal_year = doc.fiscal_year  # always taken from doc
+        fiscal_year = getattr(row, "fiscal_year", None) or doc.fiscal_year  # always taken from doc
         supplier = invoice_doc.supplier
         budget_head = getattr(row, "budget_head", None) or doc.get("budget_head")
 
@@ -224,8 +270,8 @@ def create_payment_entry_for_selected_invoices(docname):
             pe.budget_head = budget_head
 
         # Customize accounts or make dynamic
-        pe.paid_from = "2320 - Canara Bank- Annakoot & Brajras - TSF"
-        pe.paid_to = "Sundry Creditors - Suppliers - TSF"
+        pe.paid_to = get_party_account("Supplier", doc.supplier, doc.company)
+        pe.paid_from = frappe.get_value("Company", doc.company, "default_cash_account")
         pe.mode_of_payment = "Bank Transfer"
 
         for inv in invoice_list:
@@ -308,5 +354,11 @@ def get_unlinked_payment_sum(supplier, company):
         "supplier": supplier,
         "company": company
     }, as_dict=True)
-    #logging.debug(f"in get_unlinked_payment_sum with supplier: {result[0].total_unsettled}")
     return result[0].total_unsettled or 0
+
+
+@frappe.whitelist()
+def resend_approver_request(docname, method):
+    frappe.only_for(["System Manager", "Adhoc Payment Requester", "Purchase Manager", "Purchase User"])
+    doc = frappe.get_doc("Supplier Payment Request", docname)
+    assign_and_notify_next_preq_authority(doc, method)

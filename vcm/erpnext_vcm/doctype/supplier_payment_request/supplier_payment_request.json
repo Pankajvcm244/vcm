@@ -11,8 +11,13 @@
   "department",
   "purchase_order",
   "amended_from",
+  "supplier",
   "column_break_xihw",
-  "remarks__justification",
+  "preq_amount",
+  "l1_approving_authority",
+  "l2_approving_authority",
+  "l3_approving_authority",
+  "final_approving_authority",
   "po_details_section",
   "po_amount",
   "advance_requested_in_po",
@@ -24,7 +29,15 @@
   "po_payment_details",
   "section_break_dekd",
   "pending_invoice_detail_column",
-  "pending_invoice_detail"
+  "pending_invoice_detail",
+  "adhoc_request_fields_section",
+  "fiscal_year",
+  "cost_center",
+  "location",
+  "budget_head",
+  "column_break_gbgq",
+  "adhoc_amount",
+  "remarks__justification"
  ],
  "fields": [
   {
@@ -47,7 +60,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Request Type",
-   "options": "Advance Payments (against PO)\nCredit Payments (against Invoice)",
+   "options": "Advance Payments (against PO)\nCredit Payments (against Invoice)\nAdhoc Payment",
    "reqd": 1
   },
   {
@@ -63,12 +76,13 @@
   },
   {
    "fieldname": "column_break_xihw",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Approval Details"
   },
   {
    "fieldname": "po_details_section",
    "fieldtype": "Section Break",
-   "label": "Payment Details"
+   "label": "PO Advance Payment Details"
   },
   {
    "fieldname": "po_amount",
@@ -95,7 +109,8 @@
   },
   {
    "fieldname": "section_break_gmrp",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "PO Previous Payment Details"
   },
   {
    "fieldname": "column_break_taat",
@@ -109,7 +124,8 @@
   },
   {
    "fieldname": "section_break_dekd",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Invoices Details"
   },
   {
    "fieldname": "pending_invoice_detail_column",
@@ -142,13 +158,89 @@
    "label": "Department",
    "options": "Department",
    "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Budget Location"
+  },
+  {
+   "fieldname": "budget_head",
+   "fieldtype": "Link",
+   "label": "Budget Head",
+   "options": "Budget Head"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "adhoc_amount",
+   "fieldtype": "Currency",
+   "label": "Adhoc Amount "
+  },
+  {
+   "bold": 1,
+   "fieldname": "preq_amount",
+   "fieldtype": "Currency",
+   "label": "PREQ Amount",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "l1_approving_authority",
+   "fieldtype": "Data",
+   "label": "L1 Approving Authority",
+   "read_only": 1
+  },
+  {
+   "fieldname": "l2_approving_authority",
+   "fieldtype": "Data",
+   "label": "L2 Approving Authority",
+   "read_only": 1
+  },
+  {
+   "fieldname": "l3_approving_authority",
+   "fieldtype": "Data",
+   "label": "L3 Approving Authority",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_approving_authority",
+   "fieldtype": "Data",
+   "label": "Final Approving Authority",
+   "read_only": 1
+  },
+  {
+   "fieldname": "adhoc_request_fields_section",
+   "fieldtype": "Section Break",
+   "label": "Adhoc Request Fields"
+  },
+  {
+   "fieldname": "column_break_gbgq",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-05-26 13:53:09.706168",
+ "modified": "2025-05-31 14:02:53.829425",
  "modified_by": "Administrator",
  "module": "erpnext_vcm",
  "name": "Supplier Payment Request",
@@ -163,6 +255,30 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
    "share": 1,
    "submit": 1,
    "write": 1

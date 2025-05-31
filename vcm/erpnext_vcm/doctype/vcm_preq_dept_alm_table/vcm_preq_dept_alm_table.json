@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-28 16:50:33.294491",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "department",
+  "amount_condition",
+  "l1_approver",
+  "l2_approver",
+  "l3_approver",
+  "final_approver"
+ ],
+ "fields": [
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Department",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount_condition",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Amount Condition",
+   "reqd": 1
+  },
+  {
+   "fieldname": "l1_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "L1 Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "l2_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "L2 Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "l3_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "L3 Approver",
+   "options": "User"
+  },
+  {
+   "fieldname": "final_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Final Approver",
+   "options": "User",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-28 16:55:09.887227",
+ "modified_by": "Administrator",
+ "module": "erpnext_vcm",
+ "name": "VCM PREQ DEPT ALM TABLE",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

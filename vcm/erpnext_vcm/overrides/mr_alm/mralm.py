@@ -82,7 +82,7 @@ def assign_and_notify_mrn_next_authority(doc, method="Email"):
         send_email_approval(doc, user)
 
     #if current_state == "Final Level Approved":
-    if current_state in ("Final Level Approved", "Prepared"):
+    if current_state in ("Final Level Approved", "Rejected"):
         close_assignments(doc, remove=True)
     frappe.db.commit()
     return
